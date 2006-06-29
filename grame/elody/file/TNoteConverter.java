@@ -118,7 +118,7 @@ public final class TNoteConverter {
 	}
 	
 	
-	String convertPitch (float fpitch) {
+	public String convertPitch (float fpitch) {
 		int pitch = (int) fpitch;
 		//int octave = pitch/12 - 4;
 		int octave = pitch/12 - octaveOffset;

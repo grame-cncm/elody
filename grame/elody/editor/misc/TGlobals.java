@@ -10,6 +10,8 @@ import grame.elody.file.parser.TTEXTEParser;
 import grame.midishare.Midi;
 import grame.midishare.MidiAppl;
 
+import org.eclipse.swt.SWT;
+
 public class TGlobals {
 	public static TGlobalPrefs 		context = new TGlobalPrefs();
 	//public static TEvaluator 		evaluator =  new TEvaluator();
@@ -18,6 +20,7 @@ public class TGlobals {
 	//public static TExpMaker 		maker =  new TExpMaker2();
 	//public static TExpRenderer 	renderer = new TExpRenderer();
 	public static String 			appl = "ElodySharedAppl";
+//	public static Display			display = null;
 	
 	static int midishareVersion = 121;
 	static int ref = 0; // compteur du nombre d'appel de init et quit
@@ -52,6 +55,9 @@ public class TGlobals {
 				TFileParser.registerParser(TOBJECTParser.class);
 				TFileParser.registerParser(TGUIDOParser.class);
 				
+				// Création d'un Display pour la connexion entre SWT et l'OS
+	//			display = new Display();
+				
 				// Ouverture d'une application partagée pour les taches et d'un Player partagé
 				midiappl = new MidiAppl();
 				player = new TRealTimePlayer();
@@ -83,6 +89,7 @@ public class TGlobals {
 		if (--ref == 0) {
 			context.saveConnections("ElodySharedPlayer");
 			context.saveAppletsState();
+	//		display.close();
 			midiappl.Close(); 
 			player.stopPlayer();
 			player.Close();

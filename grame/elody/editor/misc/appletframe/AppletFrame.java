@@ -90,7 +90,7 @@ public class AppletFrame extends Frame implements WindowListener {
 	*/
 	public static BasicApplet startApplet(String className) {
 		return startApplet(className, new Hashtable());
-	}		
+	}
 	/**
 	* crée une nouvelle applet,
     * @param     className    le nom de l'applet à créer (package inclus)
@@ -118,10 +118,12 @@ public class AppletFrame extends Frame implements WindowListener {
 			f.setVisible(true);
 			f.repaint();
 			return a;
-		} 
+		}
 		catch (Exception e) {
-			System.err.println( "startApplet " + className + " " + e);
+			System.out.println();
+			System.out.println( "startApplet " + className + " " + e);
 			e.printStackTrace();
+			System.out.println(e.getCause().toString());
 		}
 		return null;
 	}
