@@ -12,7 +12,7 @@ public class Singleton extends BasicApplet {
 	public static boolean isSingle (String className) throws ClassNotFoundException {
 		Class c = Class.forName(className);
 		while (c!=null) {
-			if (c.getName().equals("elody.misc.Singleton")) {
+			if (c.getName().equals("grame.elody.misc.applets.Singleton")) {
 				return true;
 			}
 			c = c.getSuperclass();

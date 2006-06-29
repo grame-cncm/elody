@@ -1,5 +1,9 @@
 package grame.elody.file.parser;
 
+
+
+import grame.elody.file.html.parser.TBasicHtmlParser;
+
 import java.io.InputStream;
 
 /*******************************************************************************************

@@ -1,7 +1,6 @@
 package grame.elody.file.html.parser;
 
 import grame.elody.file.parser.ParseOperator;
-import grame.elody.file.parser.THtmlParser1;
 import grame.elody.lang.TExpMaker;
 import grame.elody.lang.texpression.expressions.TExp;
 

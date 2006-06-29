@@ -15,6 +15,7 @@ public final class TMemReuser {
   	public TMemReuser (String name) { 
  		try {
  			object = Class.forName (name);
+ 			//CAUTION: take care of packages names!!
  		}catch (Exception e) {
  			System.out.println(e);
  		}
