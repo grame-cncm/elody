@@ -25,14 +25,14 @@ public final class TFileSaver {
 	
 	public void writeFile(TFileContent content,File file, String format) throws Exception {
 		TImpFileSaver saver =  (TImpFileSaver)Class.forName("grame.elody.file.saver."+ "T" + format + "Saver").newInstance();
-		OutputStream outstream = new FileOutputStream(file.getAbsolutePath());
-		saver.writeFile(content,outstream);
-		outstream.close();
+		OutputStream out = new FileOutputStream(file.getAbsolutePath());
+		saver.writeFile(content,out);
+		out.close();
 	}
 	
-	public void writeFile(TFileContent content,OutputStream outstream, String format) throws Exception {
+	public void writeFile(TFileContent content, OutputStream out, String format) throws Exception {
 		TImpFileSaver saver =  (TImpFileSaver)Class.forName("grame.elody.file.saver."+ "T" + format + "Saver").newInstance();
-		saver.writeFile(content,outstream);
-		outstream.flush();
+		saver.writeFile(content,out);
+		out.flush();
 	}
 }

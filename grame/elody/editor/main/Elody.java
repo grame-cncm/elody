@@ -10,9 +10,10 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.Hashtable;
@@ -96,7 +97,7 @@ public final class Elody extends BasicApplet {
 		StringBuffer sbuff = new StringBuffer();
 		try {
 			for (int i=0; i < args.length; i++) {
-				DataInputStream reader = new DataInputStream (new FileInputStream (args[i]));
+				BufferedReader reader = new BufferedReader (new InputStreamReader (new FileInputStream (args[i])));
 /*				FileReader fr = new FileReader(args[i]);
 				BufferedReader reader = new BufferedReader(fr); 
 */				do {

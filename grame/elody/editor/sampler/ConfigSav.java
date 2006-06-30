@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
-import java.util.Vector;
 
 public class ConfigSav {
 	

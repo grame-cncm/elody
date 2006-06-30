@@ -15,13 +15,13 @@ import java.awt.Panel;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.Socket;
@@ -106,7 +106,7 @@ public class TPublisherServer extends BasicApplet implements ActionListener,
 		{
 			try	//	Format : URL du server, nombre maximum de client, par exemple:
 			{
-				DataInputStream in = new DataInputStream(new BufferedInputStream (new FileInputStream("Config.txt")));
+				BufferedReader in = new BufferedReader(new InputStreamReader (new FileInputStream("Config.txt")));
 				serverUrl = in.readLine();						//  http://java.grame.fr/
 				maxClient = Integer.parseInt(in.readLine());	//  10
 				in.close();
@@ -125,7 +125,7 @@ public class TPublisherServer extends BasicApplet implements ActionListener,
 		{
 			try
 			{
-				DataInputStream in = new DataInputStream(new BufferedInputStream (new FileInputStream("Index.html")));
+				BufferedReader in = new BufferedReader(new InputStreamReader (new FileInputStream("Index.html")));
 				parseFileHeader(in);
 				parseUrls(in);
 				in.close();
@@ -136,13 +136,13 @@ public class TPublisherServer extends BasicApplet implements ActionListener,
 		 	}	
 		}
 			
-		void parseFileHeader(DataInputStream in) throws IOException // lecture de l'entete du fichier d'index
+		void parseFileHeader(BufferedReader in) throws IOException // lecture de l'entete du fichier d'index
 		{
 			in.readLine();  // "<HTML><BODY>"
 			in.readLine();  // "<B> Elody File Index </B> <HR>"
 		}
 			
-		void parseUrls (DataInputStream in) throws IOException // lecture des URL contenus dans le fichier d'index
+		void parseUrls (BufferedReader in) throws IOException // lecture des URL contenus dans le fichier d'index
 		{
 			String  res;
 			while (((res = in.readLine()) != null) && (!res.startsWith("</BODY></HTML>")))

@@ -4,8 +4,8 @@ import grame.elody.lang.texpression.expressions.TExp;
 import grame.midishare.Midi;
 
 public class DelayedExprHolder extends ExprHolder implements Runnable {
-	Thread changeThread;
-	long timeout, delay;
+	private Thread changeThread;
+	private long timeout, delay;
 
 	public DelayedExprHolder (TExp e, TGraphVisitor v, boolean accept, long delay) {
 		super (e, v, accept);

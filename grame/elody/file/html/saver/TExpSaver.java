@@ -22,7 +22,6 @@ import grame.elody.lang.texpression.expressions.TYAbstrExp;
 import grame.elody.lang.texpression.operateurs.TAdd;
 import grame.elody.util.AwtUtils;
 
-import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Enumeration;
@@ -419,7 +418,7 @@ final class TExpWriter extends TExpVisitor{
 	Hashtable identTable = null;
 	String version = "100";
 	
-	public TExpWriter (OutputStream out) { this.out = new PrintWriter(new BufferedOutputStream(out));}
+	public TExpWriter (OutputStream out) { this.out = new PrintWriter(out);}
 	
 	public TExpWriter (OutputStream out, Hashtable exptable, Hashtable identtable) { 
 		this.out = new PrintWriter(out);

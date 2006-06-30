@@ -23,10 +23,10 @@ import java.awt.TextArea;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.URL;
@@ -35,7 +35,8 @@ import java.util.Hashtable;
 import java.util.Observable;
 import java.util.StringTokenizer;
 
-public class TPublisher extends BasicApplet implements Runnable, ActionListener {
+public class TPublisher extends BasicApplet implements Runnable, ActionListener
+{
 	static String publishCommand = "Publish";
 	static String fetchCommand = "Fetch";
 	static String connectCommand = "Connect";
@@ -49,8 +50,9 @@ public class TPublisher extends BasicApplet implements Runnable, ActionListener 
 	 
 	Socket socket = null;
 
-	Thread 	client;	
-	DataInputStream in = null;
+	Thread 	client;
+	boolean stopClient = false;
+	BufferedReader in = null;
 	PrintStream out = null;
 //	PrintWriter out = null;
 	Hashtable urlTable;
@@ -194,12 +196,13 @@ public class TPublisher extends BasicApplet implements Runnable, ActionListener 
 	   try {
          	socket = new Socket(host.getText(), TProtocol.port);
          	
-         	in =  new DataInputStream (new BufferedInputStream(socket.getInputStream()));
+         	in =  new BufferedReader (new InputStreamReader(socket.getInputStream()));
     		out =  new PrintStream (new BufferedOutputStream (socket.getOutputStream()));
 //    		out =  new PrintWriter (new BufferedOutputStream (socket.getOutputStream()));
 	
      	  	if (client == null) { 
 		  		client = new Thread (this, "ElodyClient");
+		  		stopClient = false;
 				client.start();
 		  	}
 		    
@@ -219,10 +222,7 @@ public class TPublisher extends BasicApplet implements Runnable, ActionListener 
 				out.flush();
 				in.close ();
 				out.close ();
-				client.stop();
-				in = null;
-				out = null;
-				client = null;
+				stopClient = true;
 			}
 			if (socket!= null) socket.close();
 			socket = null;
@@ -252,7 +252,7 @@ public class TPublisher extends BasicApplet implements Runnable, ActionListener 
 		int i,length;
 	    
 	    try {    
-	    	while (true) {
+	    	while (!stopClient) {
 	   			res = in.readLine();  // lit la taille de la liste
 	   			if (res == null) break;
 	    		urlTable.clear();
@@ -267,6 +267,9 @@ public class TPublisher extends BasicApplet implements Runnable, ActionListener 
 	    } catch (IOException e) {
 	         System.err.println("TPublisher run : " + e);
 	    }
+		in = null;
+		out = null;
+		client = null;
 	}
 
 

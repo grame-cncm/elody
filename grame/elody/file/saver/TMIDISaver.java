@@ -23,7 +23,7 @@ public final class TMIDISaver implements TImpFileSaver {
 		info = new MidiFileInfos();
 	}
 	
-	public void writeFile(TFileContent content,OutputStream outstream) throws Exception{
+	public void writeFile(TFileContent content,OutputStream out) throws Exception{
 		// A FINIR (ajouter titre, author)
 		
 		int seq = midiwriter.writeExp(content.exp); 
@@ -31,7 +31,8 @@ public final class TMIDISaver implements TImpFileSaver {
 		info.clicks = 500;
 		info.format = MidiFileInfos.midifile1;
 		info.timedef = MidiFileInfos.TicksPerQuarterNote;
-		mf.Save (outstream,seq, info);
+		mf.Save (out,seq, info);
+
 		Midi.FreeSeq(seq);
 	}
 }

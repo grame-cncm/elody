@@ -10,8 +10,6 @@ import grame.elody.file.parser.TTEXTEParser;
 import grame.midishare.Midi;
 import grame.midishare.MidiAppl;
 
-import org.eclipse.swt.SWT;
-
 public class TGlobals {
 	public static TGlobalPrefs 		context = new TGlobalPrefs();
 	//public static TEvaluator 		evaluator =  new TEvaluator();

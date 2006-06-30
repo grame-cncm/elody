@@ -15,9 +15,9 @@ import java.io.OutputStreamWriter;
 public final class TGUIDOSaver implements TImpFileSaver {
 	public TGUIDOSaver () {}
 	
-	public void writeFile(TFileContent content,OutputStream outstream) throws Exception{
+	public void writeFile(TFileContent content,OutputStream out) throws Exception{
 	
-		TGuidoExpSaver saver = new TGuidoExpSaver (new OutputStreamWriter(outstream));
+		TGuidoExpSaver saver = new TGuidoExpSaver (new OutputStreamWriter(out));
 		saver.writeFileHeader();
 		saver.writeTitle (content.title);
 		saver.writeAuthor (content.author);

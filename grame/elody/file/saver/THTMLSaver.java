@@ -14,8 +14,8 @@ import java.io.OutputStream;
 public final class THTMLSaver implements TImpFileSaver {
 	public THTMLSaver () {}
 	
-	public void writeFile(TFileContent content, OutputStream outstream) throws Exception {
-		TExpSaver saver = new TExpSaver (outstream);
+	public void writeFile(TFileContent content, OutputStream out) throws Exception {
+		TExpSaver saver = new TExpSaver (out);
 		saver.writeFileHeader();
 		saver.writePlayerApplet();
 		saver.writeTitle (content.title);

@@ -1,7 +1,8 @@
 package grame.midishare.player;
 
-import grame.midishare.*;
-import grame.midishare.midifile.*;
+import grame.midishare.Midi;
+import grame.midishare.SmpteLoc;
+import grame.midishare.midifile.MidiFileInfos;
 
 /**
  * This class in an interface to the native Player library. It allows to develop

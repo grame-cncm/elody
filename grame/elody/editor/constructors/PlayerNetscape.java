@@ -24,6 +24,7 @@ public class PlayerNetscape extends Applet implements Runnable {
 	  Button start, stop ,cont ,backward ,forward;
 	  Checkbox loopbox;
 	  Thread selfThread = null;
+	  public boolean stopThread = false;
 	  
 	  TextField dateMS, dateBBU;
 	  PlayerPos pos;
@@ -65,6 +66,7 @@ public class PlayerNetscape extends Applet implements Runnable {
 	     	}
 	     	if (selfThread == null) {
 		 		selfThread = new Thread(this);
+		 		stopThread = false;
 		 		selfThread.start();
 		 	}
 		 	
@@ -89,15 +91,8 @@ public class PlayerNetscape extends Applet implements Runnable {
 	 
 	 
 	 public void stop(){
-	 	if (msplayer != null) {
-	 		selfThread.stop();
-	 		selfThread = null;
-	 		msplayer.Close();
-	 		msplayer = null;
-	 	}
-	 	TGlobals.quit();
+		 stopThread = true;
 	 }
-	 
 	 
 	  
 	  public void init()
@@ -164,12 +159,18 @@ public class PlayerNetscape extends Applet implements Runnable {
 	 	}	
 	  	
 	  	public void run() {
-			while (true) {
+			while (!stopThread) {
 				updateState();
 				try{
 					Thread.currentThread().sleep(200);
 				}catch (InterruptedException e) {}
 			}
+		 	if (msplayer != null) {
+		 		selfThread = null;
+		 		msplayer.Close();
+		 		msplayer = null;
+		 	}
+		 	TGlobals.quit();
 		}
 		
 		  
@@ -202,7 +203,9 @@ public class PlayerNetscape extends Applet implements Runnable {
 				*/ 
 			}else  if (e.target == loopbox) {
 		    	msplayer.setLoopPlayer(loopbox.getState());
-		   }else return super.action (e, o);
+		   }else return super.action (e, o); /*Deprecated.
+		   As of JDK version 1.1, should register this component
+		   as ActionListener on component which fires action events.*/
 		    
 		   return true;
 		}

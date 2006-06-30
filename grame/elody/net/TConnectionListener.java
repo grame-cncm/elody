@@ -18,6 +18,7 @@ public class TConnectionListener extends Observable implements Runnable {
 		ServerSocket Server = null;		// socket d'ecoute
 		Socket Client = null;			// socket créé à chaque nouvelle connexion
 		Thread Watching = null;
+		boolean stopWatching = false;
 
 
 //	----------------//
@@ -28,6 +29,7 @@ public class TConnectionListener extends Observable implements Runnable {
 		{
 			Server = new ServerSocket(Port);				
 			Watching = new Thread (this, "ElodyClient");
+			stopWatching = false;
 			Watching.start();
 		}
 
@@ -39,7 +41,7 @@ public class TConnectionListener extends Observable implements Runnable {
 
 		public void run()
 		{
-			while(true)
+			while(!stopWatching)
 			{
 				try
 				{
@@ -52,13 +54,8 @@ public class TConnectionListener extends Observable implements Runnable {
 					System.err.println(e);
 				}
 			}
-		}
-
-		public void close ()
-		{
 			try
 			{
-				Watching.stop();
 				Server.close();
 				Server = null;
 			}
@@ -66,6 +63,10 @@ public class TConnectionListener extends Observable implements Runnable {
 			{
 				System.err.println("Exception TConnectionListener, close : " + e);
 			}
-		
+		}
+
+		public void close ()
+		{
+			stopWatching = true;		
 		}
 }
