@@ -142,7 +142,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	boolean		sDtInGroup 	= false;		// la date courante est dans un groupe
 	
 	// informations pour le drag and drop (de Dom) en cours
-	Object		fCurDDObj = null;		// objet qui va ?tre eventuellement droppée (non convertit en exp)
+	Object		fCurDDObj = null;		// objet qui va être eventuellement droppée (non convertit en exp)
 	TExp		fCurDDExp = null;		// cet objet convertit en TExp elody
 	int			fCurDDExpDur;			// durée de cette expression
 	boolean		fCurDDFlag;				// vrai si feedback visuel à déjà été dessiné une première fois
@@ -896,7 +896,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	{
 		//System.out.println( "drop : " + where + " (" + o + ")" );
 		if (fCurDDObj != o) {
-			System.out.println ("pb !!!, l'objet dragged a changer en cours de route "
+			System.out.println ("pb !!!, l'objet dragged a change en cours de route "
 								+ ": ancien = " + fCurDDObj
 								+ ", nouveau = " + o);
 		} else if (fCurDDExp != null) {
@@ -959,7 +959,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 			if (time >= fTimePos && line >= fLinePos) {
 				// il s'agit d'une insertion dans une piste
 		
-				// calcul de la date d'insertion "itime" qui peut ?tre ­ de "time" 
+				// calcul de la date d'insertion "itime" qui peut être ­ de "time" 
 				// en fonction de ce qu'il y a dessous le curseur
 			
 				getEventAt(time,line);	// resultat dans : sAuxEvent, sStartTime, sEndTime

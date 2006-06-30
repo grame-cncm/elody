@@ -31,12 +31,16 @@ public class DragAndDrop {
 
 	private DropAble getDrop (Point p) {
       	DropAble d = global2DropAble (p);
+      	
+      	String s1 = ((d != null)?"true":"false");
+      	String s2 = (d.accept(ddObject)?"true":"false");
+      	//System.out.println("(x,y)=("+p.x+","+p.y+") "+s1+"-"+s2+" - "+d.getClass().getName());
       	return ((d != null) && d.accept(ddObject)) ? d : null;
 	}
     public final boolean doDrag (Point p) { return doDrag (p.x, p.y); }
     public boolean doDrag (int x, int y) {
     	// on va chercher l'objet DropAble sous les coordonnées courantes de la souris
-      	DropAble d = getDrop (new Point (x, y));
+    	DropAble d = getDrop (new Point (x, y));
     	if (drop!=null) {  			// il y a déja un DropAble qui a été trouvé précédemment
      		if (!drop.equals(d)) {	// si ce n'est pas le même
      			drop.dropLeave();	// on le quitte
@@ -119,7 +123,7 @@ public class DragAndDrop {
       	Component c = global2AppletFrame (gp);
       	if (c != null) {
       		// il y a une applet
-      		Component z = c.getComponentAt(global2Local(c,gp));
+      		Component z = c.getComponentAt(global2Local(c,gp)); 
       		while ( !(c instanceof DropAble) && (z != c) ) { 
      			c = z;
       			z = c.getComponentAt(global2Local(c,gp));
@@ -127,7 +131,7 @@ public class DragAndDrop {
       		if (!(c instanceof DropAble)) {
       			c = null;
       		}
-      	}
+      	} 		
      	return (DropAble)c;
 	}
 }
