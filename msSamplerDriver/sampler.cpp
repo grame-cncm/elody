@@ -415,16 +415,19 @@ static int mixOneVoiceFixedSpeed (TSampler* sss, unsigned long const n, float* m
 				on mixe tous les echantillons demandes d'un coup.
 			*/
 
-			for (;i<n; i++) {
-				float x = src[pos++];
-				if (sss->fStereoMode == 0.0)
-					multi[v->fDst][i] += x * level;
-				else
-				{
-					multi[0][i] += x * level * cosValue ;
-					multi[1][i] += x * level * sinValue ;
+			if (sss->fStereoMode == 0.0)
+				for (;i<n; i++) {
+					float x = src[pos++] * level;
+					multi[v->fDst][i] += x;
 				}
-			} 
+			else
+			{
+				for (;i<n; i++) {
+					float x = src[pos++] * level;
+					multi[0][i] += x * cosValue ;
+					multi[1][i] += x * sinValue ;
+				}
+			}
 				
 			/*	on sort en indiquant qu'il faudra continuer a jouer cette voix 
 				puisqu'on n'est pas arrive au bout du son
@@ -438,18 +441,23 @@ static int mixOneVoiceFixedSpeed (TSampler* sss, unsigned long const n, float* m
 			/* 
 				on mixe jusqu'a la fin du son et on avise
 			*/
-			do {
-				float x = src[pos];
-				if (sss->fStereoMode == 0.0)
+			if (sss->fStereoMode == 0.0)
+				do {
+					float x = src[pos];
 					multi[v->fDst][i] += x * level;
-				else
-				{
+					pos++;
+					i++;
+				} while (pos < maxpos);
+			else
+			{
+				do {
+					float x = src[pos];
 					multi[0][i] += x * level * cosValue ;
 					multi[1][i] += x * level * sinValue ;
-				}
-				pos++;
-				i++;
-			} while (pos < maxpos);
+					pos++;
+					i++;
+				} while (pos < maxpos);
+			}
 			
 			/* 
 				on sort en indiquant que la voix a termine si elle n'est pas en mode
@@ -500,20 +508,23 @@ static int mixOneVoiceVariSpeed (TSampler* sss, unsigned long const n, float* mu
 				si le mix peut se faire sans depasser la fin du son 
 				on mixe tous les echantillons demandes d'un coup.
 			*/
-			for (;i<n; i++) {
-				float x = src[pos >> 8];
-				pos += step;
-				if (sss->fStereoMode == 0.0)
-					multi[v->fDst][i] += x * level;
-				else
-				{
-					multi[0][i] += x * level * cosValue;
-					multi[1][i] += x * level * sinValue;
-				}
 
-				
-			} 
-			
+			if (sss->fStereoMode == 0.0)
+				for (;i<n; i++) {
+					float x = src[pos >> 8] * level;
+					pos += step;
+					multi[v->fDst][i] += x;
+				}
+			else
+			{
+				for (;i<n; i++) {
+					float x = src[pos >> 8] * level;
+					pos += step;
+					multi[0][i] += x * cosValue;
+					multi[1][i] += x * sinValue;
+				}
+			}
+		
 			/*	on sort en indiquant qu'il faudra continuer a jouer cette voix 
 				puisqu'on n'est pas arrive au bout du son
 			*/
@@ -526,19 +537,23 @@ static int mixOneVoiceVariSpeed (TSampler* sss, unsigned long const n, float* mu
 			/* 
 				on mixe jusqu'a la fin du son et on avise
 			*/
-			do {
-				float x = src[pos >> 8];
-				pos += step;
-				if (sss->fStereoMode == 0.0)
+			if (sss->fStereoMode == 0.0)
+				do {
+					float x = src[pos >> 8];
+					pos += step;
 					multi[v->fDst][i] += x * level;
-				else
-				{
+					i++;
+				} while (pos < maxpos);
+			else
+			{
+				do {
+					float x = src[pos >> 8];
+					pos += step;
 					multi[0][i] += x * level * cosValue;
 					multi[1][i] += x * level * sinValue;
-				}
-
-				i++;
-			} while (pos < maxpos);
+					i++;
+				} while (pos < maxpos);
+			}
 			
 			/* 
 				on sort en indiquant que la voix a termine si elle n'est pas en mode
