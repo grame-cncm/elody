@@ -24,9 +24,9 @@
 							STRUCTURES DE DONNEES
 							
 	TSampler: {sons en memoire, 16x128 regles de jeux, voix en cours de jeu}
-	TSound	: un son en mŽmoire (element de liste)
+	TSound	: un son en mémoire (element de liste)
 	TAction	: action d'une regle (son + comment le jouer)
-	TVoice	: une note en cours de jeux (element de liste)
+	TVoice	: une note en cours de jeu (element de liste)
 			
 *********************************************************************************/
 
@@ -42,7 +42,7 @@ struct TAction {
 	TSound*		fSound;					// son a jouer
 	float 		fSpeed;					// vitesse de lecture [0..1..]
 	int			fTraj;					// numero de trajectoire
-	int			fPhase;					// position (phase dans la trajectoires)
+	int			fPhase;					// position (phase dans la trajectoire)
 };
 
 
@@ -50,12 +50,12 @@ struct TVoice {
 	Elem		fElement;				// element de la liste des voix
 	int			fChan;					// canal MIDI de la voix
 	int			fKey;					// note MIDI de la voix
-	int			fVel;					// voice vel : 0..127
+	int			fVel;					// velocite : 0..127
 	float*		fSamples;				// premier echantillon
 	unsigned long	fSize;				// nombre d'echantillons
 	unsigned long	fCurPos;			// position courante en virgule fixe 8bits
 	unsigned long 	fStep;				// pas de lecture en virgule fixe 8bits
-	short		fDst;					// le numero du canal de sortie gauche
+	short		fDst;					// le numero du canal de sortie OU le panoramique en mode stereo
 	char		fLoopMode;				// si !=0 indique lecture en boucle
 	char		fStopRequest;			// si !=0 arret demande en fin de son
 };
@@ -65,7 +65,8 @@ struct TSampler {
 	float		fMaster;					// Master Output Volume
 	float 		fVelScale[128];				// table de conversion des velocity
 	float		fChanVol[CHANNELS_NUM];		// les volumes de chaque canal
-	TAction*	fRule[CHANNELS_NUM][128];	// regles de jeux
+	float		fChanPan[CHANNELS_NUM];		// les panoramiques de chaque canal (mode stereo seulement)
+	TAction*	fRule[CHANNELS_NUM][128];	// regles de jeu
 	TVoice		fVoiceTable[kMaxVoices];	// table des voix 
 	List		fSoundList;					// liste des sons en memoire
 	List		fFreeVoiceList;				// liste des voix disponibles

@@ -27,7 +27,7 @@ import com.swtdesigner.SWTResourceManager;
 
 public class Keygroup {
 
-	private int index, ref, plus, minus, output;
+	private int index, ref, plus, minus, output, vol, pan;
 	private File file;
 	private Group group;
 	private Channel channel;
@@ -44,6 +44,8 @@ public class Keygroup {
 	public int getPlus()		{ return plus; }
 	public int getMinus()		{ return minus; }
 	public int getOutput()		{ return output; }
+	public int getVol()		{ return vol; }
+	public int getPan()		{ return pan; }
 	public Group getGroup()		{ return group; }
 
 	
@@ -52,7 +54,7 @@ public class Keygroup {
 		this.channel = channel;
 		setDefaultValues();
 		groupCreate(parent, relative, bgColor);
-		if (sav) {channel.sampler.configSav.addKeygroup(Integer.valueOf(channel.getNum()), index, (File)  null, ref, plus, minus, channel.getOutput()); }
+		if (sav) {channel.sampler.configSav.addKeygroup(Integer.valueOf(channel.getNum()), index, (File)  null, ref, plus, minus, channel.getOutput(), channel.getPan(), channel.getVol()); }
 	}
 	
 	public void delKeygroup()
@@ -197,6 +199,16 @@ public class Keygroup {
 	{
 		output=o;
 		channel.sampler.configSav.setOutput(o, channel.getNum(), index);
+	}
+	public void setVol(int v)
+	{
+		vol=v;
+		channel.sampler.configSav.setVol(v, channel.getNum(), index);
+	}
+	public void setPan(int p)
+	{
+		pan=p;
+		channel.sampler.configSav.setPan(p, channel.getNum(), index);
 	}
 	
 	private int getDefaultRef()

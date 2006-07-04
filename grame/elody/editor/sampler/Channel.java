@@ -16,6 +16,8 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -32,6 +34,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
@@ -50,6 +53,8 @@ public class Channel {
 	private boolean[] availKeyb;
 	public Sampler sampler;
 	private int output = 1;
+	private int pan = 64;
+	private int vol = 100;
 	private boolean shellOpened = false;
 	
 	private Keyboard keyboard;
@@ -89,6 +94,7 @@ public class Channel {
 	public void shellOpen() {
 		for (int i=0; i<availKeyb.length; i++)
 			availKeyb[i] = true;
+		sampler.setOutputDeviceGroupEnable(false);
 		s = new Shell();
 		s.setRedraw(false);
 		s.addShellListener(new ShellAdapter() {
@@ -99,12 +105,14 @@ public class Channel {
 				s.dispose();
 				s=null;
 				shellOpened = false;
+				if (sampler.getChannelsOpenedCount()==0)
+					sampler.setOutputDeviceGroupEnable(true);
 			}
 			public void shellDeactivated(final ShellEvent e) {
 				sampler.resetDriver();
 			}
 		});
-		s.setSize(500, 375);
+		s.setSize(500, 450);
 		s.setLocation(s.getLocation().x, s.getLocation().y+400);
 		s.setText("Sampler - Channel "+num);
 		s.setBackground(bgColor);
@@ -130,12 +138,16 @@ public class Channel {
 		s.setVisible(true);
 		s.setActive();
 		if (sampler.configSav.isSet(num))
+		{
 			setOutput(sampler.configSav.getOutput(num, 0));
-			/* each keygroup has an ouput information, but in interface,
-			 * only the first keygroup in a channel is  considered as
-			 * the main output information of this channel (others are
-			 * ignored)
+			setVol(sampler.configSav.getVol(num, 0));
+			setPan(sampler.configSav.getPan(num, 0));
+			/* each keygroup has an ouput, volume and panoramic
+			 * information, but in interface, only the first keygroup
+			 * in a channel is  considered as the main information of
+			 * this channel (others are ignored)
 			 */
+		}
 		buildInterface();
 		s.addControlListener(new ControlAdapter() {
 			public void controlResized(final ControlEvent e) 
@@ -172,6 +184,8 @@ public class Channel {
 	public boolean getAvailKeyb(int i) { return availKeyb[i]; }
 	public Vector getKeygroups() { return keygroups; }
 	public int getOutput()	{ return output; }
+	public int getPan()	{ return pan; }
+	public int getVol()	{ return vol; }
 	public void setOutput(int o)
 	{
 		output=o;
@@ -194,6 +208,24 @@ public class Channel {
 			final MessageBox mb = new MessageBox(s, SWT.OK);
 			mb.setMessage("WARNING: this device has not enough outputs, the configuration file will not correctly work in channel "+num);
 			mb.open();
+		}
+	}
+	public void setVol(int v)
+	{
+		vol=v;
+		for (int i=0; i<keygroups.size(); i++)
+		{
+			Keygroup k = (Keygroup) keygroups.get(i);
+			k.setVol(v);
+		}
+	}
+	public void setPan(int p)
+	{
+		pan=p;
+		for (int i=0; i<keygroups.size(); i++)
+		{
+			Keygroup k = (Keygroup) keygroups.get(i);
+			k.setPan(p);
 		}
 	}
 	public boolean isShellOpened() {return shellOpened; }
@@ -284,8 +316,9 @@ public class Channel {
 	
 	private void buildInterface() {
 		Composite keybComposite = keybCompositeCreate(s);
-		Composite menuComposite = menuCompositeCreate(s, keybComposite);
-		scrolledCompositeCreate(s, menuComposite);	
+		Composite menuComposite1 = menuComposite1Create(s, keybComposite);
+		Composite menuComposite2 = menuComposite2Create(s, menuComposite1);
+		scrolledCompositeCreate(s, menuComposite2);	
 	}
 
 	private Composite keybCompositeCreate(Composite parent) {
@@ -308,18 +341,132 @@ public class Channel {
 		return keybComposite;
 	}
 
-	private Composite menuCompositeCreate(Composite parent, Control relative) {
-		final Composite menuComposite = new Composite(parent, SWT.NONE);
-		menuComposite.setBackground(bgColor);
+	private Composite menuComposite1Create(Composite parent, Control relative) {
+		
+		boolean stereo = sampler.isStereo();
+		
+		final Composite menuComposite1 = new Composite(parent, SWT.NONE);
+		menuComposite1.setBackground(bgColor);
+		final FormData fd = new FormData();
+		fd.bottom = new FormAttachment(relative, 50, SWT.BOTTOM);
+		fd.right = new FormAttachment(100, 0);
+		fd.top = new FormAttachment(relative, 0, SWT.BOTTOM);
+		fd.left = new FormAttachment(0, 0);
+		menuComposite1.setLayoutData(fd);
+		menuComposite1.setLayout(new FormLayout());
+
+		final Label volLabel = new Label(menuComposite1, SWT.NONE);
+		volLabel.setFont(SWTResourceManager.getFont("", 9, SWT.BOLD));
+		volLabel.setBackground(bgColor);
+		final FormData volFd = new FormData();
+		volFd.top = new FormAttachment(0, 15);
+		volFd.left = new FormAttachment(0, 30);
+		volLabel.setLayoutData(volFd);
+		volLabel.setText("VOL :");
+		
+		final Scale volScale = new Scale(menuComposite1, SWT.HORIZONTAL);
+		volScale.setBackground(bgColor);
+		volScale.setMinimum( 0 );
+		volScale.setMaximum( 127 );
+		volScale.setSelection( vol );
+		volScale.setIncrement( 1 );
+		volScale.setPageIncrement( 10 );
+		volScale.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(final SelectionEvent e) {
+			setVol(volScale.getSelection());
+			sampler.configSav.writeAll();
+			sampler.needToReset=true;
+		}
+	});
+		final FormData volScFd = new FormData();
+		volScFd.top = new FormAttachment(0, 5);
+		volScFd.left = new FormAttachment(volLabel, 10, SWT.RIGHT);
+		volScFd.right = new FormAttachment( (stereo ? 50 : 70) , 0);
+		volScale.setLayoutData(volScFd);
+		
+		if (stereo)
+		{
+			final Label panLabel = new Label(menuComposite1, SWT.NONE);
+			panLabel.setFont(SWTResourceManager.getFont("", 9, SWT.BOLD));
+			panLabel.setBackground(bgColor);
+			final FormData panFd = new FormData();
+			panFd.top = new FormAttachment(0, 15);
+			panFd.left = new FormAttachment(volScale, 10, SWT.RIGHT);
+			panLabel.setLayoutData(panFd);
+			panLabel.setText("PAN :");
+			
+			final Scale panScale = new Scale(menuComposite1, SWT.HORIZONTAL);
+			panScale.setBackground(bgColor);
+			panScale.setMinimum( 0 );
+			panScale.setMaximum( 127 );
+			panScale.setSelection( pan );
+			panScale.setIncrement( 1 );
+			panScale.setPageIncrement( 10 );
+			panScale.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				setPan(panScale.getSelection());
+				sampler.configSav.writeAll();
+				sampler.needToReset=true;
+			}
+		});
+			panScale.addMouseListener(new MouseAdapter() {
+
+				public void mouseDoubleClick(MouseEvent e) {
+					setPan(64);
+					panScale.setSelection(64);
+					sampler.configSav.writeAll();
+					sampler.needToReset=true;
+				}		
+			});
+			final FormData panScFd = new FormData();
+			panScFd.top = new FormAttachment(0, 5);
+			panScFd.left = new FormAttachment(panLabel, 10, SWT.RIGHT);
+			panScFd.right = new FormAttachment(100, -10);
+			panScale.setLayoutData(panScFd);
+		}
+		else
+		{
+			outputSpinner = new Spinner(menuComposite1, SWT.BORDER);
+			resetOutput();
+			final FormData spinnerFd = new FormData();
+			spinnerFd.top = new FormAttachment(0, 15);
+			spinnerFd.right = new FormAttachment(100, -20);
+			spinnerFd.left = new FormAttachment(100, -80);
+			outputSpinner.setLayoutData(spinnerFd);
+			outputSpinner.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(final SelectionEvent e) {
+					setOutput(outputSpinner.getSelection());
+					sampler.configSav.writeAll();
+					sampler.needToReset=true;
+				}
+			});
+			
+			final Label outputLabel = new Label(menuComposite1, SWT.NONE);
+			outputLabel.setFont(SWTResourceManager.getFont("", 9, SWT.BOLD));
+			outputLabel.setBackground(bgColor);
+			final FormData outputFd = new FormData();
+			outputFd.top = new FormAttachment(0, 15);
+			outputFd.right = new FormAttachment(outputSpinner, -15, SWT.LEFT);
+			outputLabel.setLayoutData(outputFd);
+			outputLabel.setText("OUT :");
+		}
+		
+		
+		return menuComposite1;
+	}
+	
+	private Composite menuComposite2Create(Composite parent, Control relative) {
+		final Composite menuComposite2 = new Composite(parent, SWT.NONE);
+		menuComposite2.setBackground(bgColor);
 		final FormData fd = new FormData();
 		fd.bottom = new FormAttachment(relative, 30, SWT.BOTTOM);
 		fd.right = new FormAttachment(100, 0);
 		fd.top = new FormAttachment(relative, 0, SWT.BOTTOM);
 		fd.left = new FormAttachment(0, 0);
-		menuComposite.setLayoutData(fd);
-		menuComposite.setLayout(new FormLayout());
+		menuComposite2.setLayoutData(fd);
+		menuComposite2.setLayout(new FormLayout());
 
-		final Label keygroupsLabel = new Label(menuComposite, SWT.NONE);
+		final Label keygroupsLabel = new Label(menuComposite2, SWT.NONE);
 		keygroupsLabel.setFont(SWTResourceManager.getFont("", 9, SWT.BOLD));
 		keygroupsLabel.setBackground(bgColor);
 		final FormData keygroupsFd = new FormData();
@@ -328,7 +475,7 @@ public class Channel {
 		keygroupsLabel.setLayoutData(keygroupsFd);
 		keygroupsLabel.setText("KEYGROUPS :");
 
-		final Button newButton = new Button(menuComposite, SWT.NONE);
+		final Button newButton = new Button(menuComposite2, SWT.NONE);
 		final FormData buttonFd = new FormData();
 		buttonFd.right = new FormAttachment(0, 165);
 		buttonFd.top = new FormAttachment(0, 5);
@@ -341,30 +488,7 @@ public class Channel {
 			}
 		});
 		
-		outputSpinner = new Spinner(menuComposite, SWT.BORDER);
-		resetOutput();
-		final FormData spinnerFd = new FormData();
-		spinnerFd.top = new FormAttachment(0, 10);
-		spinnerFd.right = new FormAttachment(100, -10);
-		outputSpinner.setLayoutData(spinnerFd);
-		outputSpinner.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(final SelectionEvent e) {
-				setOutput(outputSpinner.getSelection());
-				sampler.configSav.writeAll();
-				sampler.needToReset=true;
-			}
-		});
-		
-		final Label outputLabel = new Label(menuComposite, SWT.NONE);
-		outputLabel.setFont(SWTResourceManager.getFont("", 9, SWT.BOLD));
-		outputLabel.setBackground(bgColor);
-		final FormData outputFd = new FormData();
-		outputFd.top = new FormAttachment(0, 13);
-		outputFd.right = new FormAttachment(outputSpinner, -10, SWT.LEFT);
-		outputLabel.setLayoutData(outputFd);
-		outputLabel.setText("OUT :");
-
-		final Label label = new Label(menuComposite, SWT.NONE);
+		final Label label = new Label(menuComposite2, SWT.NONE);
 		label.setFont(SWTResourceManager.getFont("", 9, SWT.BOLD));
 		label.setBackground(bgColor);
 		final FormData labelFd = new FormData();
@@ -373,7 +497,7 @@ public class Channel {
 		label.setLayoutData(labelFd);
 		label.setText("ref                +                -");
 
-		return menuComposite;
+		return menuComposite2;
 	}
 
 	private ScrolledComposite scrolledCompositeCreate(Composite parent, Control relative) {
@@ -410,7 +534,6 @@ public class Channel {
 	{
 		keyboard.redraw();
 	}
-	
 	
 	class AudioExtensionFilter implements FileFilter {
 	    public boolean accept(File file) {

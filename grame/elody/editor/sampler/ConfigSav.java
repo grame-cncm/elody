@@ -42,7 +42,7 @@ public class ConfigSav {
 				if (list.isSet(ch))
 				{
 					w.newLine();
-					w.write("#ch\tkey\tfilename\tspee\ttraj");
+					w.write("#ch\tkey\tfilename\tspee\toutput\tpan\tvol");
 					w.newLine();
 					for (int j=0; j<=list.maxKeygroups(ch); j++)
 					{
@@ -53,12 +53,14 @@ public class ConfigSav {
 							int plus = list.getPlus(ch, j);
 							File f = list.getFile(ch, j);
 							int output = list.getOutput(ch, j)-1;
+							int pan = list.getPan(ch, j);
+							int vol = list.getVol(ch, j);
 							for (int k=-minus; k<=plus; k++)
 							{
 								w.newLine();
 								double speed = Math.pow(2, k/12.0);
 								int key = ref+k;
-								w.write((ch.intValue()-1)+"\t"+key+"\t"+f.getPath()+"\t"+speed+"\t"+output);
+								w.write((ch.intValue()-1)+"\t"+key+"\t"+f.getPath()+"\t"+speed+"\t"+output+"\t"+pan+"\t"+vol);
 							}
 						}
 					}
@@ -102,6 +104,8 @@ public class ConfigSav {
 			int maxPitch=-1;
 			int index=0;
 			int output=1;
+			int pan=64;
+			int vol=100;
 			Integer channel = null;
 			Integer prevChannel = null;
 			File file = null;
@@ -118,12 +122,14 @@ public class ConfigSav {
 				    file = new File(st.nextToken());
 				    double speed = Double.parseDouble(st.nextToken());
 				    output = Integer.parseInt(st.nextToken())+1;
+				    pan = Integer.parseInt(st.nextToken());
+				    vol = Integer.parseInt(st.nextToken());
 				    
 				    if (speed<=prevSpeed)
 				    {  
 				    	if ((maxPitch=prevKey)!=-1)
 				    	{
-				    		list.addKeygroup(prevChannel, index, prevFile, refPitch, maxPitch-refPitch, refPitch-minPitch, output);
+				    		list.addKeygroup(prevChannel, index, prevFile, refPitch, maxPitch-refPitch, refPitch-minPitch, output, pan, vol);
 				    		index++;
 				    	}
 				       	minPitch=key;
@@ -138,7 +144,7 @@ public class ConfigSav {
 				}
 			}
 			if ((maxPitch=prevKey)!=-1)
-				list.addKeygroup(channel, index, file, refPitch, maxPitch-refPitch, refPitch-minPitch, output);
+				list.addKeygroup(channel, index, file, refPitch, maxPitch-refPitch, refPitch-minPitch, output, pan, vol);
 			r.close();
 		} catch (IOException e) {}
 		
@@ -146,9 +152,9 @@ public class ConfigSav {
 
 	public boolean isSet(int ch) { return list.isSet(Integer.valueOf(ch)); }
 	public int maxKeygroups(int ch) {return list.maxKeygroups(Integer.valueOf(ch)); }
-	public void addKeygroup(Integer channel, int index, File file, int ref, int plus, int minus, int output)
+	public void addKeygroup(Integer channel, int index, File file, int ref, int plus, int minus, int output, int pan, int vol)
 	{
-		list.addKeygroup(channel, index, file, ref, plus, minus, output);
+		list.addKeygroup(channel, index, file, ref, plus, minus, output, pan, vol);
 	}
 	public void delKeygroup(Integer channel, int index)
 	{
@@ -159,11 +165,15 @@ public class ConfigSav {
 	public int getPlus(int ch, int keygIndex) {return list.getPlus(Integer.valueOf(ch), keygIndex); }
 	public int getMinus(int ch, int keygIndex) {return list.getMinus(Integer.valueOf(ch), keygIndex); }
 	public int getOutput(int ch, int keygIndex) {return list.getOutput(Integer.valueOf(ch), keygIndex); }
+	public int getVol(int ch, int keygIndex) {return list.getVol(Integer.valueOf(ch), keygIndex); }
+	public int getPan(int ch, int keygIndex) {return list.getPan(Integer.valueOf(ch), keygIndex); }
 	public void setFile(File f, int ch, int keygIndex) {list.setFile(f, Integer.valueOf(ch), keygIndex); }
 	public void setRef(int r, int ch, int keygIndex) {list.setRef(r, Integer.valueOf(ch), keygIndex); }
 	public void setPlus(int p, int ch, int keygIndex) {list.setPlus(p, Integer.valueOf(ch), keygIndex); }
 	public void setMinus(int m, int ch, int keygIndex) {list.setMinus(m, Integer.valueOf(ch), keygIndex); }
 	public void setOutput(int o, int ch, int keygIndex) {list.setOutput(o, Integer.valueOf(ch), keygIndex); }
+	public void setVol(int v, int ch, int keygIndex) {list.setVol(v, Integer.valueOf(ch), keygIndex); }
+	public void setPan(int p, int ch, int keygIndex) {list.setPan(p, Integer.valueOf(ch), keygIndex); }
 }
 
 class ConfigList  {
@@ -172,10 +182,10 @@ class ConfigList  {
 
 	public ConfigList() { map = new TreeMap();	}
 	
-	public void addKeygroup(Integer channel, int index, File file, int ref, int plus, int minus, int output)
+	public void addKeygroup(Integer channel, int index, File file, int ref, int plus, int minus, int output, int pan, int vol)
 	{
 		TreeMap k = addChannel(channel);
-		k.put(Integer.valueOf(index), new Keyg(file, ref, plus, minus, output));
+		k.put(Integer.valueOf(index), new Keyg(file, ref, plus, minus, output, pan, vol));
 	}
 	public void delKeygroup(Integer channel, int index)
 	{
@@ -230,33 +240,43 @@ class ConfigList  {
 	public int getPlus(Integer ch, int keygIndex) { return getKeyg(ch,keygIndex).getPlus(); }
 	public int getMinus(Integer ch, int keygIndex) { return getKeyg(ch,keygIndex).getMinus(); }
 	public int getOutput(Integer ch, int keygIndex) { return getKeyg(ch,keygIndex).getOutput(); }
+	public int getPan(Integer ch, int keygIndex) { return getKeyg(ch,keygIndex).getPan(); }
+	public int getVol(Integer ch, int keygIndex) { return getKeyg(ch,keygIndex).getVol(); }
 	public void setFile(File f, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setFile(f); }
 	public void setRef(int r, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setRef(r); }
 	public void setPlus(int p, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setPlus(p); }
 	public void setMinus(int m, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setMinus(m); }
 	public void setOutput(int o, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setOutput(o); }
+	public void setPan(int p, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setPan(p); }
+	public void setVol(int v, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setVol(v); }
 }
 
 class Keyg {
 	private File file;
-	private int ref, plus, minus, output;
-	public Keyg(File file, int ref, int plus, int minus, int output) {
+	private int ref, plus, minus, output, pan, vol;
+	public Keyg(File file, int ref, int plus, int minus, int output, int pan, int vol) {
 		this.file = file;
 		this.ref = ref;
 		this.plus = plus;
 		this.minus = minus;
 		this.output = output;
+		this.pan = pan;
+		this.vol = vol;
 	}
 	public File getFile() { return file; }
 	public int getMinus() { return minus; }
 	public int getPlus() { return plus; }
 	public int getRef() { return ref; }
 	public int getOutput() { return output; }
+	public int getPan() { return pan; }
+	public int getVol() { return vol; }
 	public void setFile(File f) { file=f; }
 	public void setMinus(int m) { minus=m; }
 	public void setPlus(int p) { plus=p; }
 	public void setRef(int r) { ref=r; }
 	public void setOutput(int o) { output=o; }
+	public void setPan(int p) { pan=p; }
+	public void setVol(int v) { vol=v; }
 }
 
 class Comparateur implements Comparator {

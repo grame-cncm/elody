@@ -10,6 +10,9 @@
 #include <direct.h>
 //#include <libgen.h>
 
+#if !defined(PI)
+ #define PI (float)3.14159265359
+#endif
 
 #define TRACE(x) //printf x
 //#define TRACE(x...)
@@ -31,9 +34,13 @@ static void initVelScale(float tbl[])
 	for (int v=0; v<128; v++)  tbl[v]= pow(v/127.0, p) ;
 }
 
-static void initChanVol(float tbl[])
+static void initChanVolPan(float vol[], float pan[])
 {
-	for (int c=0; c<CHANNELS_NUM; c++)  tbl[c]= 100.0/127.0;
+	for (int c=0; c<CHANNELS_NUM; c++)
+	{
+		vol[c]= 100.0/127.0;
+		pan[c]= 0.5;
+	}
 }
 
 /********************************************************************************
@@ -51,7 +58,7 @@ static void readSoundFile(TSound* snd)
 	short*			buffer;
 	
 	/*
-		on ouvre le fichier est on fait quelques verifications
+		on ouvre le fichier et on fait quelques verifications
 	*/
 	sf = sf_open (snd->fSoundName,SFM_READ, &info);
 	
@@ -154,9 +161,9 @@ static TAction* newAction(TSound* sound, float speed, int traj)
 	return action;
 }
 
-static void addRule(TSampler* s, int midichan, int midikey, char* sndfilename, float speed, int traj )
+static void addRule(TSampler* s, int midichan, int midikey, char* sndfilename, float speed, int traj)
 {
-	printf("rule : %2d %2d -> %s %f %d \n", midichan, midikey, sndfilename, speed, traj);
+	printf("rule : %2d %2d -> %s %f %d\n", midichan, midikey, sndfilename, speed, traj);
 	if (s->fRule[midichan][midikey] != NULL) {
 		printf("WARNING : ecrasement de la regle %d, %d\n", midichan, midikey);
 		free (s->fRule[midichan][midikey]);
@@ -182,7 +189,7 @@ static bool readConfigFile(TSampler* s, char* fname)
 {
 	FILE* 	file;
 	char 	line[1024];
-	int		midichan, midikey, traj;
+	int		midiChan, midiKey, traj, pan, vol;
 	float	playspeed;
 	char	sndfilename[1024];
 	
@@ -204,11 +211,13 @@ static bool readConfigFile(TSampler* s, char* fname)
 		if (iscomment(line)) {
 			TRACE(("it is a comment : %s\n", line));
 			continue;
-		} else if (sscanf(line, "%d %d %s %f %d", &midichan, &midikey, sndfilename, &playspeed, &traj ) != 5) {
+		} else if (sscanf(line, "%d %d %s %f %d %d %d", &midiChan, &midiKey, sndfilename, &playspeed, &traj, &pan, &vol) != 7) {
 			printf ("ERREUR : ligne non reconnue %s\n", line);
 			exit(0);
 		}
-		addRule(s, midichan, midikey, sndfilename, playspeed, traj );
+		s->fChanVol[midiChan] = vol / 127.0;
+		s->fChanPan[midiChan] = pan / 127.0;
+		addRule(s, midiChan, midiKey, sndfilename, playspeed, traj);
 	}
 	printSoundList(s);
 	return true;
@@ -279,7 +288,7 @@ bool initSampler(TSampler* s, char* fname)
 	
 	/* Initialisation des tables	*/
 	initVelScale(s->fVelScale);
-	initChanVol(s->fChanVol);
+	initChanVolPan(s->fChanVol, s->fChanPan);
 	
 	/* initialisation des listes a vide	*/
 	
@@ -309,7 +318,7 @@ static TVoice* allocFreeVoice(TSampler* s)
 		
 	} else {
 		
-		/* si c'est pas possible, retourne la plus ancienne voix encore en activite */
+		/* si ca n'est pas possible, retourne la plus ancienne voix encore en activite */
 		//return (TVoice *) remListElem(&s->fPlayVoiceList, 0);
 		return 0;
 	}
@@ -317,7 +326,7 @@ static TVoice* allocFreeVoice(TSampler* s)
 
 static void addPlayVoice(TSampler* s, TVoice* v)
 {
-	/* ajoute un une voix en fin de liste pour preserver l'ordre */
+	/* ajoute une voix en fin de liste pour preserver l'ordre */
 	addListElem(&s->fPlayVoiceList, listSize(&s->fPlayVoiceList), (Elem*) v);
 }
 
@@ -329,14 +338,21 @@ static void doKeyOn (TSampler* s, int chan, int key, int vel)
 	a = s->fRule[chan][key];
 	
 	if (a) {
-		
 		v = allocFreeVoice(s);
 		if (v) {
-			v->fDst 	= s->fTrajTbl[a->fTraj][a->fPhase];   a->fPhase = (a->fPhase+1)&7;
-			if (s->fStereoMode != 0.0) v->fDst &= 1;	// limitation aux deux premiers canaux
-			if (v->fDst > 7) {
-				printf ("error : dest = %d\n", v->fDst);
-				v->fDst &= 7;
+			if (s->fStereoMode != 0.0)
+			{
+				v->fDst = (int) ( s->fChanPan[chan] * 127.0 );	// gestion du panoramique en mode stereo 
+			}
+			else
+			{
+				v->fDst	= s->fTrajTbl[a->fTraj][a->fPhase];
+				a->fPhase = (a->fPhase+1)&7;
+				if (v->fDst > 7)
+				{
+					printf ("error : dest = %d\n", v->fDst);
+					v->fDst &= 7;
+				}
 			}
 			v->fChan 	= chan;
 			v->fKey 	= key;
@@ -379,29 +395,35 @@ static int mixOneVoiceFixedSpeed (TSampler* sss, unsigned long const n, float* m
 	unsigned long 		pos 	= v->fCurPos;
 	unsigned long const maxpos 	= v->fSize;
 	
-	float* 				soundbuf = multi[v->fDst]; 
-	
 	/* Calcul des niveaux de sortie */
 	
    	float 	level   = sss->fVelScale[v->fVel] * sss->fVelScale[int(127.0*sss->fChanVol[v->fChan])];
-	
+	float	cosValue = cos ( v->fDst / 127.0 * PI / 2.0 );
+	float	sinValue = sin ( v->fDst / 127.0 * PI / 2.0 );	
+
 	unsigned long		i = 0;		/* i indique le nombre d'echantillons mixes */
 	
 	/* 
-		tant qu'on n'a pas mixe le nb voulu d'ech. 
+		tant qu'on n'a pas mixe le nb voulu d'echantillons
 	*/
 	while (i < n) {
 		
 		if ((n-i) + pos < maxpos) {
 			
 			/*	
-				si le mix peut se faire sans depasser la fin du son 
-				on mixe tous les ech. demandes d'un coup.
+				si le mixage peut se faire sans depasser la fin du son 
+				on mixe tous les echantillons demandes d'un coup.
 			*/
-			
+
 			for (;i<n; i++) {
 				float x = src[pos++];
-				soundbuf[i] += x * level;
+				if (sss->fStereoMode == 0.0)
+					multi[v->fDst][i] += x * level;
+				else
+				{
+					multi[0][i] += x * level * cosValue ;
+					multi[1][i] += x * level * sinValue ;
+				}
 			} 
 				
 			/*	on sort en indiquant qu'il faudra continuer a jouer cette voix 
@@ -414,11 +436,17 @@ static int mixOneVoiceFixedSpeed (TSampler* sss, unsigned long const n, float* m
 		} else {
 			
 			/* 
-				on mix jusqu' a la fin du son et on avise
+				on mixe jusqu'a la fin du son et on avise
 			*/
 			do {
 				float x = src[pos];
-				soundbuf[i] += x * level;
+				if (sss->fStereoMode == 0.0)
+					multi[v->fDst][i] += x * level;
+				else
+				{
+					multi[0][i] += x * level * cosValue ;
+					multi[1][i] += x * level * sinValue ;
+				}
 				pos++;
 				i++;
 			} while (pos < maxpos);
@@ -453,13 +481,12 @@ static int mixOneVoiceVariSpeed (TSampler* sss, unsigned long const n, float* mu
 	unsigned long 		pos 	= v->fCurPos;
 	unsigned long const maxpos 	= v->fSize * 256;
 	
-	/* les 2 buffers de sorties sont fonction du groupe	*/
-	float* 				soundbuf = multi[v->fDst]; 
-	
 	/* Calcul des niveaux de sortie */
 	
    	float 	level   = sss->fVelScale[v->fVel] * sss->fVelScale[int(127.0*sss->fChanVol[v->fChan])];
-		
+	float	cosValue = cos ( v->fDst / 127.0 * PI / 2.0 );
+	float	sinValue = sin ( v->fDst / 127.0 * PI / 2.0 );	
+	
 	unsigned long		i = 0;		/* i indique le nombre d'echantillons mixes */
 	
 	/* 
@@ -471,12 +498,19 @@ static int mixOneVoiceVariSpeed (TSampler* sss, unsigned long const n, float* mu
 			
 			/*	
 				si le mix peut se faire sans depasser la fin du son 
-				on mixe tous les ech. demandes d'un coup.
+				on mixe tous les echantillons demandes d'un coup.
 			*/
 			for (;i<n; i++) {
 				float x = src[pos >> 8];
 				pos += step;
-				soundbuf[i] += x * level;
+				if (sss->fStereoMode == 0.0)
+					multi[v->fDst][i] += x * level;
+				else
+				{
+					multi[0][i] += x * level * cosValue;
+					multi[1][i] += x * level * sinValue;
+				}
+
 				
 			} 
 			
@@ -490,12 +524,19 @@ static int mixOneVoiceVariSpeed (TSampler* sss, unsigned long const n, float* mu
 		} else {
 			
 			/* 
-				on mix jusqu'a la fin du son et on avise
+				on mixe jusqu'a la fin du son et on avise
 			*/
 			do {
 				float x = src[pos >> 8];
 				pos += step;
-				soundbuf[i] += x * level;
+				if (sss->fStereoMode == 0.0)
+					multi[v->fDst][i] += x * level;
+				else
+				{
+					multi[0][i] += x * level * cosValue;
+					multi[1][i] += x * level * sinValue;
+				}
+
 				i++;
 			} while (pos < maxpos);
 			
@@ -528,7 +569,7 @@ void mixAllVoices (TSampler* s, unsigned long nbsamples, float* multi[])
 	
 	/* 
 		Mixe toutes les voix dans les 2 buffers de sortie.
-		Attention, on parcours les voix en commençant par la fin de la liste
+		Attention, on parcourt les voix en commençant par la fin de la liste
 		car on va supprimer au fur et a mesure les voix qui ont termine. 
 	*/
 	
@@ -598,6 +639,9 @@ void processMidiEvents(short ref)
 					printf("CtrlChange\t(chan=%d,\tpitch=%d,\tvel=%d)\n",Chan(e)+Port(e)*16,Pitch(e),Vel(e));
 				if (Pitch(e) == 7) {
 					s->fChanVol[Chan(e)+Port(e)*16] = float(Vel(e))/127.0;					
+				}
+				if ((Pitch(e) == 10)&&(s->fStereoMode != 0.0)) {
+					s->fChanPan[Chan(e)+Port(e)*16] = float(Vel(e))/127.0;					
 				}
 				MidiFreeEv(e);
 				break;
