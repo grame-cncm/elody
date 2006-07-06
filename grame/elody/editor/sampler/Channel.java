@@ -48,13 +48,16 @@ public class Channel {
 	private short num;
 	private Button bt;
 	private Shell s = null;
-	private Color bgColor;	
+	public Color bgColor;	
 	private Vector keygroups;
 	private boolean[] availKeyb;
 	public Sampler sampler;
 	private int output = 1;
 	private int pan = 64;
 	private int vol = 100;
+	private Envelope envelope;
+
+	
 	private boolean shellOpened = false;
 	
 	private Keyboard keyboard;
@@ -113,7 +116,7 @@ public class Channel {
 			}
 		});
 		s.setSize(500, 450);
-		s.setLocation(s.getLocation().x, s.getLocation().y+400);
+		s.setLocation(s.getLocation().x, s.getLocation().y+340);
 		s.setText("Sampler - Channel "+num);
 		s.setBackground(bgColor);
 		s.setLayout(new FormLayout());
@@ -142,10 +145,15 @@ public class Channel {
 			setOutput(sampler.configSav.getOutput(num, 0));
 			setVol(sampler.configSav.getVol(num, 0));
 			setPan(sampler.configSav.getPan(num, 0));
-			/* each keygroup has an ouput, volume and panoramic
-			 * information, but in interface, only the first keygroup
-			 * in a channel is  considered as the main information of
-			 * this channel (others are ignored)
+			int a = sampler.configSav.getAttack(num, 0);
+			int d = sampler.configSav.getDecay(num, 0);
+			double s = sampler.configSav.getSustain(num, 0);
+			int r = sampler.configSav.getRelease(num, 0);
+			envelope = new Envelope(a,d,s,r, this);
+			/* each keygroup has an ouput, volume and panoramic,
+			 * and envelope informations, but in interface, only the
+			 * first keygroup in a channel is  considered as the main
+			 * information of this channel (others are ignored)
 			 */
 		}
 		buildInterface();
@@ -186,6 +194,10 @@ public class Channel {
 	public int getOutput()	{ return output; }
 	public int getPan()	{ return pan; }
 	public int getVol()	{ return vol; }
+	public int getAttack()		{ return envelope.getAttack(); }
+	public int getDecay()		{ return envelope.getDecay(); }
+	public double getSustain()	{ return envelope.getSustain(); }
+	public int getRelease()		{ return envelope.getRelease(); }
 	public void setOutput(int o)
 	{
 		output=o;
@@ -496,6 +508,19 @@ public class Channel {
 		labelFd.right = new FormAttachment(100, -120);
 		label.setLayoutData(labelFd);
 		label.setText("ref                +                -");
+		
+		final Button envButton = new Button(menuComposite2, SWT.NONE);
+		final FormData envFd = new FormData();
+		envFd.top = new FormAttachment(0, 5);
+		envFd.left = new FormAttachment(100, -90);
+		envFd.right = new FormAttachment(100, -20);
+		envButton.setLayoutData(envFd);
+		envButton.setText("Envelope");
+		envButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				envelope.shellOpen();
+			}
+		});
 
 		return menuComposite2;
 	}

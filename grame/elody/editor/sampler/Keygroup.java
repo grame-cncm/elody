@@ -54,7 +54,8 @@ public class Keygroup {
 		this.channel = channel;
 		setDefaultValues();
 		groupCreate(parent, relative, bgColor);
-		if (sav) {channel.sampler.configSav.addKeygroup(Integer.valueOf(channel.getNum()), index, (File)  null, ref, plus, minus, channel.getOutput(), channel.getPan(), channel.getVol()); }
+		if (sav) {channel.sampler.configSav.addKeygroup(Integer.valueOf(channel.getNum()), index, (File)  null, ref, plus, minus, channel.getOutput(),
+				channel.getPan(), channel.getVol(), channel.getAttack(), channel.getDecay(), channel.getSustain(), channel.getRelease()); }
 	}
 	
 	public void delKeygroup()
