@@ -184,6 +184,10 @@ public class ConfigSav {
 	public void setOutput(int o, int ch, int keygIndex) {list.setOutput(o, Integer.valueOf(ch), keygIndex); }
 	public void setVol(int v, int ch, int keygIndex) {list.setVol(v, Integer.valueOf(ch), keygIndex); }
 	public void setPan(int p, int ch, int keygIndex) {list.setPan(p, Integer.valueOf(ch), keygIndex); }
+	public void setAttack(int a, int ch, int keygIndex) {list.setAttack(a, Integer.valueOf(ch), keygIndex); }
+	public void setDecay(int d, int ch, int keygIndex) {list.setDecay(d, Integer.valueOf(ch), keygIndex); }
+	public void setSustain(double s, int ch, int keygIndex) {list.setSustain(s, Integer.valueOf(ch), keygIndex); }
+	public void setRelease(int r, int ch, int keygIndex) {list.setRelease(r, Integer.valueOf(ch), keygIndex); }
 }
 
 class ConfigList  {
@@ -264,6 +268,10 @@ class ConfigList  {
 	public void setOutput(int o, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setOutput(o); }
 	public void setPan(int p, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setPan(p); }
 	public void setVol(int v, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setVol(v); }
+	public void setAttack(int a, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setAttack(a); }
+	public void setDecay(int d, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setDecay(d); }
+	public void setSustain(double s, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setSustain(s); }
+	public void setRelease(int r, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setRelease(r); }
 }
 
 class Keyg {
@@ -302,6 +310,10 @@ class Keyg {
 	public void setOutput(int o) { output=o; }
 	public void setPan(int p) { pan=p; }
 	public void setVol(int v) { vol=v; }
+	public void setAttack(int a) { attack=a; }
+	public void setDecay(int d) { decay=d; }
+	public void setSustain(double s) { sustain=s; }
+	public void setRelease(int r) { release=r; }
 }
 
 class Comparateur implements Comparator {

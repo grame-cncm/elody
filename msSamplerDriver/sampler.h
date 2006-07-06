@@ -16,6 +16,7 @@
 #endif
 
 #include "list.h"
+#include "Envelope.h"
 
 #define kMaxVoices				256
 #define CHANNELS_NUM			32
@@ -58,6 +59,7 @@ struct TVoice {
 	short		fDst;					// le numero du canal de sortie OU le panoramique en mode stereo
 	char		fLoopMode;				// si !=0 indique lecture en boucle
 	char		fStopRequest;			// si !=0 arret demande en fin de son
+	Envelope	fEnvelope;				// enveloppe de cette voix
 };
 	
 
@@ -66,6 +68,7 @@ struct TSampler {
 	float 		fVelScale[128];				// table de conversion des velocity
 	float		fChanVol[CHANNELS_NUM];		// les volumes de chaque canal
 	float		fChanPan[CHANNELS_NUM];		// les panoramiques de chaque canal (mode stereo seulement)
+	Envelope	fChanEnvelope[CHANNELS_NUM];// les enveloppes pour chaque canal
 	TAction*	fRule[CHANNELS_NUM][128];	// regles de jeu
 	TVoice		fVoiceTable[kMaxVoices];	// table des voix 
 	List		fSoundList;					// liste des sons en memoire

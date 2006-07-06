@@ -43,6 +43,7 @@ static void initChanVolPan(float vol[], float pan[])
 	}
 }
 
+
 /********************************************************************************
 							METHODES
 							
@@ -189,8 +190,8 @@ static bool readConfigFile(TSampler* s, char* fname)
 {
 	FILE* 	file;
 	char 	line[1024];
-	int		midiChan, midiKey, traj, pan, vol;
-	float	playspeed;
+	int		midiChan, midiKey, traj, pan, vol, attack, decay, release;
+	float	playspeed, sustain;
 	char	sndfilename[1024];
 	
 	TRACE(("lecture du fichier de configuration \"%s\"...\n", fname));
@@ -211,12 +212,15 @@ static bool readConfigFile(TSampler* s, char* fname)
 		if (iscomment(line)) {
 			TRACE(("it is a comment : %s\n", line));
 			continue;
-		} else if (sscanf(line, "%d %d %s %f %d %d %d", &midiChan, &midiKey, sndfilename, &playspeed, &traj, &pan, &vol) != 7) {
+		} else if (sscanf(line, "%d %d %s %f %d %d %d %d %d %f %d",
+			&midiChan, &midiKey, sndfilename, &playspeed, &traj, &pan, &vol, &attack, &decay, &sustain, &release) != 11) {
 			printf ("ERREUR : ligne non reconnue %s\n", line);
 			exit(0);
 		}
 		s->fChanVol[midiChan] = vol / 127.0;
 		s->fChanPan[midiChan] = pan / 127.0;
+		s->fChanEnvelope[midiChan].setEnvelope(attack, decay, (double) sustain, release, 44100);
+
 		addRule(s, midiChan, midiKey, sndfilename, playspeed, traj);
 	}
 	printSoundList(s);
@@ -254,6 +258,8 @@ int	traj7 [] = {7,7,7,7,7,7,7,7};
 
 bool initSampler(TSampler* s, char* fname)
 {
+	s->fMaster = 1.0;
+
 	// initialisation des trajectoires
 	
 	s->fTrajTbl[0] = traj0;
@@ -363,6 +369,8 @@ static void doKeyOn (TSampler* s, int chan, int key, int vel)
 			v->fStep 	= (unsigned long)(a->fSpeed * 256.0);
 			v->fLoopMode = 0; // etait 1, voir autre strategie...
 			v->fStopRequest = 0;
+			v->fEnvelope.setEnvelope(s->fChanEnvelope[chan]);
+			v->fEnvelope.keyOn();
 			addPlayVoice(s,v);
 			//if (v->fStep==256) printf("OK 256\n"); else printf("ERREUR pas 256\n");
 		}
@@ -379,6 +387,7 @@ static void doKeyOff (TSampler* s, int chan, int key, int vel)
 	
 	for (i=0; i < listSize(&s->fPlayVoiceList); i++) {
 		TVoice* v = (TVoice*)getListElem(&s->fPlayVoiceList, i);
+		v->fEnvelope.keyOff();
 		if (v->fChan == chan && v->fKey == key && v->fStopRequest == 0) {
 			v->fStopRequest = 1;
 			break;
@@ -417,13 +426,13 @@ static int mixOneVoiceFixedSpeed (TSampler* sss, unsigned long const n, float* m
 
 			if (sss->fStereoMode == 0.0)
 				for (;i<n; i++) {
-					float x = src[pos++] * level;
+					float x = src[pos++] * level * v->fEnvelope.tick();
 					multi[v->fDst][i] += x;
 				}
 			else
 			{
 				for (;i<n; i++) {
-					float x = src[pos++] * level;
+					float x = src[pos++] * level * v->fEnvelope.tick();
 					multi[0][i] += x * cosValue ;
 					multi[1][i] += x * sinValue ;
 				}
@@ -443,17 +452,17 @@ static int mixOneVoiceFixedSpeed (TSampler* sss, unsigned long const n, float* m
 			*/
 			if (sss->fStereoMode == 0.0)
 				do {
-					float x = src[pos];
-					multi[v->fDst][i] += x * level;
+					float x = src[pos] * level * v->fEnvelope.tick();
+					multi[v->fDst][i] += x;
 					pos++;
 					i++;
 				} while (pos < maxpos);
 			else
 			{
 				do {
-					float x = src[pos];
-					multi[0][i] += x * level * cosValue ;
-					multi[1][i] += x * level * sinValue ;
+					float x = src[pos] * level * v->fEnvelope.tick();
+					multi[0][i] += x * cosValue ;
+					multi[1][i] += x * sinValue ;
 					pos++;
 					i++;
 				} while (pos < maxpos);
@@ -511,14 +520,14 @@ static int mixOneVoiceVariSpeed (TSampler* sss, unsigned long const n, float* mu
 
 			if (sss->fStereoMode == 0.0)
 				for (;i<n; i++) {
-					float x = src[pos >> 8] * level;
+					float x = src[pos >> 8] * level * v->fEnvelope.tick();
 					pos += step;
 					multi[v->fDst][i] += x;
 				}
 			else
 			{
 				for (;i<n; i++) {
-					float x = src[pos >> 8] * level;
+					float x = src[pos >> 8] * level * v->fEnvelope.tick();
 					pos += step;
 					multi[0][i] += x * cosValue;
 					multi[1][i] += x * sinValue;
@@ -539,18 +548,18 @@ static int mixOneVoiceVariSpeed (TSampler* sss, unsigned long const n, float* mu
 			*/
 			if (sss->fStereoMode == 0.0)
 				do {
-					float x = src[pos >> 8];
+					float x = src[pos >> 8] * level * v->fEnvelope.tick();
 					pos += step;
-					multi[v->fDst][i] += x * level;
+					multi[v->fDst][i] += x;
 					i++;
 				} while (pos < maxpos);
 			else
 			{
 				do {
-					float x = src[pos >> 8];
+					float x = src[pos >> 8] * level * v->fEnvelope.tick();
 					pos += step;
-					multi[0][i] += x * level * cosValue;
-					multi[1][i] += x * level * sinValue;
+					multi[0][i] += x * cosValue;
+					multi[1][i] += x * sinValue;
 					i++;
 				} while (pos < maxpos);
 			}

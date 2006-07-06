@@ -102,6 +102,7 @@ public class Channel {
 		s.setRedraw(false);
 		s.addShellListener(new ShellAdapter() {
 			public void shellClosed(final ShellEvent e) {
+				envelope.shellClose();
 				bt.setSelection(false);
 				keygroups.clear();
 				sampler.configSav.writeAll();

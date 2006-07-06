@@ -27,7 +27,8 @@ import com.swtdesigner.SWTResourceManager;
 
 public class Keygroup {
 
-	private int index, ref, plus, minus, output, vol, pan;
+	private int index, ref, plus, minus, output, vol, pan, attack, decay, release;
+	private double sustain;
 	private File file;
 	private Group group;
 	private Channel channel;
@@ -46,6 +47,10 @@ public class Keygroup {
 	public int getOutput()		{ return output; }
 	public int getVol()		{ return vol; }
 	public int getPan()		{ return pan; }
+	public int getAttack()		{ return attack; }
+	public int getDecay()		{ return decay; }
+	public double getSustain()		{ return sustain; }
+	public int getRelease()		{ return release; }
 	public Group getGroup()		{ return group; }
 
 	
@@ -210,6 +215,26 @@ public class Keygroup {
 	{
 		pan=p;
 		channel.sampler.configSav.setPan(p, channel.getNum(), index);
+	}
+	public void setAttack(int a)
+	{
+		attack=a;
+		channel.sampler.configSav.setAttack(a, channel.getNum(), index);
+	}
+	public void setDecay(int d)
+	{
+		decay=d;
+		channel.sampler.configSav.setDecay(d, channel.getNum(), index);
+	}
+	public void setSustain(double s)
+	{
+		sustain =s;
+		channel.sampler.configSav.setSustain(s, channel.getNum(), index);
+	}
+	public void setRelease(int r)
+	{
+		release=r;
+		channel.sampler.configSav.setRelease(r, channel.getNum(), index);
 	}
 	
 	private int getDefaultRef()
