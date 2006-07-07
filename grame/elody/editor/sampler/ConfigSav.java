@@ -42,7 +42,7 @@ public class ConfigSav {
 				if (list.isSet(ch))
 				{
 					w.newLine();
-					w.write("#ch\tkey\tfilename\tspee\toutput\tpan\tvol\tattack\tdecay\tsustain\trelease");
+					w.write("#ch\tkey\tfilename\tspee\toutput\tpan\tvol\tattack\tdecay\tsustain\trelease\tsensit");
 					w.newLine();
 					for (int j=0; j<=list.maxKeygroups(ch); j++)
 					{
@@ -59,13 +59,14 @@ public class ConfigSav {
 							int decay = list.getDecay(ch, j);
 							double sustain = list.getSustain(ch, j);
 							int release = list.getRelease(ch, j);
+							double sensit = list.getSensit(ch, j);
 							for (int k=-minus; k<=plus; k++)
 							{
 								w.newLine();
 								double speed = Math.pow(2, k/12.0);
 								int key = ref+k;
 								w.write((ch.intValue()-1)+"\t"+key+"\t"+f.getPath()+"\t"+speed+"\t"+output+"\t"+
-										pan+"\t"+vol+"\t"+attack+"\t"+decay+"\t"+sustain+"\t"+release);
+										pan+"\t"+vol+"\t"+attack+"\t"+decay+"\t"+sustain+"\t"+release+"\t"+sensit);
 							}
 						}
 					}
@@ -104,7 +105,7 @@ public class ConfigSav {
 		try {
 			double prevSpeed=1;		int prevKey=-1;			int minPitch=-1; 	int refPitch=-1;		int maxPitch=-1;
 			int index=0;			int output=1;			int pan=64;			int vol=100;			int attack=0;
-			int decay=0;			double sustain=0.0;		int release=300;
+			int decay=0;			double sustain=0.0;		int release=300;	double sensit=0.0;
 			Integer channel = null;
 			Integer prevChannel = null;
 			File file = null;
@@ -127,13 +128,14 @@ public class ConfigSav {
 				    decay = Integer.parseInt(st.nextToken());
 				    sustain = Double.parseDouble(st.nextToken());
 				    release = Integer.parseInt(st.nextToken());
+				    sensit = Double.parseDouble(st.nextToken());
 				    
 				    if (speed<=prevSpeed)
 				    {  
 				    	if ((maxPitch=prevKey)!=-1)
 				    	{
 				    		list.addKeygroup(prevChannel, index, prevFile, refPitch, maxPitch-refPitch, refPitch-minPitch, output,
-				    				pan, vol, attack, decay, sustain, release);
+				    				pan, vol, attack, decay, sustain, release, sensit);
 				    		index++;
 				    	}
 				       	minPitch=key;
@@ -149,7 +151,7 @@ public class ConfigSav {
 			}
 			if ((maxPitch=prevKey)!=-1)
 				list.addKeygroup(channel, index, file, refPitch, maxPitch-refPitch, refPitch-minPitch, output,
-						pan, vol, attack, decay, sustain, release);
+						pan, vol, attack, decay, sustain, release, sensit);
 			r.close();
 		} catch (IOException e) {}
 		
@@ -158,9 +160,9 @@ public class ConfigSav {
 	public boolean isSet(int ch) { return list.isSet(Integer.valueOf(ch)); }
 	public int maxKeygroups(int ch) {return list.maxKeygroups(Integer.valueOf(ch)); }
 	public void addKeygroup(Integer channel, int index, File file, int ref, int plus, int minus, int output,
-			int pan, int vol, int attack, int decay, double sustain, int release)
+			int pan, int vol, int attack, int decay, double sustain, int release, double sensit)
 	{
-		list.addKeygroup(channel, index, file, ref, plus, minus, output, pan, vol, attack, decay, sustain, release);
+		list.addKeygroup(channel, index, file, ref, plus, minus, output, pan, vol, attack, decay, sustain, release, sensit);
 	}
 	public void delKeygroup(Integer channel, int index)
 	{
@@ -177,6 +179,7 @@ public class ConfigSav {
 	public int getDecay(int ch, int keygIndex) {return list.getDecay(Integer.valueOf(ch), keygIndex); }
 	public double getSustain(int ch, int keygIndex) {return list.getSustain(Integer.valueOf(ch), keygIndex); }
 	public int getRelease(int ch, int keygIndex) {return list.getRelease(Integer.valueOf(ch), keygIndex); }
+	public double getSensit(int ch, int keygIndex) {return list.getSensit(Integer.valueOf(ch), keygIndex); }
 	public void setFile(File f, int ch, int keygIndex) {list.setFile(f, Integer.valueOf(ch), keygIndex); }
 	public void setRef(int r, int ch, int keygIndex) {list.setRef(r, Integer.valueOf(ch), keygIndex); }
 	public void setPlus(int p, int ch, int keygIndex) {list.setPlus(p, Integer.valueOf(ch), keygIndex); }
@@ -188,6 +191,7 @@ public class ConfigSav {
 	public void setDecay(int d, int ch, int keygIndex) {list.setDecay(d, Integer.valueOf(ch), keygIndex); }
 	public void setSustain(double s, int ch, int keygIndex) {list.setSustain(s, Integer.valueOf(ch), keygIndex); }
 	public void setRelease(int r, int ch, int keygIndex) {list.setRelease(r, Integer.valueOf(ch), keygIndex); }
+	public void setSensit(double s, int ch, int keygIndex) {list.setSensit(s, Integer.valueOf(ch), keygIndex); }
 }
 
 class ConfigList  {
@@ -197,10 +201,11 @@ class ConfigList  {
 	public ConfigList() { map = new TreeMap();	}
 	
 	public void addKeygroup(Integer channel, int index, File file, int ref, int plus, int minus, int output,
-			int pan, int vol, int attack, int decay, double sustain, int release)
+			int pan, int vol, int attack, int decay, double sustain, int release, double sensit)
 	{
 		TreeMap k = addChannel(channel);
-		k.put(Integer.valueOf(index), new Keyg(file, ref, plus, minus, output, pan, vol, attack, decay, sustain, release));
+		k.put(Integer.valueOf(index), new Keyg(file, ref, plus, minus,
+				output, pan, vol, attack, decay, sustain, release, sensit));
 	}
 	public void delKeygroup(Integer channel, int index)
 	{
@@ -261,6 +266,7 @@ class ConfigList  {
 	public int getDecay(Integer ch, int keygIndex) { return getKeyg(ch,keygIndex).getDecay(); }
 	public double getSustain(Integer ch, int keygIndex) { return getKeyg(ch,keygIndex).getSustain(); }
 	public int getRelease(Integer ch, int keygIndex) { return getKeyg(ch,keygIndex).getRelease(); }
+	public double getSensit(Integer ch, int keygIndex) { return getKeyg(ch,keygIndex).getSensit(); }
 	public void setFile(File f, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setFile(f); }
 	public void setRef(int r, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setRef(r); }
 	public void setPlus(int p, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setPlus(p); }
@@ -272,14 +278,15 @@ class ConfigList  {
 	public void setDecay(int d, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setDecay(d); }
 	public void setSustain(double s, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setSustain(s); }
 	public void setRelease(int r, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setRelease(r); }
+	public void setSensit(double s, Integer ch, int keygIndex) { getKeyg(ch,keygIndex).setSensit(s); }
 }
 
 class Keyg {
 	private File file;
 	private int ref, plus, minus, output, pan, vol, attack, decay, release;
-	private double sustain;
+	private double sustain, sensit;
 	public Keyg(File file, int ref, int plus, int minus, int output,
-			int pan, int vol, int attack, int decay, double sustain, int release) {
+			int pan, int vol, int attack, int decay, double sustain, int release, double sensit) {
 		this.file = file;
 		this.ref = ref;
 		this.plus = plus;
@@ -291,6 +298,7 @@ class Keyg {
 		this.decay = decay;
 		this.sustain = sustain;
 		this.release = release;
+		this.sensit = sensit;
 	}
 	public File getFile() { return file; }
 	public int getMinus() { return minus; }
@@ -303,6 +311,7 @@ class Keyg {
 	public int getDecay() { return decay; }
 	public double getSustain() { return sustain; }
 	public int getRelease() { return release; }
+	public double getSensit() { return sensit; }
 	public void setFile(File f) { file=f; }
 	public void setMinus(int m) { minus=m; }
 	public void setPlus(int p) { plus=p; }
@@ -314,6 +323,7 @@ class Keyg {
 	public void setDecay(int d) { decay=d; }
 	public void setSustain(double s) { sustain=s; }
 	public void setRelease(int r) { release=r; }
+	public void setSensit(double s) { sensit=s; }
 }
 
 class Comparateur implements Comparator {

@@ -56,6 +56,7 @@ public class Channel {
 	private int pan = 64;
 	private int vol = 100;
 	private Envelope envelope;
+	private double sensit = 0.0;
 
 	
 	private boolean shellOpened = false;
@@ -199,6 +200,7 @@ public class Channel {
 	public int getDecay()		{ return envelope.getDecay(); }
 	public double getSustain()	{ return envelope.getSustain(); }
 	public int getRelease()		{ return envelope.getRelease(); }
+	public double getSensit()	{ return sensit; }
 	public void setOutput(int o)
 	{
 		output=o;
@@ -239,6 +241,15 @@ public class Channel {
 		{
 			Keygroup k = (Keygroup) keygroups.get(i);
 			k.setPan(p);
+		}
+	}
+	public void setSensit(int s)
+	{
+		sensit=(s/100.0)-1;
+		for (int i=0; i<keygroups.size(); i++)
+		{
+			Keygroup k = (Keygroup) keygroups.get(i);
+			k.setSensit(sensit);
 		}
 	}
 	public boolean isShellOpened() {return shellOpened; }
@@ -373,9 +384,9 @@ public class Channel {
 		volLabel.setBackground(bgColor);
 		final FormData volFd = new FormData();
 		volFd.top = new FormAttachment(0, 15);
-		volFd.left = new FormAttachment(0, 30);
+		volFd.left = new FormAttachment(0, 10);
 		volLabel.setLayoutData(volFd);
-		volLabel.setText("VOL :");
+		volLabel.setText("VOL:");
 		
 		final Scale volScale = new Scale(menuComposite1, SWT.HORIZONTAL);
 		volScale.setBackground(bgColor);
@@ -393,9 +404,47 @@ public class Channel {
 	});
 		final FormData volScFd = new FormData();
 		volScFd.top = new FormAttachment(0, 5);
-		volScFd.left = new FormAttachment(volLabel, 10, SWT.RIGHT);
-		volScFd.right = new FormAttachment( (stereo ? 50 : 70) , 0);
+		volScFd.left = new FormAttachment(volLabel, 5, SWT.RIGHT);
+		volScFd.right = new FormAttachment( (stereo ? 33 : 35) , 0);
 		volScale.setLayoutData(volScFd);
+		
+		final Label sensitLabel = new Label(menuComposite1, SWT.NONE);
+		sensitLabel.setFont(SWTResourceManager.getFont("", 9, SWT.BOLD));
+		sensitLabel.setBackground(bgColor);
+		final FormData sensitFd = new FormData();
+		sensitFd.top = new FormAttachment(0, 15);
+		sensitFd.left = new FormAttachment(volScale, 10, SWT.RIGHT);
+		sensitLabel.setLayoutData(sensitFd);
+		sensitLabel.setText("SEN:");
+		
+		final Scale sensitScale = new Scale(menuComposite1, SWT.HORIZONTAL);
+		sensitScale.setBackground(bgColor);
+		sensitScale.setMinimum( 0 );
+		sensitScale.setMaximum( 200 );
+		sensitScale.setSelection( (int) ( (sensit+1)*100 ) );
+		sensitScale.setIncrement( 5 );
+		sensitScale.setPageIncrement( 50 );
+		sensitScale.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(final SelectionEvent e) {
+			setSensit(sensitScale.getSelection());
+			sampler.configSav.writeAll();
+			sampler.needToReset=true;
+		}
+	});
+		sensitScale.addMouseListener(new MouseAdapter() {
+
+			public void mouseDoubleClick(MouseEvent e) {
+				setSensit(100);
+				sensitScale.setSelection(100);
+				sampler.configSav.writeAll();
+				sampler.needToReset=true;
+			}		
+		});
+		final FormData sensitScFd = new FormData();
+		sensitScFd.top = new FormAttachment(0, 5);
+		sensitScFd.left = new FormAttachment(sensitLabel, 5, SWT.RIGHT);
+		sensitScFd.right = new FormAttachment( (stereo ? 66 : 70) , 0);
+		sensitScale.setLayoutData(sensitScFd);
 		
 		if (stereo)
 		{
@@ -404,9 +453,9 @@ public class Channel {
 			panLabel.setBackground(bgColor);
 			final FormData panFd = new FormData();
 			panFd.top = new FormAttachment(0, 15);
-			panFd.left = new FormAttachment(volScale, 10, SWT.RIGHT);
+			panFd.left = new FormAttachment(sensitScale, 10, SWT.RIGHT);
 			panLabel.setLayoutData(panFd);
-			panLabel.setText("PAN :");
+			panLabel.setText("PAN:");
 			
 			final Scale panScale = new Scale(menuComposite1, SWT.HORIZONTAL);
 			panScale.setBackground(bgColor);
@@ -433,7 +482,7 @@ public class Channel {
 			});
 			final FormData panScFd = new FormData();
 			panScFd.top = new FormAttachment(0, 5);
-			panScFd.left = new FormAttachment(panLabel, 10, SWT.RIGHT);
+			panScFd.left = new FormAttachment(panLabel, 5, SWT.RIGHT);
 			panScFd.right = new FormAttachment(100, -10);
 			panScale.setLayoutData(panScFd);
 		}
@@ -461,7 +510,7 @@ public class Channel {
 			outputFd.top = new FormAttachment(0, 15);
 			outputFd.right = new FormAttachment(outputSpinner, -15, SWT.LEFT);
 			outputLabel.setLayoutData(outputFd);
-			outputLabel.setText("OUT :");
+			outputLabel.setText("OUT:");
 		}
 		
 		
