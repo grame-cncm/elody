@@ -28,18 +28,13 @@ static int	iscomment (char* s)
 
 inline float square (float x) { return x*x; }
 
-static void initVelScale(float tbl[])
-{
-	double p = 0.7;
-	for (int v=0; v<128; v++)  tbl[v]= pow(v/127.0, p) ;
-}
-
-static void initChanVolPan(float vol[], float pan[])
+static void initChanVolPanSensit(float vol[], float pan[], float sensit[])
 {
 	for (int c=0; c<CHANNELS_NUM; c++)
 	{
 		vol[c]= 100.0/127.0;
 		pan[c]= 0.5;
+		sensit[c]= 0.0;
 	}
 }
 
@@ -191,7 +186,7 @@ static bool readConfigFile(TSampler* s, char* fname)
 	FILE* 	file;
 	char 	line[1024];
 	int		midiChan, midiKey, traj, pan, vol, attack, decay, release;
-	float	playspeed, sustain;
+	float	playspeed, sustain, sensit;
 	char	sndfilename[1024];
 	
 	TRACE(("lecture du fichier de configuration \"%s\"...\n", fname));
@@ -212,16 +207,24 @@ static bool readConfigFile(TSampler* s, char* fname)
 		if (iscomment(line)) {
 			TRACE(("it is a comment : %s\n", line));
 			continue;
-		} else if (sscanf(line, "%d %d %s %f %d %d %d %d %d %f %d",
-			&midiChan, &midiKey, sndfilename, &playspeed, &traj, &pan, &vol, &attack, &decay, &sustain, &release) != 11) {
+		} else if (sscanf(line, "%d %d %s %f %d %d %d %d %d %f %d %f",
+			&midiChan, &midiKey, sndfilename, &playspeed, &traj, &pan, &vol, &attack, &decay, &sustain, &release, &sensit) != 12) {
 			printf ("ERREUR : ligne non reconnue %s\n", line);
 			exit(0);
 		}
 		s->fChanVol[midiChan] = vol / 127.0;
 		s->fChanPan[midiChan] = pan / 127.0;
 		s->fChanEnvelope[midiChan].setEnvelope(attack, decay, (double) sustain, release, 44100);
+		s->fChanSensit[midiChan] = sensit;
 
 		addRule(s, midiChan, midiKey, sndfilename, playspeed, traj);
+	}
+	for (int i=0; i<CHANNELS_NUM; i++)
+	{
+		double e = exp(4*s->fChanSensit[i]);
+		s->fChanVel[i][0]=0;
+		for (int j=1; j<128; j++)
+			s->fChanVel[i][j]=pow(j/127.0,e);
 	}
 	printSoundList(s);
 	return true;
@@ -293,8 +296,7 @@ bool initSampler(TSampler* s, char* fname)
 #endif
 	
 	/* Initialisation des tables	*/
-	initVelScale(s->fVelScale);
-	initChanVolPan(s->fChanVol, s->fChanPan);
+	initChanVolPanSensit(s->fChanVol, s->fChanPan, s->fChanSensit);
 	
 	/* initialisation des listes a vide	*/
 	
@@ -406,7 +408,7 @@ static int mixOneVoiceFixedSpeed (TSampler* sss, unsigned long const n, float* m
 	
 	/* Calcul des niveaux de sortie */
 	
-   	float 	level   = sss->fVelScale[v->fVel] * sss->fVelScale[int(127.0*sss->fChanVol[v->fChan])];
+   	float 	level   = sss->fChanVel[v->fChan][v->fVel] * sss->fChanVol[v->fChan];
 	float	cosValue = cos ( v->fDst / 127.0 * PI / 2.0 );
 	float	sinValue = sin ( v->fDst / 127.0 * PI / 2.0 );	
 
@@ -500,7 +502,7 @@ static int mixOneVoiceVariSpeed (TSampler* sss, unsigned long const n, float* mu
 	
 	/* Calcul des niveaux de sortie */
 	
-   	float 	level   = sss->fVelScale[v->fVel] * sss->fVelScale[int(127.0*sss->fChanVol[v->fChan])];
+   	float 	level   = sss->fChanVel[v->fChan][v->fVel] * sss->fChanVol[v->fChan];
 	float	cosValue = cos ( v->fDst / 127.0 * PI / 2.0 );
 	float	sinValue = sin ( v->fDst / 127.0 * PI / 2.0 );	
 	

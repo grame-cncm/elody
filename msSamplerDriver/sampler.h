@@ -65,10 +65,11 @@ struct TVoice {
 
 struct TSampler {
 	float		fMaster;					// Master Output Volume
-	float 		fVelScale[128];				// table de conversion des velocity
 	float		fChanVol[CHANNELS_NUM];		// les volumes de chaque canal
 	float		fChanPan[CHANNELS_NUM];		// les panoramiques de chaque canal (mode stereo seulement)
 	Envelope	fChanEnvelope[CHANNELS_NUM];// les enveloppes pour chaque canal
+	float		fChanSensit[CHANNELS_NUM];	// les sensibilités à la vélocité pour chaque canal
+	float		fChanVel[CHANNELS_NUM][128]; // table de conversion des vélocités pour chaque canal
 	TAction*	fRule[CHANNELS_NUM][128];	// regles de jeu
 	TVoice		fVoiceTable[kMaxVoices];	// table des voix 
 	List		fSoundList;					// liste des sons en memoire
