@@ -41,30 +41,40 @@ import org.eclipse.swt.widgets.Spinner;
 import com.swtdesigner.SWTResourceManager;
 
 public class Channel {
-
+/***** DESCRIPTION ************************************
+ * The MIDI channels are used to separate "voices" or "instruments".
+ * In the sampler, the sounds associations (keygroups) are made in
+ * each channel. Each "Channel" instance (identified by its MIDI number)
+ * provides a channel window (shell) and a toggle button to open
+ * or close it. It includes a keyboard viewer to represent the
+ * keygroups locations, and an interface for creating, setting
+ * and deleting keygroups. Some settings are global for every keygroups
+ * in the channel, like volume, velocity sensitivity, ADSR envelope, and
+ * output track or panoramic level (depending on the chosen device).
+ ******************************************************/	
 	final public String[] EXTENSIONS = {".wav",".aiff"};
-	final public int MAX_CHANNELS = 8;
+	final public int MAX_TRACKS = 8;
 	
-	private short num;
-	private Button bt;
-	private Shell s = null;
+	private short num;			// channel number
+	private Button bt;			// open-close the shell
+	private Shell s = null;		// channel SWT window (shell)
 	public Color bgColor;	
 	private Vector keygroups;
-	private boolean[] availKeyb;
+	private boolean[] availKeyb;	// array indicating the keys (0..127) availability
+				// to prevent from Keygroups collisions (true=available / false=busy)
 	public Sampler sampler;
-	private int output = 1;
-	private int pan = 64;
-	private int vol = 100;
-	private Envelope envelope;
-	private double sensit = 0.0;
+	private int output = 1;		// output track number (multitracks mode)
+	private int pan = 64;		// panoramic (0=left / 64=center / 127=right)
+	private int vol = 100;		// volume (0..127)		
+	private Envelope envelope;		// ADSR envelope
+	private double sensit = 0.0;	// velocity sensitivity (-1=soft / 0=normal / 1=hard)
 
-	
 	private boolean shellOpened = false;
 	
-	private Keyboard keyboard;
+	private Keyboard keyboard;	// keyboard viewer
 	private ScrolledComposite scrolledComposite;
 	private Composite keygComposite;
-	private Spinner outputSpinner;
+	private Spinner outputSpinner;	// output track number widget
 	
 	public Channel(Group parent, final short num, Color bgColor, Sampler samp) {
 		sampler = samp;
@@ -122,6 +132,7 @@ public class Channel {
 		s.setText("Sampler - Channel "+num);
 		s.setBackground(bgColor);
 		s.setLayout(new FormLayout());
+		// Keygroups can be added with drag-and-drop operations on audio files
 		final DropTarget target = new DropTarget(s, DND.DROP_NONE);
 		target.setTransfer(new Transfer[] {FileTransfer.getInstance()});
 		target.addDropListener(new DropTargetAdapter() {
@@ -144,6 +155,7 @@ public class Channel {
 		s.setActive();
 		if (sampler.configSav.isSet(num))
 		{
+			// getting the settings from config file
 			setOutput(sampler.configSav.getOutput(num, 0));
 			setVol(sampler.configSav.getVol(num, 0));
 			setPan(sampler.configSav.getPan(num, 0));
@@ -154,7 +166,7 @@ public class Channel {
 			envelope = new Envelope(a,d,s,r, this);
 			/* each keygroup has an ouput, volume and panoramic,
 			 * and envelope informations, but in interface, only the
-			 * first keygroup in a channel is  considered as the main
+			 * first keygroup in a channel is considered as the main
 			 * information of this channel (others are ignored)
 			 */
 		}
@@ -168,6 +180,8 @@ public class Channel {
 		
 		if (sampler.configSav.isSet(num))
 		{
+			// getting the keygroups from config file
+			// (adding Keygroups ONLY AFTER building interface)
 			for (int i=0; i<=sampler.configSav.maxKeygroups(num); i++)
 			{
 				File file = sampler.configSav.getFile(num,i);
@@ -189,18 +203,20 @@ public class Channel {
 		// see ShellAdapter "shellClosed"
 	}
 	
-	public short getNum() {return num;}
-	public Shell getShell() { return s;	}
-	public boolean getAvailKeyb(int i) { return availKeyb[i]; }
-	public Vector getKeygroups() { return keygroups; }
-	public int getOutput()	{ return output; }
-	public int getPan()	{ return pan; }
-	public int getVol()	{ return vol; }
+	public short getNum()				{return num;}
+	public Shell getShell()				{ return s;	}
+	public boolean getAvailKeyb(int i)	{ return availKeyb[i]; }
+	public Vector getKeygroups() 		{ return keygroups; }
+	public int getOutput()				{ return output; }
+	public int getPan()					{ return pan; }
+	public int getVol()					{ return vol; }
+	public double getSensit()			{ return sensit; }
+	// 4 envelope parameters:
 	public int getAttack()		{ return envelope.getAttack(); }
 	public int getDecay()		{ return envelope.getDecay(); }
 	public double getSustain()	{ return envelope.getSustain(); }
 	public int getRelease()		{ return envelope.getRelease(); }
-	public double getSensit()	{ return sensit; }
+	
 	public void setOutput(int o)
 	{
 		output=o;
@@ -213,7 +229,7 @@ public class Channel {
 	public void resetOutput()
 	{
 		int numOutputs = sampler.getNumOutputs();
-		if (numOutputs>MAX_CHANNELS) numOutputs = MAX_CHANNELS;
+		if (numOutputs>MAX_TRACKS) numOutputs = MAX_TRACKS;
 		outputSpinner.setMinimum(1);
 		outputSpinner.setMaximum(numOutputs);
 		if (output<=numOutputs)
@@ -245,7 +261,7 @@ public class Channel {
 	}
 	public void setSensit(int s)
 	{
-		sensit=(s/100.0)-1;
+		sensit=(s/100.0)-1; // sensit value is a 0..200 integer in interface
 		for (int i=0; i<keygroups.size(); i++)
 		{
 			Keygroup k = (Keygroup) keygroups.get(i);
@@ -289,23 +305,23 @@ public class Channel {
 		sampler.configSav.writeAll();
 	}
 	
-	public void addKeygroup(boolean refresh, int i)
+	public void addKeygroup(boolean refresh, int index)
 	{	
-		boolean sav=true;
-		int index = 1;
+		boolean sav=true; // need to be added in config file
+		int keygIndex = 1;
 		Composite relative = null;
 		if (!keygroups.isEmpty())
 		{
 			Keygroup last = (Keygroup) keygroups.lastElement();
-			index = last.getIndex()+1;
+			keygIndex = last.getIndex()+1;
 			relative = last.getGroup();
 		}
-		if (i!=-1)
+		if (index!=-1) // keygroup already indexed
 		{
-			index=i;
-			sav=false;
+			keygIndex=index;
+			sav=false; // no need to be added in config file
 		} 
-		keygroups.add(new Keygroup(index, keygComposite, relative, bgColor, this, sav));
+		keygroups.add(new Keygroup(keygIndex, keygComposite, relative, bgColor, this, sav));
 		if (refresh) { keygCompositeRefresh(true); }
 		sampler.needToReset=true;
 	}
@@ -316,17 +332,20 @@ public class Channel {
 		{
 			setAvailKeyb(i,true);
 		}
-		int current = keygroups.indexOf(k);
-		if (current<keygroups.size()-1)
+		int currentIndex = keygroups.indexOf(k);
+		if (currentIndex<keygroups.size()-1) 
 		{
-			Keygroup next = (Keygroup) keygroups.get(current+1);
-			if (current>0)
+			/* this keygroup is not the last added, we need to reconnect
+			   the linked list before deleting */
+			Keygroup next = (Keygroup) keygroups.get(currentIndex+1);
+			if (currentIndex>0)
 			{
-				Keygroup prev = (Keygroup) keygroups.get(current-1);
+				Keygroup prev = (Keygroup) keygroups.get(currentIndex-1);
 				next.relocate(prev.getGroup());
 			}
 			else
 			{
+				// this keygroup is the first added
 				next.relocate(null);
 			}
 		}
@@ -334,7 +353,6 @@ public class Channel {
 		sampler.configSav.delKeygroup(Integer.valueOf(num), k.getIndex());
 		sampler.configSav.writeAll();
 		keygCompositeRefresh(false);
-		//scrolledComposite.layout();
 		sampler.needToReset=true;
 	}
 	
@@ -419,6 +437,7 @@ public class Channel {
 		
 		final Scale sensitScale = new Scale(menuComposite1, SWT.HORIZONTAL);
 		sensitScale.setBackground(bgColor);
+		// sensit value is a 0..200 integer in interface
 		sensitScale.setMinimum( 0 );
 		sensitScale.setMaximum( 200 );
 		sensitScale.setSelection( (int) ( (sensit+1)*100 ) );
@@ -486,7 +505,7 @@ public class Channel {
 			panScFd.right = new FormAttachment(100, -10);
 			panScale.setLayoutData(panScFd);
 		}
-		else
+		else	// multitracks mode
 		{
 			outputSpinner = new Spinner(menuComposite1, SWT.BORDER);
 			resetOutput();
@@ -599,7 +618,7 @@ public class Channel {
 		scrolledComposite.setRedraw(false);
 		keygComposite.layout();
 		keygComposite.pack();
-		keygComposite.setSize(/*450*/scrolledComposite.getSize().x-22,keygComposite.getSize().y);
+		keygComposite.setSize(scrolledComposite.getSize().x-22,keygComposite.getSize().y);
 		if (scrollToEnd)
 			scrolledComposite.setOrigin(keygComposite.getSize());
 		scrolledComposite.setRedraw(true);
@@ -611,6 +630,9 @@ public class Channel {
 	}
 	
 	class AudioExtensionFilter implements FileFilter {
+		/* Instances of this class provide a method "accept" that indicates
+		 * if the File parameter is a correct audio file by inspecting
+		 * its extension. These instances are used by File.listFiles method. */ 
 	    public boolean accept(File file) {
 	    	String name = file.getName();
 	    	if (file.isDirectory())

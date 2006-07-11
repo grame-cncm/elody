@@ -78,7 +78,7 @@ public class MidiSender extends Singleton implements ActionListener, Observer {
 		bottomPanel.add(load);
 		bottomPanel.add(save);
 		add("South",bottomPanel); 
-		setSize (chanCount * 35, 220);
+		setSize (chanCount * 35, 400);
 	}
 	
 	
@@ -106,6 +106,7 @@ public class MidiSender extends Singleton implements ActionListener, Observer {
 				midiTable[i].SetProgram(Integer.parseInt(st.nextToken()));
 				st.nextToken(); // CtrlChange
 				midiTable[i].SetVolume(Integer.parseInt(st.nextToken()));
+				midiTable[i].SetPan(Integer.parseInt(st.nextToken()));
 			}
 			save.setEnabled(false);
 			in.close();
@@ -120,7 +121,8 @@ public class MidiSender extends Singleton implements ActionListener, Observer {
 			PrintWriter out = new PrintWriter(new BufferedOutputStream ( new FileOutputStream(file)));
 			for (int i = 0 ; i < chanCount ; i++) {
 				out.println ("ProgChange/" + midiTable[i].GetProgram()
-						+ "/CtrlChange/" + midiTable[i].GetVolume());
+						+ "/CtrlChange/" + midiTable[i].GetVolume()
+						+ "/" + midiTable[i].GetPan() );
 			}
 			out.close();
 		} catch (IOException e) { 

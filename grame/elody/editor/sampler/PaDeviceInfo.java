@@ -2,6 +2,10 @@ package grame.elody.editor.sampler;
 
 
 public class PaDeviceInfo	{
+/***** DESCRIPTION ************************************
+ * Instances of this class represent the structure of a
+ * device such as it is returned by PortAudio API.
+ ******************************************************/		
 	private int devIndex;
 	private int structVersion;
 	private String name;

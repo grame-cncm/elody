@@ -15,7 +15,17 @@ import org.eclipse.swt.widgets.Shell;
 import com.swtdesigner.SWTResourceManager;
 
 public abstract class BasicShellSWT extends BasicApplet implements Runnable {
-	
+/***** DESCRIPTION ************************************
+ * Instances of this class represent the "windows" applet-like components.
+ * Each one provides a bridge between SWT and AWT, so that it is possible
+ * to embedded SWT components in an AWT frame.
+ * SWT needs a "Display" in order to manage the connection between SWT
+ * and the underlying OS. This class provides the thread in which the
+ * "Display" instance must be created, and distinguished as the
+ * user-interface thread for that display (some SWT methods may only
+ * be called from this thread). Note that this thread is not allowed to
+ * construct other "Displays" until that main "Display" has been disposed.  
+ ******************************************************/	
 	protected Shell shell;
 	protected Panel panel;
 	protected Canvas canvas;

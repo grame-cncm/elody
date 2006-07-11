@@ -3,6 +3,16 @@ package grame.elody.editor.sampler;
 import java.util.Vector;
 
 public class PaJniConnect {
+/***** DESCRIPTION ************************************
+ * This class provides a bridge between the Elody Sampler
+ * Editor and the MidiShare SamplerDriver, using Java Native
+ * Interface (JNI). It loads statically the associated library.
+ * Each instance of this class keeps a list with every
+ * audio Host API, and then every audio output device.
+ * It provides methods to question the MidiShare SamplerDriver concerning
+ * its configuration and get informations like current sample rate,
+ * frames per buffer. It also provides to reset and reload the driver.
+ ******************************************************/	
 	private native static int GetCurrentSampleRate();
 	private native static int GetCurrentFramesPerBuffer();
 	private native static int GetCurrentDeviceIndex();
@@ -40,11 +50,13 @@ public class PaJniConnect {
 	public PaDeviceInfo GetDevice()	{ return findByDevIndex(GetCurrentDeviceIndex()); }
 	
 	public int paDriverReload(int sampleRate, int framesPerBuffer, String configFile, int devIndex)
+	// stop and restart the driver: causes a new reading of the config file 
 	{
 		return AudioReload(sampleRate, framesPerBuffer, configFile, devIndex);
 	}
 	
 	public void setDevList(PaHostApiInfo api)
+	// add a devices list to an audio Host API structure
 	{
 		Vector v = new Vector();
 		PaDeviceInfo devArray[] = new PaDeviceInfo[api.getDeviceCount()];
@@ -61,6 +73,7 @@ public class PaJniConnect {
 	}
 	
 	public PaDeviceInfo findByDevIndex(int index)
+	// find a device by searching through every audio Host API
 	{
 		for (int i=0; i<apiList.size(); i++)
 		{

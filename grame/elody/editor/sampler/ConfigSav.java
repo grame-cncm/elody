@@ -7,15 +7,19 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 public class ConfigSav {
-	
+/***** DESCRIPTION ************************************
+ * This class provides a bridge between the sampler and the config file.
+ * It keeps a virtual view of the actual sampler state in a "ConfigList"
+ * and allows to synchronize it with the config file.
+ ******************************************************/		
 	private File configFile;
 	
 	private ConfigList list = new ConfigList();
+	// virtual view of the actual sampler state
 
 	public ConfigSav(File f)
 	{
@@ -26,6 +30,7 @@ public class ConfigSav {
 	public ConfigList getList() { return list; }
 	
 	public void writeAll()
+	// write the actual virtual sampler state in the config file
 	{
 		BufferedWriter w=null;
 		try {
@@ -80,16 +85,17 @@ public class ConfigSav {
 	
 	public void rebuildList()
 	{
-		/* Built the image of the config file by parsing it
-		 * line after line.  The keygroups are reconstituted
-		 * with the indication speed: a keygroup must 
-		 * contain one note with speed==1, otherwise is the
-		 * reverse processing not guaranteed. For this reason,
+		/* Built the virtual view of the sampler state with the
+		 * config file content by parsing it line after line.
+		 * The keygroups are reconstituted with the indication speed:
+		 * a keygroup must contain one note with speed==1, otherwise
+		 * is the reverse processing not guaranteed. For this reason,
 		 * if the config file is manually modified, it should be
 		 * done carefully. */
 		
-		/* Construit l'image du fichier de configuration en
-		 * le parcourant ligne après ligne.  Les keygroups sont
+		/* Construit l'image virtuelle de l'état du sampler d'après
+		 * le contenu du fichier de configuration en
+		 * le parcourant ligne après ligne. Les keygroups sont
 		 * reconstitués grâce à l'indication de vitesse :
 		 * un keygroup doit obligatoirement contenir une note
 		 * de vitesse 1, sinon le bon fonctionnement du reverse
@@ -157,6 +163,8 @@ public class ConfigSav {
 		
 	}
 
+	// all methods below allow to get and set the virtual view of the actual sampler state
+	
 	public boolean isSet(int ch) { return list.isSet(Integer.valueOf(ch)); }
 	public int maxKeygroups(int ch) {return list.maxKeygroups(Integer.valueOf(ch)); }
 	public void addKeygroup(Integer channel, int index, File file, int ref, int plus, int minus, int output,
@@ -195,7 +203,13 @@ public class ConfigSav {
 }
 
 class ConfigList  {
-	
+	/***** DESCRIPTION ************************************
+	 * Instances of this class are virtual views of the actual sampler state.
+	 * It keeps a map of all the channels views.
+	 * Each channel view is a map of all the keygroups views.
+	 * It provides methods to get and set any information
+	 * concerning the channel, or one of its keygroups.  
+	 ******************************************************/	
 	private TreeMap map;
 
 	public ConfigList() { map = new TreeMap();	}
@@ -282,6 +296,12 @@ class ConfigList  {
 }
 
 class Keyg {
+	/***** DESCRIPTION ************************************
+	 * Instances of this class are virtual views of a keygroup.
+	 * It contains all the informations associated to a keygroup,
+	 * including its parent channel's informations (like volume, pan...),
+	 * and provides methods to get and set these informations.
+	 ******************************************************/		
 	private File file;
 	private int ref, plus, minus, output, pan, vol, attack, decay, release;
 	private double sustain, sensit;
@@ -325,12 +345,3 @@ class Keyg {
 	public void setRelease(int r) { release=r; }
 	public void setSensit(double s) { sensit=s; }
 }
-
-class Comparateur implements Comparator {
-	  public int compare(Object obj1, Object obj2){
-	    return ((Comparable)obj2).compareTo(obj1);
-	  }
-	  public boolean equals(Object obj){
-	    return this.equals(obj);
-	  }
-	}

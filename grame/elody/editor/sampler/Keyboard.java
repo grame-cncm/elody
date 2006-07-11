@@ -16,7 +16,15 @@ import org.eclipse.swt.widgets.Composite;
 import com.swtdesigner.SWTResourceManager;
 
 public class Keyboard extends Canvas {
-
+/***** DESCRIPTION ************************************
+ * Each "Keyboard" instance (identified by its parent channel)
+ * provides a canvas with the representation of a MIDI keyboard (127 keys)
+ * and all the keygroups. Each keygroup representation has a border,
+ * a filling color excepted for the reference key that is in a different
+ * color and holds the keygroup number. Note that this class has no public
+ * method: the keyboard viewer is indirectly modified when any channel's
+ * keygroup is modified.
+ ******************************************************/	
 	final private Color LIGHT_RED = new Color(this.getDisplay(),255,128,128);
 	final private Color DARK_RED = new Color(this.getDisplay(),128,0,0);
 	final private Color LIGHT_BLUE = new Color(this.getDisplay(),192,192,255);
@@ -57,7 +65,7 @@ public class Keyboard extends Canvas {
 		});
 	}
 	
-	public void drawKeygroup(Keygroup k, GC gc)
+	protected void drawKeygroup(Keygroup k, GC gc)
 	{
 		int index = k.getIndex();
 		int ref = k.getRef();
@@ -73,7 +81,7 @@ public class Keyboard extends Canvas {
 		textGroup(ref, index, gc);
 	}
 	
-	public void textGroup(int ref, int keygroupIndex, GC gc)
+	protected void textGroup(int ref, int keygroupIndex, GC gc)
 	{
 		Transform t = new Transform(this.getDisplay());
 		int x = getKeyX(ref)-2;
@@ -90,7 +98,7 @@ public class Keyboard extends Canvas {
 		t.dispose();
 	}
 	
-	public void borderGroup(int minPitch, int maxPitch, GC gc)
+	protected void borderGroup(int minPitch, int maxPitch, GC gc)
 	{
 		final Color EXTERIOR = BLACK;
 		final Color MIDDLE = TEXT_AND_BORDER;
@@ -280,7 +288,7 @@ public class Keyboard extends Canvas {
 		}
 	}
 	
-	public void fillKeyGroup(int ref, int plus, int minus, GC gc)
+	protected void fillKeyGroup(int ref, int plus, int minus, GC gc)
 	{
 		for(int i=ref-minus; i<= ref+plus; i++)
 		{
@@ -289,7 +297,7 @@ public class Keyboard extends Canvas {
 		}
 	}
 	
-	public void fillKey(int pitch, int mode, GC gc)
+	protected void fillKey(int pitch, int mode, GC gc)
 	{
 		int x = getKeyX(pitch);
 		int type = getKeyType(pitch);
@@ -328,7 +336,7 @@ public class Keyboard extends Canvas {
 		}
 	}
 	
-	public int getKeyX(int pitch)
+	protected int getKeyX(int pitch)
 	/* return top-left key x coordinate */
 	{
 		int x=2;
@@ -349,7 +357,7 @@ public class Keyboard extends Canvas {
 		return x;
 	}
 	
-	public int getKeyType(int pitch)
+	protected int getKeyType(int pitch)
 	/* returns the shape type of the key following these rules :
 	 * 0 = C or F
 	 * 1 = B or E

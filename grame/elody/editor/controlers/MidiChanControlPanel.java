@@ -17,10 +17,11 @@ import java.util.Observer;
 public class MidiChanControlPanel extends Panel implements Observer {
 	final int ProgMsg		= 5000;
 	final int VoluMsg		= 5001;
+	final int PanMsg		= 5002;
 	int channel; 
-	EditControler program, volume; 
+	EditControler program, volume, panoramic; 
 	Label label;
-	int vol, prog;
+	int vol, prog, pan;
 
 	//----------------------------------------------
 	public MidiChanControlPanel (int chan) {
@@ -44,15 +45,24 @@ public class MidiChanControlPanel extends Panel implements Observer {
 		volume = new EditControler(new BarControler(0,127,Controler.kVertical, Color.green), Define.TextCtrlSize);
 		volume.setValue (vol = 100);
 		volume.setMessage (VoluMsg);
-		setConstraints (c, eol, GridBagConstraints.NONE, GridBagConstraints.CENTER, 30,60, 1,1, 1,1,1,1);
+		setConstraints (c, eol, GridBagConstraints.NONE, GridBagConstraints.CENTER, 30,60, 1,1, 5,1,1,1);
 		gbl.setConstraints (volume, c);
 		add (volume);
+		
+		panoramic = new EditControler(new BarControler(0,127,Controler.kVertical, Color.orange), Define.TextCtrlSize);
+		panoramic.setValue (pan = 64);
+		panoramic.setMessage (PanMsg);
+		setConstraints (c, eol, GridBagConstraints.NONE, GridBagConstraints.CENTER, 30,60, 1,1, 10,1,1,1);
+		gbl.setConstraints (panoramic, c);
+		add (panoramic);
 		addObserver (this);
 	}
 	//----------------------------------------------
+	public int GetPan ()		{ return panoramic.getValue(); }
 	public int GetVolume ()		{ return volume.getValue(); }
 	public int GetProgram ()	{ return program.getValue(); }
 	public int GetChannel ()	{ return channel; }
+	public void SetPan (int val)		{ panoramic.setValue(val); }
 	public void SetVolume (int val)		{ volume.setValue(val); }
 	public void SetProgram (int val)	{ program.setValue(val); }
 	public void SetChannel (int chan) { 
@@ -62,6 +72,7 @@ public class MidiChanControlPanel extends Panel implements Observer {
 	public void addObserver (Observer o) {
 		program.addObserver (o);
 		volume.addObserver (o);
+		panoramic.addObserver (o);
 	}
 
 	//----------------------------------------------
@@ -90,8 +101,24 @@ public class MidiChanControlPanel extends Panel implements Observer {
   				if (newVol != vol)
   					SendVol (vol = newVol);
   				break;
+  			case PanMsg:
+  				int newPan = ((Integer)arg).intValue();
+  				if (newPan != pan)
+  					SendPan (pan = newPan);
+  				break;
   		}
   	}
+	//----------------------------------------------
+	public void SendPan (int val) {
+		int ev = Midi.NewEv(Midi.typeCtrlChange);
+		if (ev!=0) {
+			Midi.SetPort (ev, TGlobals.context.getPort());
+			Midi.SetChan (ev, channel);
+			Midi.SetField (ev, 0, 10);
+			Midi.SetField (ev, 1, val);
+			Midi.SendIm (TGlobals.player.getRefnum(), ev);
+		}
+	}
 	//----------------------------------------------
 	public void SendVol (int val) {
 		int ev = Midi.NewEv(Midi.typeCtrlChange);

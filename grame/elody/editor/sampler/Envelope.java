@@ -26,14 +26,31 @@ import org.eclipse.swt.widgets.Spinner;
 import com.swtdesigner.SWTResourceManager;
 
 public class Envelope {
-	
+/***** DESCRIPTION ************************************
+ * The ADSR envelope function is to modulate the volume of the sample sound.
+ * The contour of the ADSR envelope is specified using four parameters:
+ * -Attack (in milliseconds): how quickly the sound reaches full volume
+ * 								after a MIDI KeyOn event.
+ * -Decay (in milliseconds): how quickly the sound drops to the sustain
+ * 								level after the initial peak.
+ * -Sustain (in decibels): the "constant" volume that the sound takes after
+ * 								decay until the note is released. Note that
+ * 								this parameter specifies a volume level
+ * 								rather than a time period.
+ * -Release (in milliseconds): how quickly the sound fades when a note ends
+ * 								(after a MIDI KeyOff event).
+ * Each "Envelope" instance (identified by its parent channel)
+ * provides an envelope editor window (shell) that includes a viewer to
+ * represent the envelope shape, and an interface for getting and setting
+ * these four parameters.
+ ******************************************************/		
 	private Channel ch;
 	private Canvas canvas;
 	
-	private int attack;
-	private int decay;
-	private double sustain;
-	private int release;
+	private int attack;		//milliseconds (0..15000)
+	private int decay;		//milliseconds (0..25000)
+	private double sustain;	//negative decibels (-30..0)
+	private int release;	//milliseconds (0..25000)
 	
 	private Shell s;
 	private boolean shellOpened = false;
@@ -96,6 +113,12 @@ public class Envelope {
 		}
 	}
 	
+	public void shellClose() {
+		if (s!=null)
+			s.close();
+		// see ShellAdapter "shellClosed"
+	}
+	
 	private void buildInterface()
 	{
 		final Composite composite = new Composite(s, SWT.NONE);
@@ -123,7 +146,7 @@ public class Envelope {
 		attackLabelFd.right = new FormAttachment(100, -380);
 		attackLabelFd.top = new FormAttachment(0, 200);
 		attackLabel.setLayoutData(attackLabelFd);
-		attackLabel.setText("ATTACK :");
+		attackLabel.setText("ATTACK:");
 
 		final Label decayLabel = new Label(s, SWT.NONE);
 		decayLabel.setBackground(ch.bgColor);
@@ -132,7 +155,7 @@ public class Envelope {
 		decayLabelFd.right = new FormAttachment(100, -380);
 		decayLabelFd.top = new FormAttachment(0, 250);
 		decayLabel.setLayoutData(decayLabelFd);
-		decayLabel.setText("DECAY :");
+		decayLabel.setText("DECAY:");
 
 		final Label sustainLabel = new Label(s, SWT.NONE);
 		sustainLabel.setBackground(ch.bgColor);
@@ -141,7 +164,7 @@ public class Envelope {
 		sustainLabelFd.right = new FormAttachment(100, -380);
 		sustainLabelFd.top = new FormAttachment(0, 300);
 		sustainLabel.setLayoutData(sustainLabelFd);
-		sustainLabel.setText("SUSTAIN :");
+		sustainLabel.setText("SUSTAIN:");
 
 		final Label releaseLabel = new Label(s, SWT.NONE);
 		releaseLabel.setBackground(ch.bgColor);
@@ -150,7 +173,7 @@ public class Envelope {
 		releaseLabelFd.right = new FormAttachment(100, -380);
 		releaseLabelFd.top = new FormAttachment(0, 350);
 		releaseLabel.setLayoutData(releaseLabelFd);
-		releaseLabel.setText("RELEASE :");
+		releaseLabel.setText("RELEASE:");
 
 		final Spinner attackSpinner = new Spinner(s, SWT.BORDER);
 		final Scale attackScale = new Scale(s, SWT.NONE);
@@ -215,6 +238,7 @@ public class Envelope {
 		sustainScale.setMaximum(300);
 		sustainScale.setIncrement(10);
 		sustainScale.setPageIncrement(50);
+		// sustain value is a 0..300 integer in interface
 		sustainScale.setSelection((int)(-sustain*10));
 		final FormData sustainScaleFd = new FormData();
 		sustainScaleFd.left = new FormAttachment(0, 130);
@@ -314,11 +338,13 @@ public class Envelope {
 			}
 		});
 
-		sustainSpinner.setDigits(1);
+		sustainSpinner.setDigits(1); // gives a 0.0 to 30.0 floating representation
+				// but the stored value is still a 0..300 integer
 		sustainSpinner.setMinimum(0);
 		sustainSpinner.setMaximum(300);
 		sustainSpinner.setIncrement(1);
 		sustainSpinner.setPageIncrement(10);
+		// sustain value is a 0..300 integer in interface
 		sustainSpinner.setSelection((int)(-sustain*10));
 		final FormData sustainSpinnerFd = new FormData();
 		sustainSpinnerFd.left = new FormAttachment(0, 360);
@@ -328,6 +354,7 @@ public class Envelope {
 		sustainSpinner.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				sustainScale.setSelection(sustainSpinner.getSelection());
+				// sustain real value is a -30..0 double
 				sustain = (double) (-sustainSpinner.getSelection()/10.0);
 				canvas.redraw();
 				for (int i=0; i<ch.getKeygroups().size(); i++)
@@ -409,14 +436,7 @@ public class Envelope {
 			}
 		});
 	}
-	
-	public void shellClose() {
-		if (s!=null)
-			s.close();
 
-	}
-
-	
 	public void redraw(GC gc)
 	{
 		Point origin = new Point(15,140);

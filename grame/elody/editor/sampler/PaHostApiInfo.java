@@ -3,6 +3,10 @@ package grame.elody.editor.sampler;
 import java.util.Vector;
 
 public class PaHostApiInfo 	{
+/***** DESCRIPTION ************************************
+ * Instances of this class represent the structure of
+ * an audio API such as it is returned by PortAudio API.
+ ******************************************************/		
 	private int apiIndex;
 	private int structVersion;
     private int type;

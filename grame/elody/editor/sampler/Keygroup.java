@@ -26,13 +26,28 @@ import org.eclipse.swt.widgets.Text;
 import com.swtdesigner.SWTResourceManager;
 
 public class Keygroup {
-
+/***** DESCRIPTION ************************************
+ * A keygroup represents an association between a sample and
+ * a set of MIDI notes. Each "Keygroup" instance has an index number
+ * in a channel, a reference note associated with the original sample,
+ * a set of higher and lower notes corresponding to the same sample
+ * but having a different pitch. It contains also all its parent channel's
+ * informations like volume, pan, ... It provides a group (SWT widget)
+ * containing all the interface elements representing a keygroup for
+ * getting, setting and deleting this keygroup. The channel's informations
+ * can only be set from the channel's interface elements.
+ * in the channel, like volume, velocity sensitivity, ADSR envelope, and
+ * output track or panoramic level (depending on the chosen device).
+ * The group is graphically included among other groups, so that it can
+ * be relocated if one of the precedents is deleted.
+ ******************************************************/	
 	private int index, ref, plus, minus, output, vol, pan, attack, decay, release;
 	private double sustain, sensit;
-	private File file;
-	private Group group;
+	private File file;		// sample audio file
+	private Group group;	// SWT widget group
 	private Channel channel;
 	
+	// graphical SWT widgets:
 	private Text fileText;
 	private Spinner refSpinner;
 	private Label noteLabel;
@@ -45,12 +60,13 @@ public class Keygroup {
 	public int getPlus()		{ return plus; }
 	public int getMinus()		{ return minus; }
 	public int getOutput()		{ return output; }
-	public int getVol()		{ return vol; }
-	public int getPan()		{ return pan; }
+	public int getVol()			{ return vol; }
+	public int getPan()			{ return pan; }
 	public int getAttack()		{ return attack; }
 	public int getDecay()		{ return decay; }
-	public double getSustain()		{ return sustain; }
+	public double getSustain()	{ return sustain; }
 	public int getRelease()		{ return release; }
+	public double getSensit()	{ return sensit; }
 	public Group getGroup()		{ return group; }
 
 	
@@ -91,21 +107,28 @@ public class Keygroup {
 	
 	public boolean setRef(int pitch)
 	{
+		// prevent from going outside the keyboard
 		if (((pitch+plus)>127)||((pitch-minus)<0))
 			return false;
+		
+		// setting keygroups keys available to try the new location 
 		for (int i=ref-minus; i<=ref+plus; i++)
 		{
 			channel.setAvailKeyb(i, true);
 		}
+		
 		for (int i=pitch-minus; i<=pitch+plus; i++)
 		{
+			// trying every key of the new location
 			if (channel.getAvailKeyb(i)) { continue; }
+			// one key is not available: restoring keygroups keys to unavailable 
 			for (int j=ref-minus; j<=ref+plus; j++)
 			{
 				channel.setAvailKeyb(j, false);
 			}
 			return false;
 		}
+		// all target keys are available: processing the keygroup relocation
 		ref = pitch;
 		for (int i=ref-minus; i<=ref+plus; i++)
 		{
@@ -121,15 +144,18 @@ public class Keygroup {
 	
 	public boolean setPlus(int p)
 	{
+		// prevent from going outside the keyboard
 		if ((ref+p)>127)
 			return false;
-		if (p>plus)
+		if (p>plus) // adding keys to the keygroup 
 		{
+			// trying every new key location
 			for (int i=ref+plus+1; i<=ref+p; i++)
 			{
 				if (channel.getAvailKeyb(i)) { continue; }
 				return false;
 			}
+			// all new keys are available: processing the modification
 			for (int i=ref+plus+1; i<=ref+p; i++)
 			{
 				channel.setAvailKeyb(i, false);
@@ -141,8 +167,9 @@ public class Keygroup {
 			channel.sampler.needToReset=true;
 			return true;
 		}
-		else if (p<plus)
+		else if (p<plus) // removing keys from the keygroup
 		{
+			// processing the modification
 			for (int i=ref+plus; i>ref+p; i--)
 			{
 				channel.setAvailKeyb(i, true);
@@ -153,7 +180,7 @@ public class Keygroup {
 			channel.sampler.configSav.setPlus(p, channel.getNum(), index);
 			return true;			
 		}
-		else
+		else // no change
 		{
 			channel.sampler.configSav.setPlus(p, channel.getNum(), index);
 			return true;
@@ -162,15 +189,18 @@ public class Keygroup {
 	
 	public boolean setMinus(int m)
 	{
+		// prevent from going outside the keyboard
 		if ((ref-m)<0)
 			return false;
-		if (m>minus)
+		if (m>minus) // adding keys to the keygroup 
 		{
+			// trying every new key location
 			for (int i=ref-minus-1; i>=ref-m; i--)
 			{
 				if (channel.getAvailKeyb(i)) { continue; }
 				return false;
 			}
+			// all new keys are available: processing the modification
 			for (int i=ref-minus-1; i>=ref-m; i--)
 			{
 				channel.setAvailKeyb(i, false);
@@ -182,8 +212,9 @@ public class Keygroup {
 			channel.sampler.needToReset=true;
 			return true;
 		}
-		else if (m<minus)
+		else if (m<minus) // removing keys from the keygroup
 		{
+			// processing the modification			
 			for (int i=ref-minus; i<ref-m; i++)
 			{
 				channel.setAvailKeyb(i, true);
@@ -194,7 +225,7 @@ public class Keygroup {
 			channel.sampler.configSav.setMinus(m, channel.getNum(), index);
 			return true;			
 		}
-		else
+		else // no change
 		{
 			channel.sampler.configSav.setMinus(m, channel.getNum(), index);
 			return true;
@@ -438,9 +469,11 @@ public class Keygroup {
 	}
 	
 	public void relocate(Control relative)
+	// redraw the group after the "relative" group
 	{
 		final FormData fd = new FormData();
 		if (relative==null)
+		// this keygroup is the first one
 		{
 			fd.top = new FormAttachment(0, 5);
 			fd.bottom = new FormAttachment(0, 45);
@@ -455,13 +488,17 @@ public class Keygroup {
 		group.setLayoutData(fd);
 	}
 
-	public String convertPitch(int pitch) {
+	public String convertPitch(int pitch)
+	// convert MIDI pitch value (0..127) into musical representation
+	{
 		String noteName[] = { "c", "c#", "d", "d#", "e", "f", "f#", "g", "g#",
 				"a", "a#", "b" };
 		int octave = pitch / 12;
 		// int octave = pitch/12 - 4;
 		return (noteName[pitch % 12] + Integer.toString(octave));
 	}
+	
+//the function of the methods below is to manage absolute and relative file paths
 	
 	private static List getPathList(File f) {
 		List l = new ArrayList();

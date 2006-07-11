@@ -36,8 +36,13 @@ import org.eclipse.swt.widgets.Text;
 
 import com.swtdesigner.SWTResourceManager;
 
-public class Sampler extends BasicShellSWT {
-
+public class Sampler extends BasicShellSWT {	
+/***** DESCRIPTION ************************************
+ * The sampler allows to associate sounds in WAV or AIFF audio format
+ * with one or more MIDI notes, so that when the note is emitted, the
+ * associated sound is played. The instance of this class displays
+ * the main sampler window. 
+ ******************************************************/	
 	private PaJniConnect jni = null;
 	
 	private File file = new File("soundplayer.conf");
