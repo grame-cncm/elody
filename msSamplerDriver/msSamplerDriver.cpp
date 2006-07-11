@@ -27,6 +27,8 @@
 #include <fstream>
 #include <jni.h>
 
+#include <time.h>
+
 #include "portaudio.h"
 #include "sampler.h"
 
@@ -169,6 +171,7 @@ class soundplayer
 	{
 		TRACE(("Init\n"));
 		//-- 0 - Declarations
+		DriverDataPtr data = GetData();
 		char* gAudioConfigFile;				// config file path
 		char soundConfName[256];			// buffer for config file path 
 		char path[255];						// buffer for current path
@@ -179,7 +182,7 @@ class soundplayer
 		gAudioConfigFile = soundConfName;
 
 		//-- 2 - Initialize Sampler
-		if (!initSampler(&fSampler, gAudioConfigFile))
+		if (!initSampler(&fSampler, gAudioConfigFile, data->sampleRate))
 		{
 			return false;
 		}
@@ -206,7 +209,7 @@ class soundplayer
 
 		// post processing for volume control
 		const float v = fSampler.fMaster;
-		for (int d=0; c<fNumOutputs; d++)
+		for (int d=0; d<fNumOutputs; d++)
 	   	{
 			float* out = outputs[d];
 			for (int i=0; i<len; i++)

@@ -10,18 +10,21 @@
 #include <direct.h>
 //#include <libgen.h>
 
+#include <time.h>
+
 #if !defined(PI)
  #define PI (float)3.14159265359
 #endif
 
-#define TRACE(x) //printf x
-//#define TRACE(x...)
+//#define TRACE(x) printf x
 
 using namespace std;
 
-static int	iscomment (char* s)
+static int iscomment (char* s)
 {
-	TRACE(("check for comments for line : %s\n", s));
+	#if defined(TRACE)
+		TRACE(("check for comments for line : %s\n", s));
+	#endif
 	while ( (*s != 0) && isspace(*s) ) s++;
 	return *s == 0 || *s =='#';
 }
@@ -46,7 +49,7 @@ static void initChanVolPanSensit(float vol[], float pan[], float sensit[])
 			
 *********************************************************************************/
 
-static void readSoundFile(TSound* snd)
+static void readSoundFile(TSound* snd, int sampleRate)
 {
 	SNDFILE*		sf;
 	SF_INFO			info;
@@ -65,8 +68,8 @@ static void readSoundFile(TSound* snd)
 		exit(0);
 	}
 	
-	if (info.samplerate != 44100) { 
-		printf("WARNING : le fichier doit etre a 44100 Hz or %s est a %d Hz\n", snd->fSoundName, (int)info.samplerate);
+	if (info.samplerate != sampleRate) { 
+		printf("WARNING : le fichier doit etre a %d Hz or %s est a %d Hz\n", sampleRate, snd->fSoundName, (int)info.samplerate);
 	}
 	
 	if ( info.frames > (1<<23) ) { 
@@ -100,7 +103,7 @@ static void readSoundFile(TSound* snd)
 	
 }  	
 	
-static TSound* newSoundFile(char* filename)
+static TSound* newSoundFile(char* filename, int sampleRate)
 {
 	TSound*	snd = (TSound*) malloc(sizeof(TSound));
 	if (snd == NULL) {
@@ -112,11 +115,11 @@ static TSound* newSoundFile(char* filename)
 	snd->fSamples = NULL;
 	snd->fSize = 0;
 	
-	readSoundFile(snd);
+	readSoundFile(snd, sampleRate);
 	return snd;
 }
 
-static TSound* getSoundFile(TSampler* s, char* sndfilename)
+static TSound* getSoundFile(TSampler* s, char* sndfilename, int sampleRate)
 {	
 	long	n = listSize(&s->fSoundList);
 	long	i;
@@ -126,7 +129,7 @@ static TSound* getSoundFile(TSampler* s, char* sndfilename)
 		snd = (TSound*) getListElem(&s->fSoundList, i);
 		if (strcmp(snd->fSoundName, sndfilename) == 0) return snd;
 	}
-	snd = newSoundFile(sndfilename);
+	snd = newSoundFile(sndfilename, sampleRate);
 	addListElem(&s->fSoundList, n, (Elem*)snd);
 	return snd;
 }
@@ -157,7 +160,7 @@ static TAction* newAction(TSound* sound, float speed, int traj)
 	return action;
 }
 
-static void addRule(TSampler* s, int midichan, int midikey, char* sndfilename, float speed, int traj)
+static void addRule(TSampler* s, int midichan, int midikey, char* sndfilename, float speed, int traj, int sampleRate)
 {
 	printf("rule : %2d %2d -> %s %f %d\n", midichan, midikey, sndfilename, speed, traj);
 	if (s->fRule[midichan][midikey] != NULL) {
@@ -165,7 +168,7 @@ static void addRule(TSampler* s, int midichan, int midikey, char* sndfilename, f
 		free (s->fRule[midichan][midikey]);
 	}
 		
-	s->fRule[midichan][midikey] = newAction(getSoundFile(s, sndfilename), speed, traj);
+	s->fRule[midichan][midikey] = newAction(getSoundFile(s, sndfilename, sampleRate), speed, traj);
 }
 
 // a la place de : char* dname = dirname(strdup(fname));
@@ -181,7 +184,7 @@ static void get_dirname (char* result, char* fname)
 }
 /****************************************************/
 
-static bool readConfigFile(TSampler* s, char* fname)
+static bool readConfigFile(TSampler* s, char* fname, int sampleRate)
 {
 	FILE* 	file;
 	char 	line[1024];
@@ -189,7 +192,9 @@ static bool readConfigFile(TSampler* s, char* fname)
 	float	playspeed, sustain, sensit;
 	char	sndfilename[1024];
 	
-	TRACE(("lecture du fichier de configuration \"%s\"...\n", fname));
+	#if defined(TRACE)
+		TRACE(("lecture du fichier de configuration \"%s\"...\n", fname));
+	#endif
 	
 	if ((file = fopen(fname,"r")) == NULL) {
 		printf("ERREUR : impossible de lire le fichier de configuration \"%s\"\n", fname);
@@ -203,9 +208,13 @@ static bool readConfigFile(TSampler* s, char* fname)
 	_chdir(dname);
 	
 	while (fgets(line, 1024, file)) {
-		TRACE(("point 1 (%s)\n", line));
+		#if defined(TRACE)
+			TRACE(("point 1 (%s)\n", line));
+		#endif
 		if (iscomment(line)) {
-			TRACE(("it is a comment : %s\n", line));
+			#if defined(TRACE)
+				TRACE(("it is a comment : %s\n", line));
+			#endif
 			continue;
 		} else if (sscanf(line, "%d %d %s %f %d %d %d %d %d %f %d %f",
 			&midiChan, &midiKey, sndfilename, &playspeed, &traj, &pan, &vol, &attack, &decay, &sustain, &release, &sensit) != 12) {
@@ -214,10 +223,10 @@ static bool readConfigFile(TSampler* s, char* fname)
 		}
 		s->fChanVol[midiChan] = vol / 127.0;
 		s->fChanPan[midiChan] = pan / 127.0;
-		s->fChanEnvelope[midiChan].setEnvelope(attack, decay, (double) sustain, release, 44100);
+		s->fChanEnvelope[midiChan].setEnvelope(attack, decay, (double) sustain, release, sampleRate); // valeur de samplerate à récupérer
 		s->fChanSensit[midiChan] = sensit;
 
-		addRule(s, midiChan, midiKey, sndfilename, playspeed, traj);
+		addRule(s, midiChan, midiKey, sndfilename, playspeed, traj, sampleRate);
 	}
 	for (int i=0; i<CHANNELS_NUM; i++)
 	{
@@ -259,7 +268,7 @@ int	traj7 [] = {7,7,7,7,7,7,7,7};
 
 
 
-bool initSampler(TSampler* s, char* fname)
+bool initSampler(TSampler* s, char* fname, int sampleRate)
 {
 	s->fMaster = 1.0;
 
@@ -295,7 +304,7 @@ bool initSampler(TSampler* s, char* fname)
 		{0,1,2,3,4,5,6,7}};
 #endif
 	
-	/* Initialisation des tables	*/
+	/* Initialisation des tables */
 	initChanVolPanSensit(s->fChanVol, s->fChanPan, s->fChanSensit);
 	
 	/* initialisation des listes a vide	*/
@@ -314,7 +323,7 @@ bool initSampler(TSampler* s, char* fname)
 	
 	
 	/* lecture du fichier de configuration 	*/
-	return readConfigFile(s, fname);
+	return readConfigFile(s, fname, sampleRate);
 }
 
 static TVoice* allocFreeVoice(TSampler* s)
@@ -444,7 +453,6 @@ static int mixOneVoiceFixedSpeed (TSampler* sss, unsigned long const n, float* m
 				puisqu'on n'est pas arrive au bout du son
 			*/
 			v->fCurPos = pos;
-			//printf ("bench 1 : %Ld cycles\n", t2-t1);
 			return 0; 
 
 		} else {
@@ -476,8 +484,6 @@ static int mixOneVoiceFixedSpeed (TSampler* sss, unsigned long const n, float* m
 			*/
 			if (v->fLoopMode == 0 || v->fStopRequest) { 
 				v->fCurPos = pos;
-				//printf ("bench 2 : %Ld cycles\n", t2-t1);
-				//printf ("ARRET\n"); 
 				return 1;
 			}
 
@@ -489,7 +495,6 @@ static int mixOneVoiceFixedSpeed (TSampler* sss, unsigned long const n, float* m
 	} 
 	/* cas rare ? */
 	v->fCurPos = pos;
-	//printf ("bench 3 : %Ld cycles\n", t2-t1);
 	return 0;
 }
 					
@@ -628,14 +633,13 @@ void processMidiEvents(short ref)
 		en consequence.
 	*/
 	MidiEvPtr	e;
-	Boolean trace = false;
 
 	while ((e = MidiGetEv(ref))) {
 		switch (EvType(e)) {
-		
 			case typeNote:
-				if (trace)
+				#if defined(TRACE)
 					printf("Note\t(chan=%d,\tpitch=%d,\tvel=%d,\tdur=%d)\n",Chan(e)+Port(e)*16,Pitch(e),Vel(e), Dur(e));
+				#endif
 				doKeyOn(s, Chan(e)+Port(e)*16, Pitch(e), Vel(e));
 				/* auto envoie le keyoff */
 				EvType(e)=typeKeyOff;
@@ -643,15 +647,17 @@ void processMidiEvents(short ref)
 				break;
 				
 			case typeKeyOff:
-				if (trace)
+				#if defined(TRACE)
 					printf("KeyOff\t(chan=%d,\tpitch=%d,\tvel=%d)\n",Chan(e)+Port(e)*16,Pitch(e),Vel(e));
+				#endif
 				doKeyOff(s, Chan(e)+Port(e)*16, Pitch(e), Vel(e));
 				MidiFreeEv(e);
 				break;
 
 			 case typeKeyOn:
-				if (trace)
+				#if defined(TRACE)
 					printf("KeyOn\t(port=%d,\tchan=%d,\tpitch=%d,\tvel=%d)\n",Port(e),Chan(e)+Port(e)*16,Pitch(e),Vel(e));
+				#endif
 				if (Vel(e) > 0) {
 					doKeyOn(s, Chan(e)+Port(e)*16, Pitch(e), Vel(e));
 				} else {
@@ -661,8 +667,9 @@ void processMidiEvents(short ref)
 				break;
 
 			case typeCtrlChange:
-				if (trace)
+				#if defined(TRACE)
 					printf("CtrlChange\t(chan=%d,\tpitch=%d,\tvel=%d)\n",Chan(e)+Port(e)*16,Pitch(e),Vel(e));
+				#endif
 				if (Pitch(e) == 7) {
 					s->fChanVol[Chan(e)+Port(e)*16] = float(Vel(e))/127.0;					
 				}
@@ -673,8 +680,9 @@ void processMidiEvents(short ref)
 				break;
 			
 			default:
-				//if (trace)
+				//#if defined(TRACE)
 				//	printf("Unknow\t(chan=%d,\tpitch=%d,\tvel=%d)\n",Chan(e)+Port(e)*16,Pitch(e),Vel(e));
+				//#endif
 				MidiFreeEv(e);
 				break;
 

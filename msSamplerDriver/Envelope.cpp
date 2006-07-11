@@ -64,7 +64,8 @@ void Envelope::setEnvelope(int a, int d, double s, int r, int sR)
 	rate[SUSTAIN] = 0.0;
 	target[RELEASE] = 0.0;
 	if ( release != 0 )
-		rate[RELEASE] = - 1000.0 / (sampleRate * release ) ;
+	//	rate[RELEASE] = - 1000.0 / (sampleRate * release ) ;
+		rate[RELEASE] = pow ( 10 , -2 * 1000.0 / (sampleRate * release ) );
 	else
 		rate[RELEASE] = -1.0 ;
 }
@@ -84,19 +85,30 @@ double Envelope::tick()
 {
 	if ( (state!=OFF)&&(state!=SUSTAIN) )
 	{
-        if (target[state] > value) {
-            value += rate[state];
-            if (value >= target[state]) {
-                value = target[state];
-                state++;
-            }
-        } else {
-            value += rate[state];
-            if (value <= target[state]) {
-                value = target[state];
-                state++;
-            }
-        }
+		if ( state==RELEASE )
+		{
+			value *= rate[state];
+			if (value <= target[state] + 0.01) {
+				value = target[state];
+				state++;
+			}
+		}
+		else
+		{
+			if (target[state] > value) {
+				value += rate[state];
+				if (value >= target[state]) {
+					value = target[state];
+					state++;
+				}
+			} else {
+				value += rate[state];
+				if (value <= target[state]) {
+					value = target[state];
+					state++;
+				}
+			}
+		}
     }
 	if (state==END)	state=OFF;
 	return value;
