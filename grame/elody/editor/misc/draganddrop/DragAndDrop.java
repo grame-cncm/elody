@@ -31,10 +31,7 @@ public class DragAndDrop {
 
 	private DropAble getDrop (Point p) {
       	DropAble d = global2DropAble (p);
-      	
-      	String s1 = ((d != null)?"true":"false");
-      	String s2 = (d.accept(ddObject)?"true":"false");
-      	//System.out.println("(x,y)=("+p.x+","+p.y+") "+s1+"-"+s2+" - "+d.getClass().getName());
+    	
       	return ((d != null) && d.accept(ddObject)) ? d : null;
 	}
     public final boolean doDrag (Point p) { return doDrag (p.x, p.y); }

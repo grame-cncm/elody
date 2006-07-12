@@ -255,12 +255,8 @@ public class TLZone implements TExpContent {
 	
 	public void moveRight(int unit)
 	{
-		TLTrack t;
-		TLEvent e;
-		int 	dc;
-		
 		if ( fMT.at(fVoice) ) {
-			t = fMT.getTrack();
+			TLTrack t = fMT.getTrack();
 			if (fStartTime == fEndTime) {
 				fStartTime = fEndTime = successor(t, fStartTime, unit);
 			} else {
@@ -279,12 +275,8 @@ public class TLZone implements TExpContent {
 	
 	public void moveLeft(int unit)
 	{
-		TLTrack t;
-		TLEvent e;
-		int 	dc;
-		
 		if ( fMT.at(fVoice) ) {
-			t = fMT.getTrack();
+			TLTrack t = fMT.getTrack();
 			if (fStartTime == fEndTime) {
 				fStartTime = fEndTime = predecessor(t, fStartTime, unit);
 			} else {
@@ -444,10 +436,7 @@ public class TLZone implements TExpContent {
 		
 	public void cmdGroup ()
 	{
-		TLTrack t; 
-		TExp	appl;
-		
-		t = new TLTrack(TLConverter.event(TLConverter.exp(this.moveContentToTrack()))); 
+		TLTrack t = new TLTrack(TLConverter.event(TLConverter.exp(this.moveContentToTrack()))); 
 
 		suppressRestTime(t.getFullDur());
 		insertTrackToContent(t);

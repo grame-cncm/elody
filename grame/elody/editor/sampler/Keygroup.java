@@ -285,12 +285,12 @@ public class Keygroup {
 		return ref;
 	}
 	
-	private int getDefaultRef1() {
-		/* Returns a default ref value which is not already occupied by another keygroup,
-		   following a specific discrete distribution on the keyboard.
-		   User must ensure that there is at least one available note
-		   before calling this function, otherwise it will return an out of range value. 
-		*/ 
+/*	private int getDefaultRef1() {
+		// Returns a default ref value which is not already occupied by another keygroup,
+		// following a specific discrete distribution on the keyboard.
+		// User must ensure that there is at least one available note
+		// before calling this function, otherwise it will return an out of range value. 
+		 
 		int ref = 60;
 		int result=ref;
 		int a=1;
@@ -313,7 +313,7 @@ public class Keygroup {
 				force=true;
 		}
 		return result;
-	}
+	} */
 	
 	private void groupCreate(Composite parent, Control relative, Color bgColor)
 	{

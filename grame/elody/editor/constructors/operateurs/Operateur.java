@@ -41,7 +41,7 @@ public abstract class Operateur extends Panel {
     	d.width-= offset*2; d.height-= offset*2;
     	if (image == null) {
      		FontMetrics fm = getFontMetrics (getFont());
-     		int textH = fm.getHeight();
+     	//	int textH = fm.getHeight();
      		int textW = fm.stringWidth(name);
 			g.setColor(Color.black);
 			g.drawString (name, offset+(d.width-textW)/2, offset+(d.height/2));

@@ -170,10 +170,10 @@ public class TPlayerServer extends BasicApplet implements Observer,
      }
      
      
-    private void sendData(TConnection client, Object obj)	// envoi d'un objet "obj" à un client "client"
+  /*  private void sendData(TConnection client, Object obj)	// envoi d'un objet "obj" à un client "client"
 	{
 		client.sendData(obj);
-	}
+	} */
 
 	private void sendData(Object obj)	// envoi d'un objet "obj" à tous les clients
 	{
@@ -262,7 +262,7 @@ public class TPlayerServer extends BasicApplet implements Observer,
 	}
 	
 	void sendDate(int date) { 
-		PlayerState state = player.getState();
+	//	PlayerState state = player.getState();
 		if (isPlaying ()) {
 			sendData(new Integer(getDate())); 
 			TGlobals.midiappl.ScheduleTask(sendTask, date + 1000);

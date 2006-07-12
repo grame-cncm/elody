@@ -18,7 +18,7 @@ public class ParamDecomposer {
 	public void scan (TExp exp) {
 		try {
 			int n = 4;
-			for (int i=0;  (i < 4) && (exp != null); i++) {
+			for (int i=0;  (i < n) && (exp != null); i++) {
 				exp = scanPitch (body = exp);
 				if (exp != null) {
 					exp = scanVel (body = exp);

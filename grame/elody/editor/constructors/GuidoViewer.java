@@ -148,9 +148,6 @@ public class GuidoViewer extends BasicApplet implements Observer, Runnable {
 		    	
 		    	tracker.waitForID(0);
 		        
-		 		int mapwidth = img1.getWidth(this);
-		   		int mapheight = img1.getHeight(this);
-	  			
 		   		guidoImage.setImage(img1);
 		   	}
 		  } catch (Exception e) {}

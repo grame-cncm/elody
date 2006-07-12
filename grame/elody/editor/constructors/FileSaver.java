@@ -158,7 +158,6 @@ public final class FileSaver extends BasicApplet implements ActionListener {
 	
 	//-------------------------------------------------		
 	public void saveUrl (TExp exp, String url) {
-		TExp res = TExpMaker.gExpMaker.createNull();
 		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		String item = filetype.getSelectedItem ();
 		

@@ -53,10 +53,10 @@ public final class TLConverter {
 		return emk.createNamed( emk.createSilence(ignoreColor, 0, 0, 0, dur), ignoreName ) ;
 	}
 	
-	private static TExp createIgnoreRest1 (float dur) 
+/*	private static TExp createIgnoreRest1 (float dur) 
 	{
 		return emk.createSilence(ignoreColor, 0, 0, 0, dur) ;
-	}
+	} */
 	
 	private static boolean shouldIgnore (TExp e)
 	{
@@ -238,7 +238,6 @@ public final class TLConverter {
 	{
 		final TExpMaker mk = TExpMaker.gExpMaker;
 		TExp 			result;
-		int 			curDate = 0;
 		
 		t.at(t.getFullDur());
 		
@@ -412,14 +411,14 @@ public final class TLConverter {
 		}
 	}
 	
-	private static TExp reverseSeq(TExp e, TExp res)
+/*	private static TExp reverseSeq(TExp e, TExp res)
 	{
 		if (e instanceof TSequenceExp) {
 			return reverseSeq (e.getArg2(), emk.createSeq(e.getArg1(), res));
 		}else{
 			return emk.createSeq(e, res);
 		}
-	}
+	} */
 	
 	private static TExp reverseMix(TExp e, TExp res)
 	{

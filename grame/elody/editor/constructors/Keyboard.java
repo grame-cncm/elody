@@ -54,8 +54,6 @@ public class Keyboard extends BasicApplet {
 		Define.getButtons(this);
 		KeyboardPanel kp = new KeyboardPanel(octavesCount);
 		kbCtrl = new KeyboardCtrlPanel (kp, octavesCount);
-		Dimension d1 = kp.getPreferredSize();
-		Dimension d2 = kbCtrl.getPreferredSize();
 		add ("North", kp);
 		add ("Center", kbCtrl);
 		setSize (376,206);
@@ -192,7 +190,6 @@ class KeyboardPanel extends Panel implements MouseListener, MouseMotionListener
 		int w = getSize().width / (octaves*7) * (octaves*7) ;
 		int h = getSize().height ;
 		float o = (float) octaves ;
-		Color blackColor = Color.black ;
 		boolean white[] = { true , false , true , false , true , true , false , true , false , true , false , true } ;
 		int oct = note / 12 ;
 		int key = note % 12 ;
@@ -333,7 +330,6 @@ class KbdResultHolder extends DelayedExprHolder implements KeyboardTarget
 	}
   	public void update (Observable o, Object arg) {
   		MsgNotifier mn = (MsgNotifier)o;
-  		boolean changed = false;
   		switch (mn.message()) {
   			case Define.ExprHolderMsg:
 				keyMap = arg;

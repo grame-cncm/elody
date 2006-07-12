@@ -305,7 +305,7 @@ final class THashtableWriter extends TExpVisitor {
 	}
 	
 	public Object Visite( TSequenceExp s,Object arg){
-		TWriteState state = (TWriteState) arg;
+	//	TWriteState state = (TWriteState) arg;
 		if (arg != TWriteState.SEQ) {
 			if (firstRefExp (s)) {
 				s.getArg1().Accept(this,TWriteState.DEFAULT);
@@ -320,7 +320,7 @@ final class THashtableWriter extends TExpVisitor {
 	
 	
 	public Object Visite( TMixExp s,Object arg){
-		TWriteState state = (TWriteState) arg;
+	//	TWriteState state = (TWriteState) arg;
 		
 		if (arg != TWriteState.MIX)  {
 			if (firstRefExp (s)) {

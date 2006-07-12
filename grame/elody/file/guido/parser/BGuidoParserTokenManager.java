@@ -32,14 +32,14 @@ public class BGuidoParserTokenManager implements BGuidoParserConstants {
 	  {
 	     return jjMoveNfa_0(jjStopStringLiteralDfa_0(pos, active0), pos + 1);
 	  }
-	  private final int jjStartNfaWithStates_0(int pos, int kind, int state)
+	/*  private final int jjStartNfaWithStates_0(int pos, int kind, int state)
 	  {
 	     jjmatchedKind = kind;
 	     jjmatchedPos = pos;
 	     try { curChar = input_stream.readChar(); }
 	     catch(java.io.IOException e) { return pos + 1; }
 	     return jjMoveNfa_0(state, pos + 1);
-	  }
+	  }  */
 	  private final int jjMoveStringLiteralDfa0_0()
 	  {
 	     switch(curChar)
@@ -126,22 +126,21 @@ public class BGuidoParserTokenManager implements BGuidoParserConstants {
 	        jjCheckNAdd(jjnextStates[start]);
 	     } while (start++ != end);
 	  }
-	  private final void jjCheckNAddStates(int start)
+	/*  private final void jjCheckNAddStates(int start)
 	  {
 	     jjCheckNAdd(jjnextStates[start]);
 	     jjCheckNAdd(jjnextStates[start + 1]);
-	  }
+	  } */
 	  static final long[] jjbitVec0 = {
 	     0x0L, 0x0L, 0xffffffffffffffffL, 0xffffffffffffffffL
 	  };
 	  private final int jjMoveNfa_0(int startState, int curPos)
 	  {
-	     int[] nextStates;
 	     int startsAt = 0;
 	     jjnewStateCnt = 14;
 	     int i = 1;
 	     jjstateSet[0] = startState;
-	     int j, kind = 0x7fffffff;
+	     int kind = 0x7fffffff;
 	     for (;;)
 	     {
 	        if (++jjround == 0x7fffffff)
@@ -149,7 +148,7 @@ public class BGuidoParserTokenManager implements BGuidoParserConstants {
 	        if (curChar < 64)
 	        {
 	           long l = 1L << curChar;
-	           MatchLoop: do
+	          /* MatchLoop: */ do
 	           {
 	              switch(jjstateSet[--i])
 	              {
@@ -218,7 +217,7 @@ public class BGuidoParserTokenManager implements BGuidoParserConstants {
 	        else if (curChar < 128)
 	        {
 	           long l = 1L << (curChar & 077);
-	           MatchLoop: do
+	          /* MatchLoop: */ do
 	           {
 	              switch(jjstateSet[--i])
 	              {
@@ -271,7 +270,7 @@ public class BGuidoParserTokenManager implements BGuidoParserConstants {
 	        {
 	           int i2 = (curChar & 0xff) >> 6;
 	           long l2 = 1L << (curChar & 077);
-	           MatchLoop: do
+	          /* MatchLoop: */ do
 	           {
 	              switch(jjstateSet[--i])
 	              {
@@ -418,8 +417,6 @@ public class BGuidoParserTokenManager implements BGuidoParserConstants {
 
 	  public final Token getNextToken() 
 	  {
-	    int kind;
-	    Token specialToken = null;
 	    Token matchedToken;
 	    int curPos = 0;
 

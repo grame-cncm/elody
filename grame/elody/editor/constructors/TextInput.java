@@ -8,7 +8,6 @@ import grame.elody.file.text.parser.TTextParser;
 import grame.elody.file.text.saver.TTextExpSaver;
 import grame.elody.lang.TExpMaker;
 import grame.elody.lang.texpression.expressions.TExp;
-import grame.elody.util.MsgNotifier;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -67,7 +66,7 @@ public class TextInput extends BasicApplet implements Observer, ActionListener {
   	}
     
 	 public  void update  (Observable o, Object arg) { 
-		MsgNotifier mn = (MsgNotifier)o;
+		//MsgNotifier mn = (MsgNotifier)o;
 		TExp exp = displayer.getExpression();
 		if (!exp.equals(curExp)) {
 			StringWriter writer = new  StringWriter();

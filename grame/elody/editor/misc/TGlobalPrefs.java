@@ -216,7 +216,7 @@ public class TGlobalPrefs {
 	   			String y = st.nextToken();
 	   			String width = st.nextToken();
 	   			String heigth = st.nextToken();
-	   			BasicApplet applet = AppletFrame.startApplet(name,Integer.parseInt(x),Integer.parseInt(y),
+	   		/*	BasicApplet applet = */AppletFrame.startApplet(name,Integer.parseInt(x),Integer.parseInt(y),
 	   				Integer.parseInt(width),Integer.parseInt(heigth));
 	   	}
 	}

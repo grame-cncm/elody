@@ -148,11 +148,11 @@ public class TTextParserTokenManager implements TTextParserConstants {
 		}
 	}
 
-	private final void jjAddStates(int start, int end) {
+/*	private final void jjAddStates(int start, int end) {
 		do {
 			jjstateSet[jjnewStateCnt++] = jjnextStates[start];
 		} while (start++ != end);
-	}
+	} */
 
 	private final void jjCheckNAddTwoStates(int state1, int state2) {
 		jjCheckNAdd(state1);
@@ -165,24 +165,23 @@ public class TTextParserTokenManager implements TTextParserConstants {
 		} while (start++ != end);
 	}
 
-	private final void jjCheckNAddStates(int start) {
+/*	private final void jjCheckNAddStates(int start) {
 		jjCheckNAdd(jjnextStates[start]);
 		jjCheckNAdd(jjnextStates[start + 1]);
-	}
+	} */
 
 	private final int jjMoveNfa_0(int startState, int curPos) {
-		int[] nextStates;
 		int startsAt = 0;
 		jjnewStateCnt = 9;
 		int i = 1;
 		jjstateSet[0] = startState;
-		int j, kind = 0x7fffffff;
+		int kind = 0x7fffffff;
 		for (;;) {
 			if (++jjround == 0x7fffffff)
 				ReInitRounds();
 			if (curChar < 64) {
 				long l = 1L << curChar;
-				MatchLoop: do {
+				 /* MatchLoop: */ do {
 					switch (jjstateSet[--i]) {
 					case 0:
 						if ((0x3ff000000000000L & l) != 0L) {
@@ -237,7 +236,7 @@ public class TTextParserTokenManager implements TTextParserConstants {
 				} while (i != startsAt);
 			} else if (curChar < 128) {
 				long l = 1L << (curChar & 077);
-				MatchLoop: do {
+				/* MatchLoop: */ do {
 					switch (jjstateSet[--i]) {
 					case 0:
 						if ((0x7fffffe07fffffeL & l) != 0L) {
@@ -266,9 +265,9 @@ public class TTextParserTokenManager implements TTextParserConstants {
 					}
 				} while (i != startsAt);
 			} else {
-				int i2 = (curChar & 0xff) >> 6;
-				long l2 = 1L << (curChar & 077);
-				MatchLoop: do {
+				//int i2 = (curChar & 0xff) >> 6;
+				//long l2 = 1L << (curChar & 077);
+				/* MatchLoop: */ do {
 					switch (jjstateSet[--i]) {
 					default:
 						break;
@@ -423,8 +422,6 @@ public class TTextParserTokenManager implements TTextParserConstants {
 	int jjmatchedKind;
 
 	public final Token getNextToken() {
-		int kind;
-		Token specialToken = null;
 		Token matchedToken;
 		int curPos = 0;
 

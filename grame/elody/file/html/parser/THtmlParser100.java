@@ -156,12 +156,12 @@ final class ParseAbtsr100 extends ParseOperator {
 final class ParseYAbtsr100 extends ParseOperator {
 
 	public TExp parseExp (THtmlParser1 parser) {
-		String str = parser.nextToken(); // valeur numerique
-		String str1= parser.nextToken(); // "UL"
+		String value = parser.nextToken(); // valeur numerique
+		parser.nextToken(); // "UL"
 		TExp ident = parser.parseExpression();
 		TExp arg = parser.parseExpression();
 		TExp body = parser.parseExpression();
-		TExp res =  TExpMaker.gExpMaker.createYLambda(parser.parseValue(str),ident, arg, body);
+		TExp res =  TExpMaker.gExpMaker.createYLambda(parser.parseValue(value),ident, arg, body);
 		parser.nextToken(); //  "/UL"
 		return res;
 	}

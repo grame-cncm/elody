@@ -1,7 +1,6 @@
 package grame.elody.editor.tleditor;
 
 import grame.elody.editor.misc.TGlobals;
-import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.editor.misc.draganddrop.ExtendedDropAble;
 import grame.elody.editor.misc.draganddrop.TExpContent;
 import grame.elody.editor.player.TRealTimePlayer;
@@ -31,7 +30,6 @@ import grame.midishare.player.MidiPlayer;
 
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -586,9 +584,9 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 				TLEvent e = t.getEvent();
 				if (! (e instanceof TLRest) ) {
 					int t0 = t.getDate();
-					int t1 = t0 + e.fDur;
-					int x0 = time2x(t0);
-					int x1 = time2x(t1);
+				//	int t1 = t0 + e.fDur;
+				//	int x0 = time2x(t0);
+				//	int x1 = time2x(t1);
 					drawEvent(g, fm, bkg, e, ln0, t0, Math.min(ln1, eline), etime);
 					g.setClip(clipzone2);
 				}
@@ -627,8 +625,8 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 
 		int	xorg = time2x(stime);
 		int	xend = time2x(etime);
-		int yorg = line2y(sline);
-		int yend = line2y(eline+1);
+	//	int yorg = line2y(sline);
+	//	int yend = line2y(eline+1);
 		
 		for (int l = sline; l <= eline; l++) {
 		
@@ -1458,7 +1456,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		}
 	}
 	
-	private BasicApplet getApplet () {
+/*	private BasicApplet getApplet () {
     	Component c=this;
     	while (c!=null) {
     		if (c instanceof BasicApplet){
@@ -1467,7 +1465,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
     		c = c.getParent();
     	}
     	return null;
-   	}
+   	} */
 
 	
 	

@@ -25,11 +25,7 @@ public class Fifo extends Vector {
      * @exception EmptyStackException If the stack is empty.
      */
     public Object pop() {
-		Object	obj;
-		int	len = size();
-
-		obj = peek();
-		//removeElementAt(len - 1);
+		Object	obj = peek();
 		removeElementAt(0);
 		return obj;
     }
@@ -42,7 +38,6 @@ public class Fifo extends Vector {
 		int	len = size();
 
 		if (len == 0) throw new EmptyStackException();
-		//return elementAt(len - 1);
 		return elementAt(0);
     }
 
