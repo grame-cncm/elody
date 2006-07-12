@@ -1,0 +1,41 @@
+package grame.elody.util;
+
+import java.util.Stack;
+
+/*******************************************************************************************
+*
+*	 TMemReuser (classe) : reutilisateur de mémoire
+* 
+*******************************************************************************************/
+
+public final class TMemReuser {
+	Stack stack = new Stack();
+ 	Class  object;
+ 
+  	public TMemReuser (String name) { 
+ 		try {
+ 			object = Class.forName (name);
+ 		}catch (Exception e) {
+ 			System.out.println(e);
+ 		}
+ 	}
+
+	public final Object allocate() {
+		
+		if (stack.empty()) {
+			Object obj = null;
+			try {
+				obj =  object.newInstance();
+			}catch (Exception e) {
+				System.out.println(e);
+			}
+			return obj;
+		}else {
+			return stack.pop();
+		}
+	}
+	
+	public final void destroy (Object obj) {
+		stack.push(obj);
+	}
+}
