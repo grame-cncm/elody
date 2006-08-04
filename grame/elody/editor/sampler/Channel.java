@@ -1,6 +1,9 @@
 package grame.elody.editor.sampler;
 
 import grame.elody.editor.constructors.Sampler;
+import grame.elody.editor.misc.TGlobals;
+import grame.elody.editor.misc.applets.BasicApplet;
+import grame.elody.editor.misc.applets.Window;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -16,6 +19,7 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -58,6 +62,7 @@ public class Channel {
 	private short num;			// channel number
 	private Button bt;			// open-close the shell
 	private Shell s = null;		// channel SWT window (shell)
+	private Window w = null;	// generic window
 	public Color bgColor;	
 	private Vector keygroups;
 	private boolean[] availKeyb;	// array indicating the keys (0..127) availability
@@ -110,6 +115,8 @@ public class Channel {
 			availKeyb[i] = true;
 		sampler.setOutputDeviceGroupEnable(false);
 		s = new Shell();
+		w = new Window(s);
+		BasicApplet.screen.addWindow(w);
 		s.setRedraw(false);
 		s.addShellListener(new ShellAdapter() {
 			public void shellClosed(final ShellEvent e) {
@@ -117,6 +124,7 @@ public class Channel {
 				bt.setSelection(false);
 				keygroups.clear();
 				sampler.configSav.writeAll();
+				BasicApplet.screen.delWindow(w);
 				s.dispose();
 				s=null;
 				shellOpened = false;
@@ -127,9 +135,10 @@ public class Channel {
 				sampler.resetDriver();
 			}
 		});
+
 		s.setSize(500, 450);
 		s.setLocation(s.getLocation().x, s.getLocation().y+340);
-		s.setText("Sampler - Channel "+num);
+		s.setText(TGlobals.getTranslation("Sampler")+ " - "+ TGlobals.getTranslation("Channel")+" "+num);
 		s.setBackground(bgColor);
 		s.setLayout(new FormLayout());
 		// Keygroups can be added with drag-and-drop operations on audio files
@@ -237,7 +246,7 @@ public class Channel {
 		else
 		{
 			final MessageBox mb = new MessageBox(s, SWT.OK);
-			mb.setMessage("WARNING: this device has not enough outputs, the configuration file will not correctly work in channel "+num);
+			mb.setMessage(TGlobals.getTranslation("not_enough_outputs")+num);
 			mb.open();
 		}
 	}
@@ -404,7 +413,7 @@ public class Channel {
 		volFd.top = new FormAttachment(0, 15);
 		volFd.left = new FormAttachment(0, 10);
 		volLabel.setLayoutData(volFd);
-		volLabel.setText("VOL:");
+		volLabel.setText(TGlobals.getTranslation("VOL"));
 		
 		final Scale volScale = new Scale(menuComposite1, SWT.HORIZONTAL);
 		volScale.setBackground(bgColor);
@@ -433,7 +442,7 @@ public class Channel {
 		sensitFd.top = new FormAttachment(0, 15);
 		sensitFd.left = new FormAttachment(volScale, 10, SWT.RIGHT);
 		sensitLabel.setLayoutData(sensitFd);
-		sensitLabel.setText("SEN:");
+		sensitLabel.setText(TGlobals.getTranslation("SEN"));
 		
 		final Scale sensitScale = new Scale(menuComposite1, SWT.HORIZONTAL);
 		sensitScale.setBackground(bgColor);
@@ -474,7 +483,7 @@ public class Channel {
 			panFd.top = new FormAttachment(0, 15);
 			panFd.left = new FormAttachment(sensitScale, 10, SWT.RIGHT);
 			panLabel.setLayoutData(panFd);
-			panLabel.setText("PAN:");
+			panLabel.setText(TGlobals.getTranslation("PAN"));
 			
 			final Scale panScale = new Scale(menuComposite1, SWT.HORIZONTAL);
 			panScale.setBackground(bgColor);
@@ -529,7 +538,7 @@ public class Channel {
 			outputFd.top = new FormAttachment(0, 15);
 			outputFd.right = new FormAttachment(outputSpinner, -15, SWT.LEFT);
 			outputLabel.setLayoutData(outputFd);
-			outputLabel.setText("OUT:");
+			outputLabel.setText(TGlobals.getTranslation("OUT"));
 		}
 		
 		
@@ -554,7 +563,7 @@ public class Channel {
 		keygroupsFd.top = new FormAttachment(0, 8);
 		keygroupsFd.left = new FormAttachment(0, 30);
 		keygroupsLabel.setLayoutData(keygroupsFd);
-		keygroupsLabel.setText("KEYGROUPS :");
+		keygroupsLabel.setText(TGlobals.getTranslation("KEYGROUPS"));
 
 		final Button newButton = new Button(menuComposite2, SWT.NONE);
 		final FormData buttonFd = new FormData();
@@ -562,7 +571,7 @@ public class Channel {
 		buttonFd.top = new FormAttachment(0, 5);
 		buttonFd.left = new FormAttachment(keygroupsLabel, 10, SWT.RIGHT);
 		newButton.setLayoutData(buttonFd);
-		newButton.setText("New");
+		newButton.setText(TGlobals.getTranslation("New"));
 		newButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				addKeygroup(true, -1);
@@ -576,7 +585,7 @@ public class Channel {
 		labelFd.top = new FormAttachment(0, 15);
 		labelFd.right = new FormAttachment(100, -120);
 		label.setLayoutData(labelFd);
-		label.setText("ref                +                -");
+		label.setText(TGlobals.getTranslation("ref"));
 		
 		final Button envButton = new Button(menuComposite2, SWT.NONE);
 		final FormData envFd = new FormData();
@@ -584,7 +593,7 @@ public class Channel {
 		envFd.left = new FormAttachment(100, -90);
 		envFd.right = new FormAttachment(100, -20);
 		envButton.setLayoutData(envFd);
-		envButton.setText("Envelope");
+		envButton.setText(TGlobals.getTranslation("Envelope"));
 		envButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				envelope.shellOpen();

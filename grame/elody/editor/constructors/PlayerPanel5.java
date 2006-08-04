@@ -26,9 +26,9 @@ import java.util.Observer;
 
 public final class PlayerPanel5 extends BasicApplet implements Observer,
 		ActionListener, ItemListener {
-	static final String startCommand = "Start";
-	static final String stopCommand = "Stop";
-	static final String playCommand = "Play";
+	static final String startCommand = TGlobals.getTranslation("Start");
+	static final String stopCommand = TGlobals.getTranslation("Stop_pl");
+	static final String playCommand = TGlobals.getTranslation("Play_pl");
 
 	Button start, stop ,cont;
 	Checkbox loopbox;
@@ -42,7 +42,7 @@ public final class PlayerPanel5 extends BasicApplet implements Observer,
 
 	public PlayerPanel5 ()
 	{
-		super ("Player");
+		super (TGlobals.getTranslation("Player"));
 		setSize(400,180);
 		//setSize(getPreferredSize());
 		     
@@ -103,11 +103,11 @@ public final class PlayerPanel5 extends BasicApplet implements Observer,
 		textpanel.setLayout(new GridLayout(1,4,2,2));  
 		transportpanel.setLayout( new GridLayout(2,1,2,2)) ;
 
-		loopbox = new  Checkbox("Loop",null, true);
+		loopbox = new  Checkbox(TGlobals.getTranslation("Loop"),null, true);
 		
 		synchro = new Choice()  ;
-    	synchro.add("Internal");
-    	synchro.add("Clock");
+    	synchro.add(TGlobals.getTranslation("Internal"));
+    	synchro.add(TGlobals.getTranslation("Clock"));
     	synchro.addItemListener (this);
     
 		loopbox.addItemListener (this);
@@ -118,13 +118,13 @@ public final class PlayerPanel5 extends BasicApplet implements Observer,
 		buttonpanel.add(stop) ;
 		buttonpanel.add(cont) ;
 
-		TextField text = new TextField("Min  Sec  Ms");
+		TextField text = new TextField(TGlobals.getTranslation("time_unit"));
 		text.setEditable(false);
 		 
 		textpanel.add(text);
 		textpanel.add(dateMS);
 
-		text = new TextField("Bar Beat Unit");
+		text = new TextField(TGlobals.getTranslation("bar_unit"));
 		text.setEditable(false);
 		textpanel.add(text);
 		textpanel.add(dateBBU);

@@ -3,6 +3,7 @@ package grame.elody.editor.constructors;
 import grame.elody.editor.expressions.ExprHolder;
 import grame.elody.editor.expressions.TNotesVisitor;
 import grame.elody.editor.misc.TDialog;
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.file.parser.TFileContent;
 import grame.elody.file.parser.TFileParser;
@@ -41,9 +42,9 @@ public class TPublisherClient extends BasicApplet implements Observer,
 //	-----------//	
 		
 		
-		static String publishCommand = "Publish";	// textes et noms des 
-		static String fetchCommand = "Fetch";		// actions des
-		static String connectCommand = "Connect";	// boutons
+		static String publishCommand = TGlobals.getTranslation("Publish");	// textes et noms des 
+		static String fetchCommand = TGlobals.getTranslation("Fetch");		// actions des
+		static String connectCommand = TGlobals.getTranslation("Connect");	// boutons
 
 		TextField port,host,title,author;
 		TextArea destext;
@@ -66,7 +67,7 @@ public class TPublisherClient extends BasicApplet implements Observer,
 			
 		public TPublisherClient ()	// Constructeur
 		{	
-			super ("Publisher");
+			super (TGlobals.getTranslation("Publisher"));
 			setSize(270,380);
 		}
 		
@@ -172,7 +173,7 @@ public class TPublisherClient extends BasicApplet implements Observer,
 			connection = null;
 					
 			connected = false;
-			connect.setLabel("Connect");
+			connect.setLabel(TGlobals.getTranslation("Connect"));
 		}
 		
 		
@@ -185,23 +186,23 @@ public class TPublisherClient extends BasicApplet implements Observer,
 				connection.addObserver(this);
 		
 				connected = true;
-				connect.setLabel("Disconnect");
+				connect.setLabel(TGlobals.getTranslation("Disconnect"));
 			
 				//updateUrlList();
 			}
 			catch (NumberFormatException e) 	// Si le numéro de port est incorrect
 	        {
-	        	TDialog Box = new TDialog(this.getFrame(),"Invalide port number : " + port.getText());
+	        	TDialog Box = new TDialog(this.getFrame(),TGlobals.getTranslation("Invalid_port") + port.getText());
 		       	Box.setVisible(true);
 			}
 			catch (UnknownHostException e) 	// Si le serveur n'a pas ete trouve
 	        {
-	        	TDialog Box = new TDialog(this.getFrame(),"Unknowm Hostname : " + host.getText());
+	        	TDialog Box = new TDialog(this.getFrame(),TGlobals.getTranslation("Unknowm_Hostname") + host.getText());
 		       	Box.setVisible(true);
 			}
 	        catch (Exception e)				// Si la connexion a echouee
 	        {
-				TDialog Box = new TDialog(this.getFrame(),"Impossible to establish the connection");
+				TDialog Box = new TDialog(this.getFrame(),TGlobals.getTranslation("impossible_connect"));
 				Box.setVisible(true);
 	        }
 		 
@@ -232,7 +233,7 @@ public class TPublisherClient extends BasicApplet implements Observer,
 				if (messageText.equals("DECONNECTION"))
 				{
 					clientDisconnect();
-					TDialog Box = new TDialog(this.getFrame(),"You are no more connected with " + host.getText());
+					TDialog Box = new TDialog(this.getFrame(),TGlobals.getTranslation("nomore_connected") + host.getText());
 					Box.setVisible(true);
 				}
 			}
@@ -321,24 +322,24 @@ public class TPublisherClient extends BasicApplet implements Observer,
 	  				
 	  		topPanel.setLayout(new GridLayout(2,2,1,1));
 	  		
-	  		topPanel.add(new Label ("Port"));
+	  		topPanel.add(new Label (TGlobals.getTranslation("Port")));
 	  		topPanel.add(port);
 	  		
-	  		topPanel.add (new Label ("Server host"));
+	  		topPanel.add (new Label (TGlobals.getTranslation("Server_host")));
 	  		topPanel.add (host);
 	  	
 	  		add("North",topPanel);  
 	  		
 	 		/// TITLE
 			titlePanel.setLayout(new GridLayout(2,1,1,1));
-			titlePanel.add(new Label ("Title"));
+			titlePanel.add(new Label (TGlobals.getTranslation("Title")));
 			title =  new TextField("", 15);
 			titlePanel.add(title);
 			
 			
 			/// AUTHOR
 			authorPanel.setLayout(new GridLayout(2,1,1,1));
-			authorPanel.add(new Label ("Author"));
+			authorPanel.add(new Label (TGlobals.getTranslation("Author")));
 			author =  new TextField("", 15);
 			authorPanel.add(author);
 			
@@ -350,7 +351,7 @@ public class TPublisherClient extends BasicApplet implements Observer,
 			/// DESRIPTION
 			destext = new TextArea(1,1);
 			desPanel.setLayout(new BorderLayout());
-			desPanel.add("West",new Label ("Description"));
+			desPanel.add("West",new Label (TGlobals.getTranslation("Description")));
 			desPanel.add("Center",destext);
 			
 			

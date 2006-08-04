@@ -1,12 +1,16 @@
 package grame.elody.editor.main;
 
+import grame.elody.editor.misc.TGlobals;
+
 import java.applet.Applet;
 import java.awt.Button;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 public class ArgsReader {
+	
 	final String menuFlag = "Menu:";
+	final String langFlag = "Language:";
   	Vector v, actifs;
 	
 	public ArgsReader (Applet applet, String str) {
@@ -14,13 +18,16 @@ public class ArgsReader {
   		actifs = new Vector ();
   		for (StringTokenizer t = new StringTokenizer(str, ","); t.hasMoreTokens(); ) {
 			String token = t.nextToken().trim();
+			if (token.startsWith(langFlag))
+				TGlobals.setLanguage(token.substring(langFlag.length()));
+			else
 			add (applet, token);
 		}
 	}
 
 	public void add (Applet applet, String str) {
 		if (str.startsWith (menuFlag)) {
-			addMenu (str.substring (menuFlag.length()));
+			addMenu (TGlobals.getTranslation(str.substring (menuFlag.length())));
 		}
 		else if (v.size() != 0) {
 			Object last = v.lastElement();

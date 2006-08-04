@@ -10,6 +10,7 @@ import grame.elody.editor.expressions.FunctionTag;
 import grame.elody.editor.expressions.ParamDecomposer;
 import grame.elody.editor.expressions.VarArgsFunctionDecomposer;
 import grame.elody.editor.misc.Define;
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.lang.TExpMaker;
 import grame.elody.lang.texpression.expressions.TEvent;
@@ -34,19 +35,19 @@ public class MontConstructor extends BasicApplet implements Observer,
 		ActionListener {
 	static final String appletName = "MontConstructor";
 	static final int stepsCount = 8;
-	static public String clearCommand = "Clear";
+	static public String clearCommand = TGlobals.getTranslation("Clear");
 	MainExprHolder meh;
 	MontStepPanel ppanel[];
 
 	public MontConstructor() {
-		super("Montage constructor");
+		super(TGlobals.getTranslation("Montage_constructor"));
 	}
     public void init() {
     	int exprWidth = 30;
     	int totalSteps = stepsCount + 2;
 		Define.getButtons(this);
 
-   		setSize(totalSteps * 74, 176);
+   		setSize(totalSteps * 110, 176);
 		setLayout(new GridLayout(1, totalSteps, 3, 3));
 		MontExprHolder exprHolders[] = new MontExprHolder[stepsCount];
 		ppanel = new MontStepPanel[stepsCount];
@@ -156,7 +157,7 @@ class MontCommandsPanel extends ParamFrame
 		int align = GridBagConstraints.CENTER;
 
 		setConstraints (c, eol, GridBagConstraints.NONE, align, 0,0, 0,0, 0,2,2,1);
-		add (new ColoredLabel("Parameters", Label.CENTER, Color.darkGray), gbl, c);
+		add (new ColoredLabel(TGlobals.getTranslation("Parameters"), Label.CENTER, Color.darkGray), gbl, c);
 		setConstraints (c, eol, GridBagConstraints.BOTH, align, 30,30, 1,1, 0,4,4,4);
 		add (new SeqHelpPanel (), gbl, c);
 		setConstraints (c, eol, GridBagConstraints.NONE, align, 20,0, 1,0, 0,5,5,2);

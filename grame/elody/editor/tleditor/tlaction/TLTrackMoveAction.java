@@ -65,6 +65,7 @@ public class TLTrackMoveAction extends TLDragAction {
 						fPane.getFMultiTracks().insert(cpy);
 						fPane.getFSelection().selectLine(dstLine);
 						fPane.selectionChanged();
+						fPane.fStack.push(new String("trackCopy"));
 					} else {
 						TLTrack trk = fPane.getFMultiTracks().getTrack();
 						fPane.getFMultiTracks().remove();
@@ -72,6 +73,7 @@ public class TLTrackMoveAction extends TLDragAction {
 						fPane.getFMultiTracks().insert(trk);
 						fPane.getFSelection().selectLine(fPane.getFMultiTracks().getPos());
 						fPane.selectionChanged();
+						fPane.fStack.push(new String("trackMove"));
 					}
 					fPane.multiTracksChanged();
 				}

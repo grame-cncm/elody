@@ -39,14 +39,14 @@ public class ChordConstructor extends BasicApplet implements ActionListener {
 	static final int velMsg		= 5001;
 	static final int durMsg		= 5002;
 	static final int chanMsg	= 5003;
-	static final String clearCommand = "Clear";
+	static final String clearCommand = TGlobals.getTranslation("Clear");
 	ChordPanel chordPanel; ChordExpressionHolder chordEh;
 
 	public ChordConstructor() {
-		super("Chord constructor");
+		super(TGlobals.getTranslation("Chord_constructor"));
 		setLayout(new BorderLayout());
     	setFont (new Font("Times", Font.PLAIN, 12));
-		setSize(390, 300);
+		setSize(490, 300);
 	}
     public void add (Container c, Component p, int x, int y, int w, int h) {
 		c.add(p);
@@ -60,19 +60,20 @@ public class ChordConstructor extends BasicApplet implements ActionListener {
 		int col = Define.TextCtrlSize;
 		EditControler e = new EditControler (new JamButtonControler(-64,+64,0,Define.pitchColor,Define.pitchButton), col);
 		init (e, pitchMsg, obs, 0);
-		p.add (new TextBarCtrl(e, "pitch", 12));
+		p.add (new TextBarCtrl(e, TGlobals.getTranslation("pitch"), 12));
 
 		e = new EditControler (new JamButtonControler(1,127,1,Define.velColor,Define.velButton), col);
 		init (e, velMsg, obs, 100);
-		p.add (new TextBarCtrl(e, "vel", 12));
+		p.add (new TextBarCtrl(e, TGlobals.getTranslation("vel"), 12));
 
 		e = new FloatEditCtrl (new JamButtonControler(1,19,10,Define.durColor,Define.durButton), col);
 		init (e, durMsg, obs, 1);
-		p.add (new TextBarCtrl(e, "dur", 12));
+		p.add (new TextBarCtrl(e, TGlobals.getTranslation("dur"), 12));
 
 		e = new EditControler (new JamButtonControler(1,32,1,Define.chanColor,Define.chanButton), col);
 		init (e, chanMsg, obs, 1);
-		p.add (new TextBarCtrl(e, "chan", 12));
+		p.add (new TextBarCtrl(e, TGlobals.getTranslation("chan"), 12));
+	
 		return p;
     }
     public Panel buildButtons (ColorHolder colorHolder, Checkbox checkbox) {
@@ -99,7 +100,7 @@ public class ChordConstructor extends BasicApplet implements ActionListener {
 		colorDrop.setLayout (new BorderLayout(5,5));
 		add ("Center", colorDrop);
 
-		Checkbox checkbox = new Checkbox ("play");
+		Checkbox checkbox = new Checkbox (TGlobals.getTranslation("play"));
 		chordEh = new ChordExpressionHolder (checkbox);
 		chordPanel = new ChordPanel(chordEh);
 		colorHolder.addObserver(chordPanel);
@@ -110,7 +111,7 @@ public class ChordConstructor extends BasicApplet implements ActionListener {
 		south.setLayout (new GridLayout(2,1,5,5));
 
 		south.add (buildControlers(chordEh));
-		south.add (buildButtons (colorHolder, checkbox));
+//		south.add (buildButtons (colorHolder, checkbox));
 
 		east.add (chordEh);
 		east.add (south);
@@ -233,13 +234,14 @@ class ChordPanel extends Panel implements Observer, MouseListener
 		}
 				
 		offgraphics.setColor(Color.blue);
-		char name[]={'A'};
+		char name[]={'a'};
 		c.x -= fontHeight/3;
 		c.y += fontHeight/3;
 		for (int i=0, r=diam/2+fontHeight-2, n=9; i<7; i++, name[0]++) {
 			int x = (int)(c.x + r * Math.sin(n*arc));
 			int y = (int)(c.y + r * Math.cos(n*arc));
-			offgraphics.drawChars (name,0,1,x,y);
+			String str = TGlobals.getTranslation(new String(name));
+			offgraphics.drawChars (str.toCharArray(),0,str.length(),x,y);
 			n -= ((i==1) || (i==4)) ? 1 : 2;
 		}
 		

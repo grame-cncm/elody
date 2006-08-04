@@ -1,6 +1,7 @@
 package grame.elody.editor.constructors;
 
 import grame.elody.editor.expressions.ExprHolderPanel;
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.Persistent;
 import grame.elody.lang.TExpMaker;
 import grame.elody.lang.texpression.expressions.TExp;
@@ -13,7 +14,7 @@ public class HistoryEditor extends Persistent implements Observer {
 	ExprHolderPanel[] holdTable;
 	
 	public HistoryEditor () {
-		super ("History");
+		super (TGlobals.getTranslation("History"));
 		int size = 8;
 		setLayout (new GridLayout(size, 1, 0, 2));
 		holdTable= new ExprHolderPanel[size];

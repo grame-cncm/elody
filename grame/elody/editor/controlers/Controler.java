@@ -78,7 +78,7 @@ public abstract class Controler extends Panel implements MouseListener,
     public void click (Point p) {
     	if (contains (p.x, p.y)) {
      		dragStarted = true;
-   			setValue (PointToVal (p.x, p.y));
+   			//setValue (PointToVal (p.x, p.y));
     	}
     }
     public boolean drag (Point p) {

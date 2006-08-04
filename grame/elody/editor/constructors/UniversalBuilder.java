@@ -7,6 +7,7 @@ import grame.elody.editor.constructors.operateurs.Operateur;
 import grame.elody.editor.constructors.operateurs.SequenceOp;
 import grame.elody.editor.expressions.ExprHolder;
 import grame.elody.editor.expressions.TNotesVisitor;
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.editor.misc.draganddrop.DragAble;
 import grame.elody.lang.texpression.expressions.TExp;
@@ -19,7 +20,7 @@ import java.awt.Point;
 
 public class UniversalBuilder extends BasicApplet {
 	public UniversalBuilder() {
-		super("Builder");
+		super(TGlobals.getTranslation("Builder"));
 		setLayout(new GridLayout(3,3,2,2));
     	setSize (294,294);
 	} 
@@ -43,7 +44,7 @@ class BuildMix extends BuildExprDrop
 	public BuildMix (ExprHolder result, boolean first) {
 		super (result, first);
 		this.op = new MixageOp(null);
-		name = "mix";
+		name = TGlobals.getTranslation("mix");
 	}
 }
 
@@ -52,7 +53,7 @@ class BuildSeq extends BuildExprDrop
 	public BuildSeq (ExprHolder result, boolean first) {
 		super (result, first);
 		this.op = new SequenceOp(null);
-		name = "seq";
+		name = TGlobals.getTranslation("seq");
 	}
 }
 
@@ -61,7 +62,7 @@ class BuildAppl extends BuildExprDrop
 	public BuildAppl (ExprHolder result, boolean first) {
 		super (result, first);
 		this.op = new ApplicationOp(null);
-		name = "appl";
+		name = TGlobals.getTranslation("appl");
 	}
 }
 
@@ -70,7 +71,7 @@ class BuildAbstr extends BuildExprDrop
 	public BuildAbstr (ExprHolder result, boolean first) {
 		super (result, first);
 		this.op = new AbstractionOp(null);
-		name = "abstr";
+		name = TGlobals.getTranslation("abstr");
 	}
 }
 

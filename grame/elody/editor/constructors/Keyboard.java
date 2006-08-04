@@ -46,7 +46,7 @@ public class Keyboard extends BasicApplet {
 	static final int octavesCount = 4;
 	
 	public Keyboard () {
-		super("Keyboard");
+		super(TGlobals.getTranslation("Keyboard"));
 		setLayout(new BorderLayout(0, 4));
 	}
 	
@@ -65,8 +65,8 @@ public class Keyboard extends BasicApplet {
 
 class KbdModeMenu extends Choice
 {
-	public static final String ChordMode 	= "Chord mode";
-	public static final String SeqMode 		= "Seq mode";
+	public static final String ChordMode 	= TGlobals.getTranslation("Chord_mode");
+	public static final String SeqMode 		= TGlobals.getTranslation("Seq_mode");
 	public KbdModeMenu (ItemListener listener) {
 		addItemListener (listener);
 		add (SeqMode);
@@ -482,19 +482,19 @@ class KeyboardParams extends Panel implements Observer
 		pitch = new EditControler (new JamButtonControler(0,pitchRange,0,Define.pitchColor,Define.pitchButton), col);
 		pitch.addObserver (this);
 		init (pitch, pitchMsg, obs, pitchRange/2 + (pitchRange%2));
-		add (new TextBarCtrl(pitch, "oct", 12));
+		add (new TextBarCtrl(pitch, TGlobals.getTranslation("oct"), 12));
 
 		vel = new EditControler (new JamButtonControler(1,127,1,Define.velColor,Define.velButton), col);
 		init (vel, velMsg, obs, 100);
-		add (new TextBarCtrl(vel, "vel", 12));
+		add (new TextBarCtrl(vel, TGlobals.getTranslation("vel"), 12));
 
 		dur = new FloatEditCtrl (new JamButtonControler(1,19,10,Define.durColor,Define.durButton), col);
 		init (dur, durMsg, obs, 1);
-		add (new TextBarCtrl(dur, "dur", 12));
+		add (new TextBarCtrl(dur, TGlobals.getTranslation("dur"), 12));
 
 		chan = new EditControler (new JamButtonControler(1,32,1,Define.chanColor,Define.chanButton), col);
 		init (chan, chanMsg, obs, 0);
-		add (new TextBarCtrl(chan, "chan", 12));
+		add (new TextBarCtrl(chan, TGlobals.getTranslation("chan"), 12));
     }
     public void init (EditControler ebc, int msg, Observer obs, int defaultValue) {
 		ebc.setMessage (msg);
@@ -600,8 +600,8 @@ class ExprAndColorHolder extends ExprHolder
 
 class KeyboardCtrlPanel extends Panel implements ItemListener, ActionListener
 {
-	static final String ClearCmd = "Clear";
-	static final String UndoCmd  = "Undo";
+	static final String ClearCmd = TGlobals.getTranslation("Clear");
+	static final String UndoCmd  = TGlobals.getTranslation("Undo");
 	KeyboardPanel kbPanel;
 	KbdResultHolder result;
 	Dimension prefSize;

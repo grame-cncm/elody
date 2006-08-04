@@ -1,5 +1,6 @@
 package grame.elody.editor.treeeditor.texpeditor;
 
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.treeeditor.ColorPanel;
 import grame.elody.editor.treeeditor.StringPanel;
 import grame.elody.editor.treeeditor.TreePanel;
@@ -31,14 +32,14 @@ public class TEventEditor extends TExpEditor {
 	
 	public void addSonsTo(TreePanel t) {
 		if (fNoteType) {
-			t.add(new StringPanel(t, TExp.PITCH, 		"Key", String.valueOf(fPitch)));
-			t.add(new StringPanel(t, TExp.VEL, 		"Vel", String.valueOf(fVel)));
-			t.add(new StringPanel(t, TExp.CHAN, 		"Chn", String.valueOf(fChan)));
-			t.add(new StringPanel(t, TExp.DURATION,	"Dur", String.valueOf(fDur)));
-			t.add(new ColorPanel(t, 0, "Col", fColor));
+			t.add(new StringPanel(t, TExp.PITCH, 		TGlobals.getTranslation("key"), String.valueOf(fPitch)));
+			t.add(new StringPanel(t, TExp.VEL, 		TGlobals.getTranslation("vel"), String.valueOf(fVel)));
+			t.add(new StringPanel(t, TExp.CHAN, 		TGlobals.getTranslation("chan"), String.valueOf(fChan)));
+			t.add(new StringPanel(t, TExp.DURATION,	TGlobals.getTranslation("dur"), String.valueOf(fDur)));
+			t.add(new ColorPanel(t, 0, TGlobals.getTranslation("col"), fColor));
 		} else {
-			t.add(new StringPanel(t, TExp.DURATION,	"Dur", String.valueOf(fDur)));
-			t.add(new ColorPanel(t, 0, "Col", fColor));
+			t.add(new StringPanel(t, TExp.DURATION,	TGlobals.getTranslation("dur"), String.valueOf(fDur)));
+			t.add(new ColorPanel(t, 0, TGlobals.getTranslation("col"), fColor));
 		}
 	}
 	
@@ -49,13 +50,13 @@ public class TEventEditor extends TExpEditor {
 	public String getKindName () 
 	{ 
 		if (fNoteType) {
-			return "NOTE (" + String.valueOf (fPitch)
+			return TGlobals.getTranslation("NOTE")+" (" + String.valueOf (fPitch)
 					 + ", " + String.valueOf (fVel)
 					 + ", " + String.valueOf (fChan)
 					 + ", " + String.valueOf (fDur)
 					 + ")";
 		} else {
-			return "REST (" + String.valueOf(fDur) + ")"; 
+			return TGlobals.getTranslation("REST")+" (" + String.valueOf(fDur) + ")"; 
 		}
 	}
 		

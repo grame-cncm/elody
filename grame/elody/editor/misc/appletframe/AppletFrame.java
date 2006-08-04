@@ -1,5 +1,6 @@
 package grame.elody.editor.misc.appletframe;
 
+import grame.elody.editor.main.Elody;
 import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.editor.misc.applets.BasicStub;
@@ -179,7 +180,10 @@ public class AppletFrame extends Frame implements WindowListener {
 			Object o = en.nextElement();
 			if (o instanceof AppletFrame) {
 				AppletFrame f = (AppletFrame)o;
-				f.close();
+				if (f.applet instanceof Elody)
+					aList.remove(f);
+				else
+					f.close();
 				en = aList.elements();
 			}
 		}

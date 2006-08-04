@@ -1,5 +1,6 @@
 package grame.elody.editor.treeeditor.texpeditor;
 
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.treeeditor.StringPanel;
 import grame.elody.editor.treeeditor.TreePanel;
 import grame.elody.lang.texpression.expressions.TExp;
@@ -10,8 +11,10 @@ import grame.elody.util.TExpRenderer;
 import java.awt.Color;
 
 public class TModifyEditor extends TExpEditor {
-	static String[] gModifyName = {"bidon", "TRANSPOSE", "LOUDNESS", "CHANNEL", "STRETCH"};
-	static String[] gModifyAttr = {"bidon", "Pitch", "Vel", "Chan", "Dur"};
+	static String[] gModifyName = {"bidon", "TRANSPOSE",
+		"LOUDNESS", "CHANNEL","STRETCH"};
+	static String[] gModifyAttr = {"bidon", TGlobals.getTranslation("pitch"), TGlobals.getTranslation("vel"),
+		TGlobals.getTranslation("chan"),	TGlobals.getTranslation("dur")};
 	
 	TExp		fExp;
 	TExp		fBody;

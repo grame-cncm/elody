@@ -1,5 +1,6 @@
 package grame.elody.editor.constructors;
 
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.editor.treeeditor.TreePanel;
 import grame.elody.lang.TExpMaker;
@@ -13,7 +14,7 @@ import java.awt.ScrollPane;
 
 public class TreeApplet extends BasicApplet {
 	public TreeApplet() {
-		super("Structured Editor");
+		super(TGlobals.getTranslation("Structured_Editor"));
 		setLayout(new BorderLayout());
 		setSize (250, 500);
 	} 

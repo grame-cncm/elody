@@ -1,10 +1,11 @@
 package grame.elody.editor.constructors;
 
 import grame.elody.editor.constructors.operateurs.BeginOp;
+import grame.elody.editor.misc.TGlobals;
 
 public class BeginRule extends RuleApplet
 {
-    public BeginRule () { super("Begin"); }
+    public BeginRule () { super(TGlobals.getTranslation("Begin")); }
     public void init() {
     	super.init();
 		add (new RulePanel( new BeginOp (getRuleImage("begin.jpg")),  

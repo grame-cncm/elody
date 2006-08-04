@@ -8,17 +8,21 @@ import grame.elody.file.parser.TMIDIFileParser;
 import grame.elody.file.parser.TOBJECTParser;
 import grame.elody.file.parser.TTEXTEParser;
 import grame.midishare.Midi;
-import grame.midishare.MidiAppl;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class TGlobals {
 	public static TGlobalPrefs 		context = new TGlobalPrefs();
 	//public static TEvaluator 		evaluator =  new TEvaluator();
-	public static MidiAppl  	 	midiappl = null;
+	public static MidiApplAlarm	 	midiappl = null;
 	public static TRealTimePlayer   player = null;
 	//public static TExpMaker 		maker =  new TExpMaker2();
 	//public static TExpRenderer 	renderer = new TExpRenderer();
 	public static String 			appl = "ElodySharedAppl";
-//	public static Display			display = null;
+	public static Locale locale = Locale.getDefault();
+	public static ResourceBundle messages = ResourceBundle.getBundle("Elody", locale);
+	
 	
 	static int midishareVersion = 121;
 	static int ref = 0; // compteur du nombre d'appel de init et quit
@@ -53,13 +57,11 @@ public class TGlobals {
 				TFileParser.registerParser(TOBJECTParser.class);
 				TFileParser.registerParser(TGUIDOParser.class);
 				
-				// Création d'un Display pour la connexion entre SWT et l'OS
-	//			display = new Display();
-				
 				// Ouverture d'une application partagée pour les taches et d'un Player partagé
-				midiappl = new MidiAppl();
+				midiappl = new MidiApplAlarm();
 				player = new TRealTimePlayer();
 				midiappl.Open(appl);
+				Midi.Connect(0, midiappl.refnum,1);
 				player.Open("ElodySharedPlayer");
 				context.restoreConnections("ElodySharedPlayer");
 				context.restoreAppletsState();
@@ -87,7 +89,6 @@ public class TGlobals {
 		if (--ref == 0) {
 			context.saveConnections("ElodySharedPlayer");
 			context.saveAppletsState();
-	//		display.close();
 			midiappl.Close(); 
 			player.stopPlayer();
 			player.Close();
@@ -104,6 +105,20 @@ public class TGlobals {
 	
 	// ferme l'appli MidiShare
 	protected void finalize () { quit ();}
+	
+	public static void setLanguage (String lang)
+	{
+		if (lang.length()>0)
+		{
+			locale = new Locale(lang.toLowerCase());
+			messages = ResourceBundle.getBundle("Elody", locale);
+		}
+	}
+	
+	public static String getTranslation (String s)
+	{
+		return messages.getString(s);
+	}
 
-	public static String   version() {return  "1.053";}
+	//public static String   version() {return  "1.053";}
 }

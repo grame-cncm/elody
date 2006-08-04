@@ -1,5 +1,6 @@
 package grame.elody.editor.constructors;
 
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.sampler.Channel;
 import grame.elody.editor.sampler.ConfigSav;
 import grame.elody.editor.sampler.PaDeviceInfo;
@@ -74,7 +75,7 @@ public class Sampler extends BasicShellSWT {
     final int[] STD_BUFFERSIZES = {256, 512, 1024, 2048, 4096}; 
 
 	public Sampler() {
-		super("Sampler");
+		super(TGlobals.getTranslation("Sampler"));
 		jni = new PaJniConnect();
 		setDevice(jni.GetDevice());
 		sampleRate = jni.GetSampleRate();
@@ -136,7 +137,7 @@ public class Sampler extends BasicShellSWT {
 		outputDeviceGroup = new Group(parent, SWT.NONE);
 		outputDeviceGroup.setLayout(new FormLayout());
 		outputDeviceGroup.setBackground(bgColor);
-		outputDeviceGroup.setText("output devices");
+		outputDeviceGroup.setText(TGlobals.getTranslation("output_devices"));
 		final FormData fd = new FormData();
 		fd.top = new FormAttachment(relative, 10, SWT.BOTTOM);
 		fd.right = new FormAttachment(100, -10);
@@ -171,7 +172,7 @@ public class Sampler extends BasicShellSWT {
 		rowLayout.marginBottom = 10;
 		channelsToDisplayGroup.setLayout(rowLayout);
 		channelsToDisplayGroup.setBackground(bgColor);
-		channelsToDisplayGroup.setText("channels to display");
+		channelsToDisplayGroup.setText(TGlobals.getTranslation("channels_to_display"));
 
 		for (short i=1; i<=CH_NUM; i++)
 		{
@@ -185,7 +186,7 @@ public class Sampler extends BasicShellSWT {
 	private Group fileGroupCreate(Composite parent) {
 		fileGroup = new Group(parent, SWT.NONE);
 		fileGroup.setBackground(bgColor);
-		fileGroup.setText("file");
+		fileGroup.setText(TGlobals.getTranslation("file"));
 
 		final FormData fd = new FormData();
 		fd.bottom = new FormAttachment(0, 50);
@@ -197,55 +198,9 @@ public class Sampler extends BasicShellSWT {
 
 		final Button fileNewButton = new Button(fileGroup, SWT.NONE);
 		final Button fileLoadButton = new Button(fileGroup, SWT.NONE);
-
-		fileText = new Text(fileGroup, SWT.BORDER);
-		fileText.addKeyListener(new KeyAdapter() {
-			public void keyReleased(final KeyEvent e) {
-					if (e.character == SWT.CR) {
-						fileOk(fileText, fileNewButton, fileLoadButton);
-					} else if (e.character == SWT.ESC) {
-						fileCancel(fileText, fileNewButton, fileLoadButton);
-					}
-			}
-		});
-
 		final FileDialog fDial = new FileDialog(shell);
 		
 		fDial.setFilterExtensions(EXTENSIONS);
-
-		fileText.addMouseListener(new MouseAdapter() {
-			public void mouseDoubleClick(final MouseEvent e) {
-				if (!fileText.getEditable()) {
-					fileLoad(fileText, fDial);
-				}
-			}
-		});
-		fileText.setEditable(false);
-		fileText.setText(file.getName());
-		final FormData textFd = new FormData();
-		textFd.right = new FormAttachment(60, 0);
-		textFd.bottom = new FormAttachment(100, -5);
-		textFd.top = new FormAttachment(0, 5);
-		textFd.left = new FormAttachment(0, 10);
-		fileText.setLayoutData(textFd);
-
-		fileNewButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(final SelectionEvent e) {
-				if (!fileText.getEditable()) {
-					fileNew(fileText, fileNewButton, fileLoadButton);
-				} else {
-					fileOk(fileText, fileNewButton, fileLoadButton);
-				}
-
-			}
-		});
-		final FormData newButtonFd = new FormData();
-		newButtonFd.left = new FormAttachment(fileText, 10, SWT.DEFAULT);
-		newButtonFd.right = new FormAttachment(78, 0);
-		newButtonFd.bottom = new FormAttachment(100, -5);
-		newButtonFd.top = new FormAttachment(0, 5);
-		fileNewButton.setLayoutData(newButtonFd);
-		fileNewButton.setText("New");
 
 		fileLoadButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
@@ -257,19 +212,62 @@ public class Sampler extends BasicShellSWT {
 			}
 		});
 		final FormData loadButtonFd = new FormData();
-		loadButtonFd.left = new FormAttachment(fileNewButton, 5, SWT.RIGHT);
 		loadButtonFd.right = new FormAttachment(100, -10);
 		loadButtonFd.bottom = new FormAttachment(100, -5);
 		loadButtonFd.top = new FormAttachment(0, 5);
 		fileLoadButton.setLayoutData(loadButtonFd);
-		fileLoadButton.setText("Load");
+		fileLoadButton.setText(TGlobals.getTranslation("Load"));
+		
+		fileNewButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				if (!fileText.getEditable()) {
+					fileNew(fileText, fileNewButton, fileLoadButton);
+				} else {
+					fileOk(fileText, fileNewButton, fileLoadButton);
+				}
+
+			}
+		});
+		final FormData newButtonFd = new FormData();
+		newButtonFd.right = new FormAttachment(fileLoadButton, -5, SWT.LEFT);
+		newButtonFd.bottom = new FormAttachment(100, -5);
+		newButtonFd.top = new FormAttachment(0, 5);
+		fileNewButton.setLayoutData(newButtonFd);
+		fileNewButton.setText(TGlobals.getTranslation("New"));
+		
+		fileText = new Text(fileGroup, SWT.BORDER);
+		fileText.addKeyListener(new KeyAdapter() {
+			public void keyReleased(final KeyEvent e) {
+					if (e.character == SWT.CR) {
+						fileOk(fileText, fileNewButton, fileLoadButton);
+					} else if (e.character == SWT.ESC) {
+						fileCancel(fileText, fileNewButton, fileLoadButton);
+					}
+			}
+		});
+
+		fileText.addMouseListener(new MouseAdapter() {
+			public void mouseDoubleClick(final MouseEvent e) {
+				if (!fileText.getEditable()) {
+					fileLoad(fileText, fDial);
+				}
+			}
+		});
+		fileText.setEditable(false);
+		fileText.setText(file.getName());
+		final FormData textFd = new FormData();
+		textFd.right = new FormAttachment(fileNewButton, -10, SWT.LEFT);
+		textFd.bottom = new FormAttachment(100, -5);
+		textFd.top = new FormAttachment(0, 5);
+		textFd.left = new FormAttachment(0, 10);
+		fileText.setLayoutData(textFd);
 
 		return fileGroup;
 	}
 	private Group sampleRateGroupCreate(Composite parent, Control relative) {
 		sampleRateGroup = new Group(parent, SWT.NONE);
 		sampleRateGroup.setBackground(bgColor);
-		sampleRateGroup.setText("sample rate");
+		sampleRateGroup.setText(TGlobals.getTranslation("sample_rate"));
 		final FormData fd = new FormData();
 		fd.top = new FormAttachment(relative, 10, SWT.BOTTOM);
 		fd.bottom = new FormAttachment(relative, 60, SWT.BOTTOM);
@@ -302,7 +300,7 @@ public class Sampler extends BasicShellSWT {
 	private Group bufferGroupCreate(Composite parent, Control relative) {
 		bufferGroup = new Group(parent, SWT.NONE);
 		bufferGroup.setBackground(bgColor);
-		bufferGroup.setText("frames per buffer");
+		bufferGroup.setText(TGlobals.getTranslation("frames_per_buffer"));
 		final FormData fd = new FormData();
 		fd.bottom = new FormAttachment(relative, 60, SWT.BOTTOM);
 		fd.top = new FormAttachment(relative, 10, SWT.BOTTOM);
@@ -347,8 +345,9 @@ public class Sampler extends BasicShellSWT {
 		fileText.forceFocus();
 		fileText.setText("");
 		fileText.setEditable(true);
-		fileNewButton.setText("OK");
-		fileLoadButton.setText("Cancel");
+		fileNewButton.setText(TGlobals.getTranslation("OK"));
+		fileLoadButton.setText(TGlobals.getTranslation("Cancel"));
+		fileGroup.layout();
 	}
 	private void fileLoad(Text fileText, FileDialog fd) {
 		fd.setFileName(file.getName());
@@ -377,8 +376,9 @@ public class Sampler extends BasicShellSWT {
 				closeAllChannels();
 				configSav = new ConfigSav(file);
 				fileText.setEditable(false);
-				fileNewButton.setText("New");
-				fileLoadButton.setText("Load");
+				fileNewButton.setText(TGlobals.getTranslation("New"));
+				fileLoadButton.setText(TGlobals.getTranslation("Load"));
+				fileGroup.layout();
 				fileNewButton.forceFocus();
 				needToReset=true;
 				resetDriver();
@@ -387,8 +387,8 @@ public class Sampler extends BasicShellSWT {
 				outputDeviceGroup.setEnabled(true);
 			} else {
 
-				mb.setMessage("The file [" + fileText.getText()
-						+ "] allready exists!");
+				mb.setMessage(TGlobals.getTranslation("file_exists1") + fileText.getText()
+						+ TGlobals.getTranslation("file_exists2"));
 				mb.open();
 			}
 		} catch (IOException e1) {
@@ -397,8 +397,9 @@ public class Sampler extends BasicShellSWT {
 	private void fileCancel(Text fileText, Button fileNewButton, Button fileLoadButton) {
 		fileText.setText(file.getName());
 		fileText.setEditable(false);
-		fileNewButton.setText("New");
-		fileLoadButton.setText("Load");
+		fileNewButton.setText(TGlobals.getTranslation("New"));
+		fileLoadButton.setText(TGlobals.getTranslation("Load"));
+		fileGroup.layout();
 		fileLoadButton.forceFocus();
 		sampleRateGroup.setEnabled(true);
 		bufferGroup.setEnabled(true);

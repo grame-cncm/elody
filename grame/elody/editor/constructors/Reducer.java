@@ -10,6 +10,7 @@ import grame.elody.editor.expressions.FunctionTag;
 import grame.elody.editor.expressions.TNotesVisitor;
 import grame.elody.editor.expressions.VarArgsFunctionDecomposer;
 import grame.elody.editor.misc.Define;
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.lang.TExpMaker;
 import grame.elody.lang.texpression.expressions.TExp;
@@ -32,19 +33,19 @@ import java.util.Observer;
 public class Reducer extends BasicApplet implements Observer, ActionListener {
 	static final String appletName = "Reducer";
 	static final int stepsCount = 6;
-	static public String clearCommand = "Clear";
+	static public String clearCommand = TGlobals.getTranslation("Clear");
 	NamedExprHolder function; MainExprHolder meh;
 	ParamPanel ppanel[];
 	
 	public Reducer() {
-		super("Combiner");
+		super(TGlobals.getTranslation("Combiner"));
 	}
     public void init() {
     	int exprWidth = 30;
     	int totalSteps = stepsCount + 3;
 		Define.getButtons(this);
 
-    	setSize(totalSteps * 74, 176);
+    	setSize(totalSteps * 110, 176);
 		setLayout(new GridLayout(1, totalSteps, 3,3));
 		ParamExprHolder exprHolders[] = new ParamExprHolder[stepsCount];
 		ppanel = new ParamPanel[stepsCount];
@@ -122,7 +123,7 @@ class FunctionPanel extends Panel
 {
 	public FunctionPanel (NamedExprPanel p) {
 		setLayout (new BorderLayout (4,4));
-		add ("North", new Label ("Function", Label.CENTER));
+		add ("North", new Label (TGlobals.getTranslation("Function"), Label.CENTER));
 		add ("Center", p);
 		add ("South", new Label ("", Label.CENTER));
 	}
@@ -141,7 +142,7 @@ class ReduceCommandsPanel extends ParamFrame
 		int align = GridBagConstraints.CENTER;
 
 		setConstraints (c, eol, GridBagConstraints.NONE, align, 0,0, 0,0, 0,2,2,1);
-		add (new ColoredLabel("Parameters", Label.CENTER, Color.darkGray), gbl, c);
+		add (new ColoredLabel(TGlobals.getTranslation("Parameters"), Label.CENTER, Color.darkGray), gbl, c);
 		setConstraints (c, eol, GridBagConstraints.BOTH, align, 30,30, 1,1, 0,4,4,4);
 		add (new SeqHelpPanel (), gbl, c);
 		setConstraints (c, eol, GridBagConstraints.NONE, align, 20,0, 1,0, 0,5,5,4);

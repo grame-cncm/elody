@@ -19,9 +19,11 @@ import grame.elody.editor.tleditor.tlaction.TLZoomAction;
 import grame.elody.editor.tleditor.tlevent.TLEvent;
 import grame.elody.editor.tleditor.tlevent.TLRest;
 import grame.elody.lang.TEvaluator;
+import grame.elody.lang.texpression.expressions.TEvent;
 import grame.elody.lang.texpression.expressions.TExp;
 import grame.elody.lang.texpression.expressions.TNamedExp;
 import grame.elody.lang.texpression.expressions.TNullExp;
+import grame.elody.lang.texpression.expressions.TSequenceExp;
 import grame.elody.util.MsgNotifier;
 import grame.midishare.Midi;
 import grame.midishare.MidiAppl;
@@ -37,6 +39,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MenuItem;
+import java.awt.Panel;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.PopupMenu;
@@ -55,11 +58,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Observer;
+import java.util.Stack;
 
 public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	MouseMotionListener, KeyListener, ActionListener, FocusListener, 
 	/*ComponentListener,*/ ExtendedDropAble
 {
+	// les actions
+	public Stack		fStack = new Stack();	// pile des dernières modifications
 	// les couleurs utilisées
 	final static Color	fGrisClair 		= new Color(238, 238, 238);
 	final static Color	fGris 			= new Color(221, 221, 221);
@@ -110,7 +116,9 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	// contenu de l'éditeur
 	TLMultiTracks		fMultiTracks;
 	double				fScoreDur;				// durée de la partition en seconde
+	Panel				fControlPanel;			// panneau de contrôle
 	TextField			fName;					// nom éventuel de la partition
+	ButtonPanel			fBtnPan;				// boutons de contrôle
 	
 	// les scrollbar externes
 	Scrollbar			fVSB;					// références aux scrollbars pour pouvoir les
@@ -130,8 +138,8 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	TLDragAction	fDragAction;							// l'action courante ( choisie par mousePressed(MouseEvent m) ) 
 
 	// contenu courant de la selection
-	TLZone		fSelection;
-	int			fTrackNum;
+	protected TLZone		fSelection;
+	public int	fTrackNum;
 	// informations auxilliaires volatiles maj a chaque appel de getEventAt
 	TLEvent		sAuxEvent 	= null;		// l'ev trouvé par getEventAt
 	int			sStartTime 	= 0;			// sa date de début
@@ -171,7 +179,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
     Image 		offImage;
     Graphics 	offGraphics;
     
-    TLUpdater	fUpdater;
+    public TLUpdater	fUpdater;
     
     
     // gestion du curseur de jeu
@@ -190,15 +198,19 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	//
 	//==================================================================================
 
-	public TLPane(Scrollbar	hsb, Scrollbar	vsb, MsgNotifier  not, TextField name, TRealTimePlayer player)
+	public TLPane(Scrollbar	hsb, Scrollbar	vsb, MsgNotifier  not, Panel controlPan, TextField name, TRealTimePlayer player)
 	{
 		fUpdater = new TLUpdater(this);
 		
 		fVSB = vsb;
 		fHSB = hsb;
+		fControlPanel = controlPan;
 		fName = name;
+		fBtnPan = new ButtonPanel(this);
+		fBtnPan.setSize(100,30);
+		controlPan.add("West", fBtnPan);
 		
-		InternalSetMultiTracks(new TLMultiTracks());
+		internalSetMultiTracks(new TLMultiTracks());
 		setZoom(0.1);
 		initScrollbars();
 		
@@ -234,10 +246,10 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	
 	public void setMultiTracks(TLMultiTracks mt)
 	{
-		InternalSetMultiTracks(mt);
+		internalSetMultiTracks(mt);
 		fUpdater.doUpdates();
 	}
-	public void InternalSetMultiTracks(TLMultiTracks mt)
+	public void internalSetMultiTracks(TLMultiTracks mt)
 	{
 		// complete le nouveau MT à 128 pistes
 		int nbt = mt.getCount();
@@ -718,8 +730,8 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		String s1 = "";
 		String s2 = "";
 		String s3 = "";
-		if (min > 0) s1 = String.valueOf(min) + "m"; 
-		if (sec > 0) s2 = String.valueOf(sec) + "s"; 
+		if (min > 0) s1 = String.valueOf(min) + TGlobals.getTranslation("m"); 
+		if (sec > 0) s2 = String.valueOf(sec) + TGlobals.getTranslation("s"); 
 		if (milli > 0) s3 = String.valueOf(milli); 
 		return s1+s2+s3;
 	}
@@ -906,29 +918,49 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 					if (fCurDDExp instanceof TNamedExp) {
 						exp = fCurDDExp.getArg1();
 						name =((TNamedExp)fCurDDExp).getName();
+						System.out.println("cas 1.1.1");
 					} else {
 						exp = fCurDDExp;
 						name = "";
+						System.out.println("cas 1.1.2");
 					}
-					InternalSetMultiTracks(TLConverter.multi(exp));
+					internalSetMultiTracks(TLConverter.multi(exp));
 					fName.setText(name);
 					
 				} else {											// drop d'une piste complète
 					setTrack(y2line(where.y), TLConverter.track(fCurDDExp));
+					System.out.println("cas 1.2");
 				}
 				
 			} else if (fCurDDApplFlag) {
 				if (fSelection.contains(x2time(where.x), y2line(where.y))) {
 					fSelection.cmdApply(fCurDDExp);
+					System.out.println("cas 2.1");
 				} else {
 					TLZone dest = new TLZone (fMultiTracks, x2time(where.x), y2line(where.y));
 					dest.cmdApply(fCurDDExp);
 					fSelection.set(dest);
+					System.out.println("cas 2.2");
 				}
 				
 			} else {
+				/* getting useful informations about margin computing */
+				fSelection.selectEvent(fCurDDITime, fCurDDLine);
+				boolean empty = fSelection.empty();
+				int nextEventStart = getNextEvent(true).start();		
+				/* ************************************************** */
+				
 				fSelection.selectDstPoint(fCurDDITime, fCurDDLine);
 				fSelection.cmdInsert(fCurDDExp);
+			
+				/* margin computing for undo stack */
+				int margin=0;
+				if ((!empty)&&(fSelection.end()>nextEventStart))
+					margin = fSelection.end()-nextEventStart;
+				/* ******************************* */
+				
+				fStack.push(new TLActionItem(TLActionItem.Action.SIMPLEDROP, new Object [] {new TLZone(fSelection), new Integer(margin)}, this));
+				
 			}
 			fCurDDExp = null;
 			fCurDDFlag = false;
@@ -1132,10 +1164,17 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	
 	void makePopupMenus ()
 	{
-		scoreMenu 	= makeOneMenu(new String[]{"StartAll","StopAll", "PlayAll" ,"ClearAll"});
-		trackMenu 	= makeOneMenu(new String[]{"NormalTrack", "SeqFunctionTrack","MixFunctionTrack", "ParamTrack", "AbstractTrack", "MuteTrack", "UnmuteTrack", "PlayTrack", "ClearTrack"});
-		eventMenu 	= makeOneMenu(new String[]{"PlayEvent", "Evaluate", "Simplify", "Unevaluate", "Group", "ClearEvent"});
-		timeMenu 	= makeOneMenu(new String[]{"SetPos", "MaxZoom", "PreviousZoom", "ZoomIn", "ZoomOut"});
+		scoreMenu 	= makeOneMenu(new String[]{TGlobals.getTranslation("StartAll"),TGlobals.getTranslation("StopAll"),
+						TGlobals.getTranslation("PlayAll") ,TGlobals.getTranslation("ClearAll")});
+		trackMenu 	= makeOneMenu(new String[]{TGlobals.getTranslation("NormalTrack"), TGlobals.getTranslation("SeqFunctionTrack"),
+						TGlobals.getTranslation("MixFunctionTrack"), TGlobals.getTranslation("ParamTrack"), TGlobals.getTranslation("AbstractTrack"),
+						TGlobals.getTranslation("MuteTrack"), TGlobals.getTranslation("UnmuteTrack"), TGlobals.getTranslation("PlayTrack"),
+						TGlobals.getTranslation("ClearTrack")});
+		eventMenu 	= makeOneMenu(new String[]{TGlobals.getTranslation("PlayEvent"), TGlobals.getTranslation("Evaluate"),
+						TGlobals.getTranslation("Simplify"), TGlobals.getTranslation("Unevaluate"), TGlobals.getTranslation("Group"),
+						TGlobals.getTranslation("ClearEvent")});
+		timeMenu 	= makeOneMenu(new String[]{TGlobals.getTranslation("SetPos"), TGlobals.getTranslation("MaxZoom"),
+						TGlobals.getTranslation("PreviousZoom"), TGlobals.getTranslation("ZoomIn"), TGlobals.getTranslation("ZoomOut")});
 	}
 	
 	PopupMenu makeOneMenu(String[] labels)
@@ -1158,38 +1197,38 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		String cmd = e.getActionCommand();
 		
 		// analyse des commandes
-				if (cmd.equals("PlayAll")) 			PlayAllTracks();
-		else 	if (cmd.equals("ClearAll")) 		ClearAllTracks();
-		else 	if (cmd.equals("StopAll")) 			StopAllTracks();
-		else 	if (cmd.equals("StartAll")) 		StartAllTracks();
+				if (cmd.equals(TGlobals.getTranslation("PlayAll"))) 			playAllTracks();
+		else 	if (cmd.equals(TGlobals.getTranslation("ClearAll"))) 			clearAllTracks();
+		else 	if (cmd.equals(TGlobals.getTranslation("StopAll"))) 			stopAllTracks();
+		else 	if (cmd.equals(TGlobals.getTranslation("StartAll"))) 			startAllTracks();
 		
-		else 	if (cmd.equals("NormalTrack")) 		NormalModeSelTrack();
-		else 	if (cmd.equals("SeqFunctionTrack")) SeqFunModeSelTrack();
-		else 	if (cmd.equals("MixFunctionTrack")) MixFunModeSelTrack();
-		else 	if (cmd.equals("ParamTrack")) 		ParModeSelTrack();
-		else 	if (cmd.equals("AbstractTrack")) 	AbsModeSelTrack();
-		else 	if (cmd.equals("MuteTrack")) 		muteSelTrack();
-		else 	if (cmd.equals("UnmuteTrack")) 		unmuteSelTrack();
-		else 	if (cmd.equals("PlayTrack")) 		PlaySelTrack();
-		else 	if (cmd.equals("ClearTrack")) 		ClearSelTrack();
+		else 	if (cmd.equals(TGlobals.getTranslation("NormalTrack"))) 		normalModeSelTrack();
+		else 	if (cmd.equals(TGlobals.getTranslation("SeqFunctionTrack")))	seqFunModeSelTrack();
+		else 	if (cmd.equals(TGlobals.getTranslation("MixFunctionTrack")))	mixFunModeSelTrack();
+		else 	if (cmd.equals(TGlobals.getTranslation("ParamTrack"))) 			parModeSelTrack();
+		else 	if (cmd.equals(TGlobals.getTranslation("AbstractTrack"))) 		absModeSelTrack();
+		else 	if (cmd.equals(TGlobals.getTranslation("MuteTrack"))) 			muteSelTrack();
+		else 	if (cmd.equals(TGlobals.getTranslation("UnmuteTrack"))) 		unmuteSelTrack();
+		else 	if (cmd.equals(TGlobals.getTranslation("PlayTrack"))) 			playSelTrack();
+		else 	if (cmd.equals(TGlobals.getTranslation("ClearTrack"))) 			clearSelTrack();
 		
-		else 	if (cmd.equals("PlayEvent"))		PlaySelEvent();
-		else 	if (cmd.equals("Evaluate")) 		EvaluateSelEvent();
-		else 	if (cmd.equals("Simplify")) 		ReifySelEvent();
-		else 	if (cmd.equals("Unevaluate")) 		UnevaluateSelEvent();
-		else 	if (cmd.equals("ClearEvent")) 		ClearSelEvent();
-		else 	if (cmd.equals("Group"))	 		GroupSelEvent();
+		else 	if (cmd.equals(TGlobals.getTranslation("PlayEvent")))			playSelEvent();
+		else 	if (cmd.equals(TGlobals.getTranslation("Evaluate"))) 			evaluateSelEvent();
+		else 	if (cmd.equals(TGlobals.getTranslation("Simplify"))) 			reifySelEvent();
+		else 	if (cmd.equals(TGlobals.getTranslation("Unevaluate"))) 			unevaluateSelEvent();
+		else 	if (cmd.equals(TGlobals.getTranslation("ClearEvent"))) 			clearSelEvent();
+		else 	if (cmd.equals(TGlobals.getTranslation("Group")))	 			groupSelEvent();
 		
-		else 	if (cmd.equals("SetPos")) 			SetPos(fPosMs);
-		else 	if (cmd.equals("MaxZoom")) 			MaxZoom();
-		else 	if (cmd.equals("PreviousZoom")) 	PreviousZoom();
-		else 	if (cmd.equals("ZoomIn")) 			ZoomIn();
-		else 	if (cmd.equals("ZoomOut")) 			ZoomOut();
+		else 	if (cmd.equals(TGlobals.getTranslation("SetPos"))) 				setPos(fPosMs);
+		else 	if (cmd.equals(TGlobals.getTranslation("MaxZoom"))) 			maxZoom();
+		else 	if (cmd.equals(TGlobals.getTranslation("PreviousZoom")))	 	previousZoom();
+		else 	if (cmd.equals(TGlobals.getTranslation("ZoomIn"))) 				zoomIn();
+		else 	if (cmd.equals(TGlobals.getTranslation("ZoomOut"))) 			zoomOut();
 			
 		fUpdater.doUpdates();
 	}
 	
-	void SetPos(int date_ms)
+	void setPos(int date_ms)
 	{
 		if (fCurExp != null) {  // Si pas d'expression en cours
 			fPlayer.setPosMsPlayer(date_ms);
@@ -1197,12 +1236,12 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		}
 	}
 	
-	void PlayAllTracks()
+	void playAllTracks()
 	{
-		StopAllTracks();
+		stopAllTracks();
 	
 		if (fCurExp == null) {  // Si pas d'expression en cours
-			StartAllTracks();
+			startAllTracks();
 		}else if (fPlayer.getState().date < fDuration) {  // Si le rendu n'est pas terminé
 			fTask.Forget();
 			fPlayer.contPlayer();
@@ -1210,9 +1249,9 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		}
 	}
 	
-	void StartAllTracks()
+	void startAllTracks()
 	{
-		StopAllTracks();
+		stopAllTracks();
 		
 		fCurExp = TLConverter.exp(fMultiTracks);
 		
@@ -1225,7 +1264,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		}
 	}
 	
-	void StopAllTracks()
+	void stopAllTracks()
 	{
 		if (fPlayer.getState().state == MidiPlayer.kPlaying) {
 			fTask.Forget();
@@ -1233,73 +1272,95 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		}
 	}
 	
-	void ClearAllTracks()
+	void clearAllTracks()
 	{
 		fMultiTracks.clear();
 		fName.setText("");
 		multiTracksChanged();
 		fCurExp = TLConverter.exp(fMultiTracks);
 		notifier.notifyObservers (fCurExp);
+		fUpdater.doUpdates();
+//		fStack.push(new ActionItem(Action.STYLE_2, null, this));
 	}
 
-	void NormalModeSelTrack()
+	public void normalModeSelTrack() { normalModeSelTrack(false); } 
+	public void normalModeSelTrack(boolean undo)
 	{
 		if (fMultiTracks.at(fTrackNum)) {
+			if (!(undo||(fMultiTracks.getTrack().getTrackMode()==TLTrack.NORMAL)))
+				fStack.push(new TLActionItem(TLActionItem.Action.NORMALMODESELTRACK, new Integer [] {fTrackNum, fMultiTracks.getTrack().getTrackMode()}, this));
 			fMultiTracks.getTrack().setTrackMode(TLTrack.NORMAL);
 			multiTracksChanged();
 		}
 	}
 
-	void SeqFunModeSelTrack()
+	public void seqFunModeSelTrack() { seqFunModeSelTrack(false); };
+	public void seqFunModeSelTrack(boolean undo)
 	{
 		if (fMultiTracks.at(fTrackNum)) {
+			if (!(undo||(fMultiTracks.getTrack().getTrackMode()==TLTrack.SEQFUNCTION)))
+				fStack.push(new TLActionItem(TLActionItem.Action.SEQFUNMODESELTRACK, new Integer [] {fTrackNum, fMultiTracks.getTrack().getTrackMode()}, this));
 			fMultiTracks.getTrack().setTrackMode(TLTrack.SEQFUNCTION);
 			multiTracksChanged();
 		}
 	}
 	
-	void MixFunModeSelTrack()
+	public void mixFunModeSelTrack() { mixFunModeSelTrack(false); };
+	public void mixFunModeSelTrack(boolean undo)
 	{
 		if (fMultiTracks.at(fTrackNum)) {
+			if (!(undo||(fMultiTracks.getTrack().getTrackMode()==TLTrack.MIXFUNCTION)))
+				fStack.push(new TLActionItem(TLActionItem.Action.MIXFUNMODESELTRACK, new Integer [] {fTrackNum, fMultiTracks.getTrack().getTrackMode()}, this));
 			fMultiTracks.getTrack().setTrackMode(TLTrack.MIXFUNCTION);
 			multiTracksChanged();
 		}
 	}
 
-	
-	void ParModeSelTrack()
+	public void parModeSelTrack() { parModeSelTrack(false); };
+	public void parModeSelTrack(boolean undo)
 	{
 		if (fMultiTracks.at(fTrackNum)) {
+			if (!(undo||(fMultiTracks.getTrack().getTrackMode()==TLTrack.PARAMETER)))
+				fStack.push(new TLActionItem(TLActionItem.Action.PARMODESELTRACK, new Integer [] {fTrackNum, fMultiTracks.getTrack().getTrackMode()}, this));
 			fMultiTracks.getTrack().setTrackMode(TLTrack.PARAMETER);
 			multiTracksChanged();
 		}
 	}
 	
-	void AbsModeSelTrack()
+	public void absModeSelTrack() { absModeSelTrack(false); };
+	public void absModeSelTrack(boolean undo)
 	{
 		if (fMultiTracks.at(fTrackNum)) {
+			if (!(undo||(fMultiTracks.getTrack().getTrackMode()==TLTrack.ABSTRACTION)))
+				fStack.push(new TLActionItem(TLActionItem.Action.ABSMODESELTRACK, new Integer [] {fTrackNum, fMultiTracks.getTrack().getTrackMode()}, this));
 			fMultiTracks.getTrack().setTrackMode(TLTrack.ABSTRACTION);
 			multiTracksChanged();
 		}
 	}
 
-	void muteSelTrack()
+	public void muteSelTrack() { muteSelTrack(false); }
+	public void muteSelTrack(boolean undo)
 	{
 		if (fMultiTracks.at(fTrackNum)) {
+			if ((!undo)&&(!fMultiTracks.getTrack().getMuteFlag()))
+				fStack.push(new TLActionItem(TLActionItem.Action.MUTESELTRACK, new Integer[] {fTrackNum}, this));
 			fMultiTracks.getTrack().setMuteFlag(true);
 			multiTracksChanged();
 		}
 	}
 
-	void unmuteSelTrack()
+	public void unmuteSelTrack() { unmuteSelTrack(false); }
+	public void unmuteSelTrack(boolean undo)
 	{
 		if (fMultiTracks.at(fTrackNum)) {
+			if ((!undo)&&(fMultiTracks.getTrack().getMuteFlag()))
+				fStack.push(new TLActionItem(TLActionItem.Action.UNMUTESELTRACK, new Integer[]{fTrackNum}, this));
 			fMultiTracks.getTrack().setMuteFlag(false);
 			multiTracksChanged();
 		}
 	}
 
-	void PlaySelTrack()
+	void playSelTrack()
 	{
 		if (fMultiTracks.at(fTrackNum)) {
 			TLTrack tr =fMultiTracks.getTrack();
@@ -1312,7 +1373,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		}
 	}
 
-	void ClearSelTrack() 
+	void clearSelTrack() 
 	{
 		if (fMultiTracks.at(fTrackNum)) {
 			TLTrack t = fMultiTracks.remove();
@@ -1321,60 +1382,71 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 			if (fSelection.voice() == fTrackNum) fSelection.normalizeZone();
 				
 			multiTracksChanged();
+//			fStack.push(new ActionItem(Action.STYLE_2, null, this));
 		}
 	}
 
-	void PlaySelEvent()
+	void playSelEvent()
 	{
 		fSelection.cmdPlay();
 	}
 
-	void ClearSelEvent()
+	public void clearSelEvent() { clearSelEvent(false); }
+	public void clearSelEvent(boolean undo)
 	{
+		if (!undo)
+		{
+			TLTrack buffer = fSelection.copyContentToTrack();
+			fStack.push(new TLActionItem(TLActionItem.Action.CLEARSELEVENT, new Object[]{new TLZone(fSelection), buffer}, this));	
+		}
 		fSelection.cmdClear();
 		multiTracksChanged();
 	}
 
-	void GroupSelEvent()
+	void groupSelEvent()
 	{
 		fSelection.cmdGroup();
 		multiTracksChanged(); 
+//		fStack.push(new ActionItem(Action.STYLE_2, null, this));
 	}
 
-	void EvaluateSelEvent()
+	void evaluateSelEvent()
 	{
 		fSelection.cmdEvaluate();
 		multiTracksChanged();
+//		fStack.push(new ActionItem(Action.STYLE_2, null, this));
 	}
 
-	void UnevaluateSelEvent()
+	void unevaluateSelEvent()
 	{
 		fSelection.cmdUnevaluate();
 		multiTracksChanged();
+//		fStack.push(new ActionItem(Action.STYLE_2, null, this));
 	}
 
-	void ReifySelEvent()
+	void reifySelEvent()
 	{
 		fSelection.cmdReify();
 		multiTracksChanged();
+//		fStack.push(new ActionItem(Action.STYLE_2, null, this));
 	}
 
-	void MaxZoom()
+	void maxZoom()
 	{
 		setZoomAt(fZoomMax, fZoomX);
 	}
 
-	void PreviousZoom()
+	void previousZoom()
 	{
 		setZoomAt(fOldZoom, fZoomX);
 	}
 
-	void ZoomIn()
+	void zoomIn()
 	{
 		setZoomAt(fZoom*2, fZoomX);
 	}
 
-	void ZoomOut()
+	void zoomOut()
 	{
 		setZoomAt(fZoom/2, fZoomX);
 	}
@@ -1393,70 +1465,123 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		//System.out.println( "keyPressed " + e + ", " + e.getKeyCode());
 		int kc = e.getKeyCode();
 
-		if (kc == KeyEvent.VK_BACK_SPACE) {
-			if (fSelection.empty()) {
-				fSelection.extendLeft(fUnit);
-			}
-			if (!fSelection.empty()) {
-				fSelection.cmdClear();
-				multiTracksChanged();
-			}
-			fUpdater.selectionChanged();
-			fUpdater.doUpdates();
-		
-		} else if (kc == KeyEvent.VK_LEFT /*37*/) {
-			if (e.isShiftDown()) {
-				fSelection.extendLeft(fUnit);
-			}else{
-				fSelection.moveLeft(fUnit);
-			}
-			fUpdater.selectionChanged();
-			fUpdater.doUpdates();
-		
-		} else if (kc == KeyEvent.VK_RIGHT /*39*/) {
-			if (e.isShiftDown()) { 
-				fSelection.extendRight(fUnit);
-			}else{
-				fSelection.moveRight(fUnit);
-			}
-			fUpdater.selectionChanged();
-			fUpdater.doUpdates();
-		
-		} else if (kc == KeyEvent.VK_UP /*38*/) {
-			fSelection.moveUp();
-			fUpdater.selectionChanged();
-			fUpdater.doUpdates();
-		
-		} else if (kc == KeyEvent.VK_DOWN /*40*/) {
-			fSelection.moveDown();
-			fUpdater.selectionChanged();
-			fUpdater.doUpdates();
-		
-		} else if (e.isControlDown() || e.isMetaDown()) {
+		if (e.isControlDown() || e.isMetaDown()) {
 
-			if (kc == KeyEvent.VK_X /*88*/) {				// Ctrl+X
+			if (kc == KeyEvent.VK_SPACE) {
+				startAllTracks();
+			}
+			else if (kc == KeyEvent.VK_DELETE) {			// Ctrl+Suppr
+				clearAllTracks();
+			}
+			else if (kc == KeyEvent.VK_X /*88*/) {			// Ctrl+X
+				TLTrack buffer = fSelection.copyContentToTrack();
+				TLTrack prevScrap = fSelection.cmdGetScrap();
+				fStack.push(new TLActionItem(TLActionItem.Action.CUT, new Object[] {new TLZone (fSelection), buffer, prevScrap}, this));
 				fSelection.cmdCutToScrap();
 				multiTracksChanged();
 				fUpdater.selectionChanged();
 				fUpdater.doUpdates();
-			
+
 			} else if (kc == KeyEvent.VK_C /*67*/) {		// Ctrl+C
+				TLTrack prevScrap = fSelection.cmdGetScrap();
+				fStack.push(new TLActionItem(TLActionItem.Action.COPY, new Object[] {prevScrap}, this));
 				fSelection.cmdCopyToScrap();
 				multiTracksChanged();
 				fUpdater.selectionChanged();
 				fUpdater.doUpdates();
-			
+//				fStack.push(new ActionItem(Action.STYLE_2, null, this));
+
 			} else if (kc == KeyEvent.VK_V /*86*/) {		// Ctrl+V
-				fSelection.cmdPasteFromScrap();
+				
+				/* getting useful informations about margin computing */
+				TLZone targetZone = new TLZone(fSelection);
+				TLTrack previousContent = null;
+				boolean empty = targetZone.empty();
+				boolean isRest = targetZone.isRestZone();
+
+				if (!empty)
+					previousContent = targetZone.copyContentToTrack();
+
+				fSelection.selectEvent(targetZone.end()+1, targetZone.topline());
+				int nextEventStart = getNextEvent(true).start();
+				/* ************************************************** */
+				
+				fSelection.set(targetZone);
+				TLZone finalState = fSelection.cmdPasteFromScrap();
 				multiTracksChanged();
 				fUpdater.selectionChanged();
 				fUpdater.doUpdates();
-			
+				
+				/* margin computing for undo stack */
+				int margin=0;
+				if ((finalState.end()>nextEventStart)||(isRest && (!empty) && (finalState.end()<nextEventStart)))
+					margin = finalState.end()-nextEventStart;
+				/* ******************************* */
+				System.out.println(finalState.end()+" "+nextEventStart);
+				fStack.push(new TLActionItem(TLActionItem.Action.PASTE, new Object[] {finalState, new Integer(margin), previousContent}, this));
+				
+			} else if (kc == KeyEvent.VK_Z /*90*/) {		// Ctrl+Z
+				TLActionItem act = (TLActionItem) fStack.pop();
+				act.print();
+				act.undo();
+			}
+		}
+		else
+		{
+			if (kc == KeyEvent.VK_SPACE) {
+				if (fPlayer.getState().state == MidiPlayer.kPlaying) { stopAllTracks(); }
+				else { playAllTracks(); }
+			}
+			else if (kc == KeyEvent.VK_BACK_SPACE) {
+				if (fSelection.empty()) {
+					fSelection.extendLeft(fUnit);
+				}
+				if (!fSelection.empty()) {
+					clearSelEvent();
+				}
+				fUpdater.selectionChanged();
+				fUpdater.doUpdates();
+
+			} else if (kc == KeyEvent.VK_DELETE) {
+				if (!fSelection.empty()) {
+					clearSelEvent();
+				}
+				fUpdater.selectionChanged();
+				fUpdater.doUpdates();
+
+			} else if (kc == KeyEvent.VK_LEFT /*37*/) {
+				if (e.isShiftDown()) {
+					fSelection.extendLeft(fUnit);
+				}else{
+					fSelection.moveLeft(fUnit);
+				}
+				fUpdater.selectionChanged();
+				fUpdater.doUpdates();
+
+			} else if (kc == KeyEvent.VK_RIGHT /*39*/) {
+				if (e.isShiftDown()) { 
+					fSelection.extendRight(fUnit);
+				}else{
+					fSelection.moveRight(fUnit);
+				}
+				fUpdater.selectionChanged();
+				fUpdater.doUpdates();
+
+			} else if (kc == KeyEvent.VK_UP /*38*/) {
+				fSelection.moveUp();
+				fUpdater.selectionChanged();
+				fUpdater.doUpdates();
+				
+			} else if (kc == KeyEvent.VK_DOWN /*40*/) {
+				fSelection.moveDown();
+				fUpdater.selectionChanged();
+				fUpdater.doUpdates();
+
 			}
 		}
 	}
-	
-/*	private BasicApplet getApplet () {
+
+	/*	private BasicApplet getApplet () {
     	Component c=this;
     	while (c!=null) {
     		if (c instanceof BasicApplet){
@@ -1606,7 +1731,11 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 								//selectionChanged(); 
 								break;
 			}
-			
+		} else if (m.isControlDown()||m.isMetaDown()) {
+				switch (z) {
+					case TEMPS : 	fPosMs = ctime; setPos(fPosMs);					
+									break;
+				}			
 		} else {
 			switch (z) {
 				case EVNMENT 	:  
@@ -1713,6 +1842,24 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		}
 		return sAuxEvent;
 	}
+	
+	public TLZone getNextEvent(boolean selectionIncluded)
+	// returne la prochaine zone de non-silence à partir de la sélection actuelle
+	{
+		TLZone initialState = new TLZone(fSelection);
+		if (!selectionIncluded)
+			fSelection.selectEvent(fSelection.end()+1, fSelection.topline());
+		TLZone result = new TLZone(fSelection);
+		
+		if (fSelection.isRestZone())
+		{
+			// évènement de type SILENCE
+			fSelection.selectEvent(fSelection.end()+1, fSelection.topline());
+			result = getNextEvent(true); // plusieurs évènements de type SILENCE peuvent se succéder
+			fSelection.set(initialState);
+		}
+		return result;
+	}
 
 	public static Color getFArgColorBkg() { return fArgColorBkg; }
 	public static int getFLineHeight() { return fLineHeight; }
@@ -1744,4 +1891,195 @@ final class TimeLineTask extends MidiTask {
 			TGlobals.midiappl.ScheduleTask(this, Math.max (Midi.GetTime(), date + 250));
 		}
 	}
+}
+
+/*******************************************************************************************
+*
+*	ButtonPanel (classe) : dessin et gestion d'évènements liés aux boutons
+* 
+*******************************************************************************************/
+
+final class ButtonPanel extends Canvas implements MouseListener {
+	
+	protected TLPane tl;
+	
+	protected Point origin;
+	protected Point btSiz;
+	
+	protected Point startP;
+	protected Point startSiz;
+	
+	protected Point stopP;
+	protected Point stopSiz;
+	
+	protected Point playP;
+	protected Point playSiz;
+	
+	protected Point clearP;
+	protected Point clearSiz;
+	
+	final protected int NULL = -1;
+	final protected int START = 0;
+	final protected int STOP = 1;
+	final protected int PLAY = 2;
+	final protected int CLEAR = 3;
+	
+	protected int pressed = NULL;
+
+	public ButtonPanel(TLPane tl)
+	{
+		super();
+		this.tl = tl;
+		addMouseListener(this);
+	}
+    public void paint(Graphics g) {update(g);}
+    
+    public void update(Graphics g) 
+	{
+    	compute();
+    	drawBtn(startP,startSiz,new Color(0,128,0),START,g);
+    	drawBtn(stopP,stopSiz,new Color(128,0,0),STOP,g);
+    	drawBtn(playP,playSiz,new Color(128,0,128),PLAY,g);
+    	drawBtn(clearP,clearSiz,new Color(255,0,0),CLEAR,g);
+	}
+	private void compute() {
+		origin = new Point(2,2);
+    	btSiz = new Point((getBounds().width-5*origin.x)/4, getBounds().height-2*origin.y);
+  
+    	startP = new Point(origin);
+    	startSiz = btSiz;
+    	
+    	stopP = new Point((int)(startP.x+startSiz.x+origin.x),startP.y);
+    	stopSiz = btSiz;
+    	
+    	playP = new Point((int)(stopP.x+stopSiz.x+origin.x),stopP.y);
+    	playSiz = btSiz;
+    	
+    	clearP = new Point((int)(playP.x+playSiz.x+origin.x),playP.y);
+    	clearSiz = btSiz;
+	}
+    
+    private void drawBtn(Point pos, Point siz, Color color, int pattern, Graphics g)
+    {
+    	Point p = new Point(pos);
+    	Point margin = new Point (siz.x/4, siz.y/4);
+    	g.setColor(Color.black);
+    	g.drawRect(p.x, p.y, siz.x, siz.y);
+    	g.setColor(color);
+    	g.fillRect(p.x+1, p.y+1, siz.x-1, siz.y-1);
+    	if (pressed==pattern)
+    	{
+    		g.setColor(color.brighter());
+    		g.fillRect(p.x+1, p.y+siz.y-2, siz.x-2, 2);
+    		g.fillRect(p.x+siz.x-2, p.y+1, 2, siz.y-2);
+    		g.setColor(color.darker().darker());
+    		g.drawLine(p.x+1,p.y+1, p.x+1, p.y+siz.y-1);
+    		g.drawLine(p.x+1,p.y+1, p.x+siz.x-1, p.y+1);
+    		g.setColor(color.darker());
+    		g.drawLine(p.x+2,p.y+2, p.x+siz.x-2, p.y+2);
+    		g.drawLine(p.x+2,p.y+2, p.x+2, p.y+siz.y-2);
+    		p.setLocation(p.x+1, p.y+1);
+    		
+    	}
+    	else
+    	{
+    		g.setColor(color.brighter());
+    		g.fillRect(p.x+1, p.y+1, siz.x-2, 2);
+    		g.fillRect(p.x+1, p.y+1, 2, siz.y-2);
+    		g.setColor(color.darker().darker());
+    		g.drawLine(p.x+1,p.y+siz.y-1, p.x+siz.x-1, p.y+siz.y-1);
+    		g.drawLine(p.x+siz.x-1,p.y+1, p.x+siz.x-1, p.y+siz.y-1);
+    		g.setColor(color.darker());
+    		g.drawLine(p.x+2,p.y+siz.y-2, p.x+siz.x-2, p.y+siz.y-2);
+    		g.drawLine(p.x+siz.x-2,p.y+2, p.x+siz.x-2, p.y+siz.y-2);
+    	}
+    	drawPattern(pattern, p, siz, margin, g);
+    }
+    
+    private void drawPattern(int pattern, Point p, Point siz, Point margin, Graphics g)
+    {
+       	g.setColor(Color.white);
+    	switch (pattern) {
+		case START:
+			g.fillRect(p.x+margin.x, p.y+margin.y, (siz.x-2*margin.x)/4, siz.y-2*margin.y);
+			g.fillPolygon(new int[] {p.x+margin.x+(siz.x-2*margin.x)*3/8, p.x+siz.x-margin.x, p.x+margin.x+(siz.x-2*margin.x)*3/8}, new int[] {p.y+margin.y, p.y+siz.y/2, p.y+siz.y-margin.y} , 3);
+			break;
+		case STOP:
+			g.fillRect(p.x+margin.x, p.y+margin.y, (siz.x-2*margin.x)/3, siz.y-2*margin.y);
+			g.fillRect(p.x+margin.x + 2*(siz.x-2*margin.x)/3, p.y+margin.y, (siz.x-2*margin.x)/3, siz.y-2*margin.y);
+			break;
+		case PLAY:
+			g.fillPolygon(new int[] {p.x+margin.x, p.x+siz.x-margin.x, p.x+margin.x}, new int[] {p.y+margin.y, p.y+siz.y/2, p.y+siz.y-margin.y} , 3);
+			break;
+		case CLEAR:
+			g.drawLine(p.x+margin.x, p.y+margin.y, p.x+siz.x-margin.x, p.y+siz.y-margin.y);
+			g.drawLine(p.x+margin.x, p.y+siz.y-margin.y, p.x+siz.x-margin.x, p.y+margin.y);
+			int nx = (siz.x-2*margin.x)/7;
+			int ny = (siz.y-2*margin.y)/7;
+			int i = 1;
+			while ((i<=nx)||(i<=ny))
+			{
+				int ix = (i>nx) ? nx : i;
+				int iy = (i>ny) ? ny : i;
+				g.drawLine(p.x+margin.x+ix, p.y+margin.y, p.x+siz.x-margin.x, p.y+siz.y-margin.y-iy);
+				g.drawLine(p.x+margin.x, p.y+margin.y+iy, p.x+siz.x-margin.x-ix, p.y+siz.y-margin.y);
+				g.drawLine(p.x+margin.x+ix, p.y+siz.y-margin.y, p.x+siz.x-margin.x, p.y+margin.y+iy);
+				g.drawLine(p.x+margin.x, p.y+siz.y-margin.y-iy, p.x+siz.x-margin.x-ix, p.y+margin.y);
+				i++;
+			}
+			
+			break;
+
+		default:
+			break;
+		}
+    }
+
+	public void mouseClicked(MouseEvent arg0) {}
+	public void mouseEntered(MouseEvent arg0) {}
+	public void mouseExited(MouseEvent arg0) {}
+	
+	public void mousePressed(MouseEvent e)
+	{
+		Point s = e.getPoint();
+		if ((s.x>startP.x)&&(s.x<startP.x+startSiz.x)
+				&&(s.y>startP.y)&&(s.y<startP.y+startSiz.y))
+			pressed = START;
+		else if ((s.x>stopP.x)&&(s.x<stopP.x+stopSiz.x)
+				&&(s.y>stopP.y)&&(s.y<stopP.y+stopSiz.y))
+			pressed = STOP;
+		else if ((s.x>playP.x)&&(s.x<playP.x+playSiz.x)
+				&&(s.y>playP.y)&&(s.y<playP.y+playSiz.y))
+			pressed = PLAY;
+		else if ((s.x>clearP.x)&&(s.x<clearP.x+clearSiz.x)
+				&&(s.y>clearP.y)&&(s.y<clearP.y+clearSiz.y))
+			pressed = CLEAR;
+		else
+			pressed = NULL;
+		
+		switch (pressed) {
+		case START:
+			tl.startAllTracks();		
+			break;
+		case STOP:
+			tl.stopAllTracks();
+			break;
+		case PLAY:
+			tl.playAllTracks();
+			break;
+		case CLEAR:
+			tl.clearAllTracks();
+			break;
+		default:
+			break;
+		}	
+	   	repaint();
+	}
+
+	public void mouseReleased(MouseEvent e)
+	{
+	   	pressed = NULL;
+	   	repaint();
+	   	tl.requestFocus();
+	}	
 }

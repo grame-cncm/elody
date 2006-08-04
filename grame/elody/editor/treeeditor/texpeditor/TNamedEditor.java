@@ -1,5 +1,6 @@
 package grame.elody.editor.treeeditor.texpeditor;
 
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.treeeditor.StringPanel;
 import grame.elody.editor.treeeditor.TreePanel;
 import grame.elody.lang.texpression.expressions.TExp;
@@ -15,7 +16,7 @@ public class TNamedEditor extends TExpEditor {
 		{ fExp = exp; }
 	
 	public void addSonsTo(TreePanel t) {
-		t.add(new StringPanel(t, 0, "Name : ", fExp.name));
+		t.add(new StringPanel(t, 0, TGlobals.getTranslation("Name"), fExp.name));
 		t.add(new TreePanel(t, 1, fExp.arg1));
 	}
 	

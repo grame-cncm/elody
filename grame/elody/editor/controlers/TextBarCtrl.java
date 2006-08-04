@@ -14,7 +14,7 @@ public class TextBarCtrl extends Panel {
    		eCtrl = ctrl;
    		setFont (new Font("Times", Font.PLAIN, fontSize));
 		Label tp = new Label(text, Label.CENTER);
-   		add ("Center", eCtrl);
+  		add ("Center", eCtrl);
 		if (ctrl.getDirection() == Controler.kVertical) {
  	  		add ("South", tp);
 		} else {

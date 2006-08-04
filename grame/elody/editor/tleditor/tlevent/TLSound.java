@@ -1,5 +1,7 @@
 package grame.elody.editor.tleditor.tlevent;
 
+import grame.elody.editor.misc.TGlobals;
+
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -19,11 +21,29 @@ public abstract class TLSound extends TLEvent {
 	public final boolean isRest() {
 		return false;
 	}
+	
+	private Color negative(Color bgColor)
+	// returns a text color so that it is readable
+	// on the background color in parameter
+	{
+		int r = bgColor.getRed();
+		int g = bgColor.getGreen();
+		int b = bgColor.getBlue();
+		int bright = (r+g+b)/3;
+		if ((bright>70)&&(bright<170)) // contrast lack 
+		{
+			int sat = (int) Math.sqrt(((Math.pow(r-bright,2)+Math.pow(g-bright,2)+Math.pow(b-bright,2))/3));
+			if (sat<100) // saturation lack
+				return Color.white;
+		}
+		return new Color(255-r,255-g,255-b);
+	}
 
 	final public void draw(Graphics g, FontMetrics fm, Color dark, Color light,
 			int x, int y, int w, int h) {
 		// calcul du début du nom
-		int sw = fm.stringWidth(fName);
+		String name = fName.contains("Input") ? fName.replaceAll("Input", TGlobals.getTranslation("Input")) : fName;
+		int sw = fm.stringWidth(name);
 		int sx = x + Math.max(1, (w - sw) / 2);
 		int sh = fm.getHeight();
 		int sy = y + (h + sh) / 2;
@@ -39,7 +59,8 @@ public abstract class TLSound extends TLEvent {
 
 		// dessin du rectangle
 		Color ec = getColor();
-		g.setColor((ec == null) ? dark : ec);
+		Color main = (ec == null) ? dark : ec;
+		g.setColor(main);
 		g.fillRect(x, y, w, h);
 		g.setColor(light);
 		g.drawLine(x + 1, y + 1, x + w - 1, y + 1);
@@ -48,7 +69,9 @@ public abstract class TLSound extends TLEvent {
 		g.drawRect(x, y, w - 1, h);
 
 		// dessin centré du nom
-		g.drawString(fName, sx, sy);
+		Color textColor = negative(main);
+		g.setColor(textColor);
+		g.drawString(name, sx, sy);
 	}
 
 	// méthodes abstraites à implémenter

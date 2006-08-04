@@ -34,7 +34,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class TLEditor extends BasicApplet implements Observer, ActionListener {
-	static final String cmds[] = { "Load", "Save", "Save as" };
+	static final String cmds[] = { TGlobals.getTranslation("Load"), TGlobals.getTranslation("Save"), TGlobals.getTranslation("Save_as") };
 	static final int kLoad=0, kSave=1, kSaveAs=2;
 	MsgNotifier fNotifier ;
 	
@@ -44,6 +44,7 @@ public class TLEditor extends BasicApplet implements Observer, ActionListener {
 	TLPane		fTLPane;
 	Scrollbar	fVSB;
 	Scrollbar	fHSB;
+	Panel		fControlPanel;
 	TextField	fName;
 	PlayExprHolder 	fDisplayer;
 	Button[] 		fButtons; 
@@ -52,15 +53,16 @@ public class TLEditor extends BasicApplet implements Observer, ActionListener {
 	
 	public TLEditor () 
 	{ 
-		super("TimeLine Editor");
+		super(TGlobals.getTranslation("TimeLine_Editor"));
 		fDisplayer = new PlayExprHolder(false);
 		fNotifier = new MsgNotifier (2002);
 		fVSB = new Scrollbar(Scrollbar.VERTICAL);
 		fHSB = new Scrollbar(Scrollbar.HORIZONTAL);
-		fName = new TextField();
+		fControlPanel = new Panel(new BorderLayout());
+		fControlPanel.add("Center", fName = new TextField());
 		fPlayer = new TRealTimePlayer() ;
 		fPlayerName = MidiUtils.availableName("ElodyTLPlayer");
-		fTLPane = new TLPane(fHSB, fVSB, fNotifier, fName, fPlayer);
+		fTLPane = new TLPane(fHSB, fVSB, fNotifier, fControlPanel, fName, fPlayer);
 		fTLPane.addObserver(this);
 		fButtons = new Button[3];
 		dirty = false;
@@ -106,7 +108,7 @@ public class TLEditor extends BasicApplet implements Observer, ActionListener {
 		editor.setLayout(new BorderLayout());
 		
 		fTLPane.setBackground(Color.white);
-		editor.add("North", fName);
+		editor.add("North", fControlPanel);
 		editor.add("East", fVSB);
 		editor.add("South", fHSB);
 		editor.add("Center", fTLPane);
@@ -177,7 +179,7 @@ public class TLEditor extends BasicApplet implements Observer, ActionListener {
     
     //-------------------------------------------------
     public void SaveAs (String file) {
-    	FileSelector fs = new FileSelector (getFrame(), "Enter the file name:", file, FileDialog.SAVE);
+    	FileSelector fs = new FileSelector (getFrame(), TGlobals.getTranslation("SaveAs_prompt"), file, FileDialog.SAVE);
     	if (fs.select ()) {
     		String fname = fs.getFile();
     		Save (fname, path = fs.getDirectory());
@@ -187,7 +189,7 @@ public class TLEditor extends BasicApplet implements Observer, ActionListener {
     
     //-------------------------------------------------
     public void Load () {
-     	FileSelector fs = new FileSelector (getFrame(),  "Select a file:", "", FileDialog.LOAD);
+     	FileSelector fs = new FileSelector (getFrame(),  TGlobals.getTranslation("Load_prompt"), "", FileDialog.LOAD);
     	if (fs.select ()) {
     		String fname = fs.getFile();
     		path = fs.getDirectory();

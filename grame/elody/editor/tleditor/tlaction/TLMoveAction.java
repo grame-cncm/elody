@@ -1,8 +1,11 @@
 package grame.elody.editor.tleditor.tlaction;
 
+import grame.elody.editor.tleditor.TLActionItem;
 import grame.elody.editor.tleditor.TLExportDrag;
 import grame.elody.editor.tleditor.TLPane;
+import grame.elody.editor.tleditor.TLTrack;
 import grame.elody.editor.tleditor.TLZone;
+import grame.elody.lang.texpression.expressions.TExp;
 
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -112,18 +115,50 @@ public class TLMoveAction extends TLDragAction {
 			if ((fDestZone.voice() != fPane.getFSelection().voice())
 					|| (fDestZone.start() != fPane.getFSelection().start())) { // si
 				// mouvement
-
+				
+				TLZone prevSelection = new TLZone(fPane.getFSelection());
+				int margin=0;
+				
 				if (!fDestZone.empty()) { // application
+					fPane.getFSelection().selectEvent(fDestZone.start(), fDestZone.topline());
+					boolean empty = fPane.getFSelection().empty();
+					int nextEventStart = fPane.getNextEvent(false).start();
+					fPane.getFSelection().set(prevSelection);
+					TLTrack t = fDestZone.copyContentToTrack();
 					fDestZone.cmdApply(fPane.getFSelection().getFunction());
 					fPane.getFSelection().set(fDestZone);
+					if ((!empty)&&(fPane.getFSelection().end()>nextEventStart))
+						margin = fPane.getFSelection().end()-nextEventStart;
+					fPane.fStack.push(new TLActionItem(TLActionItem.Action.APPLICATION,
+							new Object[] {prevSelection, new TLZone (fPane.getFSelection()), t, new Integer(margin)}, fPane));
 
 				} else if (m.isAltDown()) { // duplication
 					/* fDestZone.cmdDuplicate(fPane.fSelection); */
+					fPane.getFSelection().selectEvent(fDestZone.start(), fDestZone.topline());
+					boolean empty = fPane.getFSelection().empty();
+					int nextEventStart = fPane.getNextEvent(true).start();
+					fPane.getFSelection().set(prevSelection);
 					fPane.getFSelection().cmdDuplicateTo(fDestZone);
+					if ((!empty)&&(fPane.getFSelection().end()>nextEventStart))
+						margin = fPane.getFSelection().end()-nextEventStart;
+					fPane.fStack.push(new TLActionItem(TLActionItem.Action.DUPLICATION,
+							new Object[] {prevSelection, new TLZone (fPane.getFSelection()), new Integer(margin)}, fPane));
 
 				} else { // déplacement
 					/* fDestZone.cmdMove(fPane.fSelection); */
+					TLTrack buffer = fPane.getFSelection().copyContentToTrack();
+					fPane.clearSelEvent(true);
+					fPane.getFSelection().selectEvent(fDestZone.start(), fDestZone.topline());
+					boolean empty = fPane.getFSelection().empty();
+					int nextEventStart = fPane.getNextEvent(true).start();
+					fPane.getFSelection().selectDstPoint(prevSelection.start(), prevSelection.topline());
+					fPane.getFSelection().suppressRestTime(buffer.getFullDur());
+					fPane.getFSelection().insertTrackToContent(buffer);
 					fPane.getFSelection().cmdMoveTo(fDestZone);
+					if ((!empty)&&(fPane.getFSelection().end()>nextEventStart))
+						margin = fPane.getFSelection().end()-nextEventStart;
+					fPane.fStack.push(new TLActionItem(TLActionItem.Action.MOVE,
+							new Object[] {prevSelection, new TLZone (fPane.getFSelection()), new Integer(margin)}, fPane));
 				}
 
 				/* fPane.fSelection = fDestZone; */
@@ -138,8 +173,10 @@ public class TLMoveAction extends TLDragAction {
 		if (m.getClickCount() == 2) {
 			if (m.isAltDown()) {
 				fPane.getFSelection().cmdUnevaluate();
+				fPane.fStack.push(new String("unevaluate"));
 			} else {
 				fPane.getFSelection().cmdEvaluate();
+				fPane.fStack.push(new String("evaluate"));
 				;
 			}
 			fPane.multiTracksChanged();

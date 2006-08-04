@@ -39,7 +39,7 @@ public class BegEndConstructor extends BasicApplet {
 	TimeControlerPanel beg, end;
 	
 	public BegEndConstructor() {
-		super("Begin End");
+		super(TGlobals.getTranslation("Begin_End"));
 		setLayout(new BorderLayout(4,4));
 		setSize (410, 137);
 	} 
@@ -48,11 +48,11 @@ public class BegEndConstructor extends BasicApplet {
 		eh = new BegEndExprHolder (defaultBeg, defaultEnd);
 		add ("Center", eh);
 
-		beg = new TimeControlerPanel ("Begin", BegEndExprHolder.beginMsg);
+		beg = new TimeControlerPanel (TGlobals.getTranslation("Begin"), BegEndExprHolder.beginMsg);
 		beg.init (eh, defaultBeg);
 		add ("West", beg);
 
-		end = new TimeControlerPanel ("End", BegEndExprHolder.endMsg);
+		end = new TimeControlerPanel (TGlobals.getTranslation("End"), BegEndExprHolder.endMsg);
 		end.init (eh, defaultEnd);
 		add ("East", end);
 		moveFrame (250, 350);
@@ -303,15 +303,15 @@ class TimeControlerPanel extends Panel implements Observer, DropAble
 		p.setLayout(new GridLayout(1, 3, 1,1));
 		notifier.addObserver (obs);
 		BarControler bar = new BarControler (0, 59, BarControler.getKVertical(), new Color(120,120,255));
-		mn = new TextBarCtrl (new EditBarControler (bar, 2), "min", 12);
+		mn = new TextBarCtrl (new EditBarControler (bar, 2), TGlobals.getTranslation("min"), 12);
 		add (p, mn, value/60000);
 
 		bar = new BarControler (0, 59, BarControler.getKVertical(), new Color(160,160,255));
-		sec = new TextBarCtrl (new EditBarControler (bar, 2), "sec", 12);
+		sec = new TextBarCtrl (new EditBarControler (bar, 2), TGlobals.getTranslation("sec"), 12);
 		add (p, sec, (value%60000)/1000);
 
 		bar = new BarControler (0, 999, BarControler.getKVertical(), new Color(200,200,255));
-		mls = new TextBarCtrl (new EditBarControler (bar, 3), "mls", 12);
+		mls = new TextBarCtrl (new EditBarControler (bar, 3), TGlobals.getTranslation("mls"), 12);
 		add (p, mls, value%1000);
 		add ("Center", p);
 	}

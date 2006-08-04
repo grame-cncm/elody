@@ -41,7 +41,12 @@ public class TLPitchAction extends TLDragAction
 	}
 	public void mouseReleased(MouseEvent m)
 	{ 
-		if ( trp != 0) { fPane.getFSelection().cmdPitch(trp); fPane.multiTracksChanged();}
+		if ( trp != 0)
+		{
+			fPane.getFSelection().cmdPitch(trp);
+			fPane.multiTracksChanged();
+			fPane.fStack.push(new String("pitch"));
+		}
 	}
 	public void drawVisualFeedback(Graphics g)
 	{

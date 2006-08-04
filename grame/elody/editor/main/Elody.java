@@ -6,10 +6,13 @@ import grame.elody.editor.misc.appletframe.AppletFrame;
 import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.editor.misc.applets.BasicStub;
 
+import java.awt.BorderLayout;
+import java.awt.Checkbox;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Panel;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,7 +40,7 @@ public final class Elody extends BasicApplet {
   		if (Define.appletMode) {
   			setupContent (getParameter("editors"));
   		}else {
- 			setupContent (getParameter("editors") + ",AboutApplet/About Elody/0,QuitElody/Quit/0");
+ 			setupContent (getParameter("editors") + ",AboutApplet/About_Elody/0,QuitElody/Quit/0");
  			moveFrame (20,20);
  		}
 	}
@@ -62,7 +65,7 @@ public final class Elody extends BasicApplet {
   	private void setupContent (String str) {
   		ArgsReader ar = new ArgsReader (this, str);
   		Vector v = ar.components ();
-		setLayout (new GridLayout( v.size(), 1, 0, 3));
+		setLayout (new GridLayout( v.size()+1, 1, 0, 3));
 		int w=0, h=0;
 		for (int i=0; i<v.size(); i++) {
 		    Component c = (Component)v.elementAt(i);
@@ -71,6 +74,10 @@ public final class Elody extends BasicApplet {
 		    if (d.width > w) w = d.width;
 		    h += d.height + 3;
 		}
+		Panel pan = new Panel(new BorderLayout());
+		pan.add("Center",TGlobals.midiappl.getMidiLed());
+		pan.add("East",TGlobals.midiappl.getThru());
+		add(pan);
 		Insets i = getInsets();
 		setSize (w+i.left+i.right, h+i.bottom+i.top);
 		activate (ar.actifs ());

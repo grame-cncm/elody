@@ -2,6 +2,7 @@ package grame.elody.editor.constructors;
 
 import grame.elody.editor.controlers.MidiChanControlPanel;
 import grame.elody.editor.misc.Define;
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.Singleton;
 import grame.elody.util.fileselector.FileFilter;
 import grame.elody.util.fileselector.FileSelector;
@@ -29,8 +30,8 @@ import java.util.Observer;
 import java.util.StringTokenizer;
 
 public class MidiSender extends Singleton implements ActionListener, Observer {
-	static final String saveCommand = "Save";
-	static final String loadCommand = "Load";
+	static final String saveCommand = TGlobals.getTranslation("Save");
+	static final String loadCommand = TGlobals.getTranslation("Load");
 	
 	final int chanCount = 16;
 	
@@ -39,7 +40,7 @@ public class MidiSender extends Singleton implements ActionListener, Observer {
 	MidiChanControlPanel[] midiTable;
 	
 	public MidiSender (){	
-		super ("EventSender");
+		super (TGlobals.getTranslation("EventSender"));
 		midiTable = new MidiChanControlPanel[16];
 		save = CreateCommand ( saveCommand ) ;
 		load  = CreateCommand ( loadCommand ) ;

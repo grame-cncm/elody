@@ -12,11 +12,9 @@ import grame.elody.editor.constructors.operateurs.YAbstractionOp;
 import grame.elody.editor.expressions.ExprDecomposer;
 import grame.elody.editor.expressions.ExprHolder;
 import grame.elody.editor.expressions.TNotesVisitor;
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
-import grame.elody.editor.misc.draganddrop.TExpContent;
-import grame.elody.lang.TExpMaker;
 import grame.elody.lang.texpression.expressions.TExp;
-import grame.elody.lang.texpression.expressions.TNamedExp;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -25,12 +23,11 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Panel;
-import java.awt.Point;
 import java.net.URL;
 
 public class Rules extends BasicApplet {
 	   public Rules() {
-	    	super("Rules");
+	    	super(TGlobals.getTranslation("Rules"));
 			setLayout(new GridLayout(0,1,10,2));
 			setSize(250, 360);
 		}
@@ -149,55 +146,6 @@ class RestResultHolder extends ResultExprHolder {
 
 class StretchResultHolder extends ResultExprHolder {
 	public boolean accept (TExp exp) { return ExprDecomposer.isStretch (exp); }
-}
-
-abstract class ResultExprHolder extends ExprHolder
-{
-	RulePanel container;
-	
-	public ResultExprHolder () {
-		super(null, new TNotesVisitor(), true);
-	}
-	public TExp extractExpr (TExp exp) {
-		if (exp instanceof TNamedExp) {
-			exp = ((TNamedExp)exp).getArg1();
-		}
-		return exp;
-	}
-	public void drop (Object o, Point where) {
-		if (o instanceof TExpContent) decomposeExpr(((TExpContent)o).getExpression());
-	}
-	public abstract boolean accept (TExp exp);
-	public boolean accept (Object o) {
-		return (o instanceof TExpContent) ? accept(((TExpContent)o).getExpression()) : false;
-	}
-
-   	public boolean decomposeExpr(TExp exp) {
-    	if (decomposeBasicExpr (exp.convertMixExp())) return true;
-   		if (decomposeBasicExpr (exp.convertSeqExp())) return true;
-   		if (decomposeBasicExpr (exp.convertApplExp())) return true;
-  		if (decomposeBasicExpr (exp.convertBeginExp())) return true;
-  		if (decomposeBasicExpr (exp.convertRestExp())) return true;
-  		if (decomposeBasicExpr (exp.convertDilateExp())) return true;
-   		if (decomposeAbstrExpr (exp.convertAbstrExp())) return true;
-		return decomposeAbstrExpr (exp.convertYAbstrExp());
-    }
-    public boolean decomposeBasicExpr(TExp exp) {
-		if (exp != null) {
-	    	container.eh1.setExpression (exp.getArg1());
-	    	container.eh2.setExpression (exp.getArg2());
-			return true;
-		}
-		else return false;
-    }
-    public boolean decomposeAbstrExpr(TExp exp) { 
-		if (exp != null) {
-	    	container.eh1.setExpression (exp.getArg1().getArg1());
-	    	container.eh2.setExpression (TExpMaker.gExpMaker.createBody(exp.getArg1(), exp.getArg2()));
-			return true;
-		}
-		else return false;
-    }
 }
 
 class RulePanel extends Panel

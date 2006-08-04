@@ -4,6 +4,7 @@ import grame.elody.editor.constructors.parametrer.ParamExprHolder;
 import grame.elody.editor.constructors.parametrer.ParamPanel;
 import grame.elody.editor.expressions.VarArgsFunctionDecomposer;
 import grame.elody.editor.misc.Define;
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.lang.texpression.expressions.TExp;
 
@@ -16,18 +17,18 @@ public class SeqConstructor extends BasicApplet implements Observer,
 		ActionListener {
 	static final String appletName = "SeqConstructor";
 	static final int stepsCount = 8;
-	static public String clearCommand = "Clear";
+	static public String clearCommand = TGlobals.getTranslation("Clear");
 	SeqPlayerMgr playMgr; MainExprHolder meh;
 	ParamPanel ppanel[];
 	
 	public SeqConstructor() {
-		super("Sequences constructor");
+		super(TGlobals.getTranslation("Sequence_constructor"));
 	}
     public void init() {
     	int exprWidth = 30;
 		Define.getButtons(this);
 
-    	setSize(10 * 74, 176);
+    	setSize(10 * 110, 176);
 		setLayout(new GridLayout(1, 10, 3,3));
 		ParamExprHolder exprHolders[] = new ParamExprHolder[stepsCount];
 		ppanel = new ParamPanel[stepsCount];

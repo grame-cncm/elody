@@ -4,6 +4,7 @@ import grame.elody.editor.controlers.TextBarField;
 import grame.elody.editor.expressions.ExprHolder;
 import grame.elody.editor.expressions.TNotesVisitor;
 import grame.elody.editor.misc.Define;
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.file.guido.saver.TGuidoWriter;
 import grame.elody.file.midifile.TMultiSeqVisitor;
@@ -36,7 +37,7 @@ public class GuidoViewer extends BasicApplet implements Observer, Runnable {
 	Thread loader = null;
 	
 	public GuidoViewer (){	
-		super ("GuidoViewer");
+		super (TGlobals.getTranslation("Guido_Viewer"));
 		guidoImage = new GuidoPanel();
 		guidoView = new ScrollPane();
 		setSize(500,300);
@@ -59,7 +60,7 @@ public class GuidoViewer extends BasicApplet implements Observer, Runnable {
   		zoom = new TextBarField("50",10);
   		zoom.addObserver(this);
 		botPanel.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		botPanel.add(new Label("Zoom Factor"));
+		botPanel.add(new Label(TGlobals.getTranslation("Zoom_Factor")));
   		botPanel.add(zoom); 
   		    		
   		add("South",botPanel);

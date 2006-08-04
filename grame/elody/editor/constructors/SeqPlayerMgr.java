@@ -17,8 +17,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class SeqPlayerMgr implements Observer, ExpObserver, ActionListener {
-	static String playCommand = "Play";
-	static String stopCommand = "Stop";
+	static String playCommand = TGlobals.getTranslation("Play");
+	static String stopCommand = TGlobals.getTranslation("Stop");
 	private TSeqRealTimePlayer player;
 	private int playIndex;
 	Button button;

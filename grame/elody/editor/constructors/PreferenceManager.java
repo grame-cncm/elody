@@ -26,7 +26,7 @@ public class PreferenceManager extends Singleton implements ItemListener,
 	String in, out;
 
 	public PreferenceManager() {
-		super("PreferenceManager");
+		super(TGlobals.getTranslation("PreferenceManager"));
 		inConnection = new Choice();
 		outConnection = new Choice();
 		port = new TextBarField(new Integer(TGlobals.context.getPort())
@@ -82,16 +82,16 @@ public class PreferenceManager extends Singleton implements ItemListener,
 		inConnection.addMouseListener(this);
 		outConnection.addMouseListener(this);
 
-		add(new Label("MidiPort"));
+		add(new Label(TGlobals.getTranslation("MidiPort")));
 		add(port);
 
-		add(new Label("MidiEvents"));
+		add(new Label(TGlobals.getTranslation("MidiEvents")));
 		add(events);
 
-		add(new Label("Default Midi Ouput"));
+		add(new Label(TGlobals.getTranslation("Default_Midi_Ouput")));
 		add(outConnection);
 
-		add(new Label("Default Midi Input"));
+		add(new Label(TGlobals.getTranslation("Default_Midi_Input")));
 		add(inConnection);
 	}
 

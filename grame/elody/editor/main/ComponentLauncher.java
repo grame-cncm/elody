@@ -1,5 +1,6 @@
 package grame.elody.editor.main;
 
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.appletframe.AppletFrame;
 
 import java.applet.Applet;
@@ -17,7 +18,7 @@ public class ComponentLauncher implements ActionListener {
 		applet = a;
 		StringTokenizer t 	= new StringTokenizer(str, "/");
 	    className 	= t.nextToken().trim();
-	    name 		= t.hasMoreTokens() ? t.nextToken().trim() : className;
+	    name 		= t.hasMoreTokens() ? TGlobals.getTranslation(t.nextToken().trim()) : className;
 	    activate = false;
 	    if (t.hasMoreTokens()) activate = new Integer(t.nextToken()).intValue() != 0;
 	}

@@ -40,7 +40,12 @@ public class TLVelocityAction extends TLDragAction {
 	}
 	public void mouseReleased(MouseEvent m)
 	{ 
-		if ( trp != 0) { fPane.getFSelection().cmdVelocity(trp); fPane.multiTracksChanged();}
+		if ( trp != 0)
+		{
+			fPane.getFSelection().cmdVelocity(trp);
+			fPane.multiTracksChanged();
+			fPane.fStack.push(new String("velocity"));
+		}
 	}
 	public void drawVisualFeedback(Graphics g)
 	{

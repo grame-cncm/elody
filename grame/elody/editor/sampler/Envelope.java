@@ -1,5 +1,9 @@
 package grame.elody.editor.sampler;
 
+import grame.elody.editor.misc.TGlobals;
+import grame.elody.editor.misc.applets.BasicApplet;
+import grame.elody.editor.misc.applets.Window;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -52,7 +56,8 @@ public class Envelope {
 	private double sustain;	//negative decibels (-30..0)
 	private int release;	//milliseconds (0..25000)
 	
-	private Shell s;
+	protected Shell s;
+	protected Window w;
 	private boolean shellOpened = false;
 	
 	final private Color RED = new Color(Display.getCurrent(),255,0,0);
@@ -85,9 +90,12 @@ public class Envelope {
 		if (!shellOpened)
 		{
 			s = new Shell(SWT.DIALOG_TRIM);
+			w = new Window(s);
+			BasicApplet.screen.addWindow(w);
 			s.setRedraw(false);
 			s.addShellListener(new ShellAdapter() {
 				public void shellClosed(final ShellEvent e) {
+					BasicApplet.screen.delWindow(w);
 					s.dispose();
 					s=null;
 					shellOpened = false;
@@ -97,7 +105,7 @@ public class Envelope {
 				}
 			});
 			s.setSize(500, 450);
-			s.setText("Sampler - Channel "+ch.getNum()+" - Envelope Editor");
+			s.setText(TGlobals.getTranslation("Sampler")+" - "+TGlobals.getTranslation("Channel")+" "+ch.getNum()+" - "+TGlobals.getTranslation("Envelope_Editor"));
 			s.setBackground(ch.bgColor);
 			s.setLayout(new FormLayout());
 			s.setVisible(true);
@@ -146,7 +154,7 @@ public class Envelope {
 		attackLabelFd.right = new FormAttachment(100, -380);
 		attackLabelFd.top = new FormAttachment(0, 200);
 		attackLabel.setLayoutData(attackLabelFd);
-		attackLabel.setText("ATTACK:");
+		attackLabel.setText(TGlobals.getTranslation("ATTACK"));
 
 		final Label decayLabel = new Label(s, SWT.NONE);
 		decayLabel.setBackground(ch.bgColor);
@@ -155,7 +163,7 @@ public class Envelope {
 		decayLabelFd.right = new FormAttachment(100, -380);
 		decayLabelFd.top = new FormAttachment(0, 250);
 		decayLabel.setLayoutData(decayLabelFd);
-		decayLabel.setText("DECAY:");
+		decayLabel.setText(TGlobals.getTranslation("DECAY"));
 
 		final Label sustainLabel = new Label(s, SWT.NONE);
 		sustainLabel.setBackground(ch.bgColor);
@@ -164,7 +172,7 @@ public class Envelope {
 		sustainLabelFd.right = new FormAttachment(100, -380);
 		sustainLabelFd.top = new FormAttachment(0, 300);
 		sustainLabel.setLayoutData(sustainLabelFd);
-		sustainLabel.setText("SUSTAIN:");
+		sustainLabel.setText(TGlobals.getTranslation("SUSTAIN"));
 
 		final Label releaseLabel = new Label(s, SWT.NONE);
 		releaseLabel.setBackground(ch.bgColor);
@@ -173,7 +181,7 @@ public class Envelope {
 		releaseLabelFd.right = new FormAttachment(100, -380);
 		releaseLabelFd.top = new FormAttachment(0, 350);
 		releaseLabel.setLayoutData(releaseLabelFd);
-		releaseLabel.setText("RELEASE:");
+		releaseLabel.setText(TGlobals.getTranslation("RELEASE"));
 
 		final Spinner attackSpinner = new Spinner(s, SWT.BORDER);
 		final Scale attackScale = new Scale(s, SWT.NONE);
@@ -398,7 +406,7 @@ public class Envelope {
 		attackUnitFd.top = new FormAttachment(0, 200);
 		attackUnitFd.left = new FormAttachment(0, 450);
 		attackUnitLabel.setLayoutData(attackUnitFd);
-		attackUnitLabel.setText("ms");
+		attackUnitLabel.setText(TGlobals.getTranslation("ms"));
 
 		final Label decayUnitLabel = new Label(s, SWT.NONE);
 		decayUnitLabel.setBackground(ch.bgColor);
@@ -406,7 +414,7 @@ public class Envelope {
 		decayUnitFd.top = new FormAttachment(0, 250);
 		decayUnitFd.left = new FormAttachment(0, 450);
 		decayUnitLabel.setLayoutData(decayUnitFd);
-		decayUnitLabel.setText("ms");
+		decayUnitLabel.setText(TGlobals.getTranslation("ms"));
 
 		final Label sustainUnitLabel = new Label(s, SWT.NONE);
 		sustainUnitLabel.setBackground(ch.bgColor);
@@ -414,7 +422,7 @@ public class Envelope {
 		sustainUnitFd.top = new FormAttachment(0, 300);
 		sustainUnitFd.left = new FormAttachment(0, 450);
 		sustainUnitLabel.setLayoutData(sustainUnitFd);
-		sustainUnitLabel.setText("dB");
+		sustainUnitLabel.setText(TGlobals.getTranslation("dB"));
 
 		final Label releaseUnitLabel = new Label(s, SWT.NONE);
 		releaseUnitLabel.setBackground(ch.bgColor);
@@ -422,14 +430,14 @@ public class Envelope {
 		releaseUnitFd.top = new FormAttachment(0, 350);
 		releaseUnitFd.left = new FormAttachment(0, 450);
 		releaseUnitLabel.setLayoutData(releaseUnitFd);
-		releaseUnitLabel.setText("ms");
+		releaseUnitLabel.setText(TGlobals.getTranslation("ms"));
 		
 		final Button closeButton = new Button(s, SWT.NONE);
 		final FormData closeFd = new FormData();
 		closeFd.top = new FormAttachment(0, 385);
 		closeFd.left = new FormAttachment(0, 220);
 		closeButton.setLayoutData(closeFd);
-		closeButton.setText("Close");
+		closeButton.setText(TGlobals.getTranslation("Close"));
 		closeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				shellClose();

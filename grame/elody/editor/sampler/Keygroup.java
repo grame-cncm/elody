@@ -1,5 +1,7 @@
 package grame.elody.editor.sampler;
 
+import grame.elody.editor.misc.TGlobals;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -433,7 +435,7 @@ public class Keygroup {
 		loadFd.right = new FormAttachment(noteLabel, -10, SWT.LEFT);
 		loadFd.left = new FormAttachment(noteLabel, -50, SWT.LEFT);
 		loadButton.setLayoutData(loadFd);
-		loadButton.setText("Load");
+		loadButton.setText(TGlobals.getTranslation("Load"));
 		loadButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 					fileLoad(fileText, fDial);			
@@ -491,8 +493,12 @@ public class Keygroup {
 	public String convertPitch(int pitch)
 	// convert MIDI pitch value (0..127) into musical representation
 	{
-		String noteName[] = { "c", "c#", "d", "d#", "e", "f", "f#", "g", "g#",
-				"a", "a#", "b" };
+		String noteName[] = { TGlobals.getTranslation("c"), TGlobals.getTranslation("c")+"#",
+				TGlobals.getTranslation("d"), TGlobals.getTranslation("d")+"#",
+				TGlobals.getTranslation("e"), TGlobals.getTranslation("f"),
+				TGlobals.getTranslation("f")+"#", TGlobals.getTranslation("g"),
+				TGlobals.getTranslation("g")+"#", TGlobals.getTranslation("a"),
+				TGlobals.getTranslation("a")+"#", TGlobals.getTranslation("b") };
 		int octave = pitch / 12;
 		// int octave = pitch/12 - 4;
 		return (noteName[pitch % 12] + Integer.toString(octave));

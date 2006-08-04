@@ -2,6 +2,7 @@ package grame.elody.editor.constructors;
 
 import grame.elody.editor.constructors.parametrer.ParamFrame;
 import grame.elody.editor.expressions.ExprHolder;
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.util.fileselector.ColoredLabel;
 
 import java.awt.Button;
@@ -23,7 +24,7 @@ public class SeqCommandsPanel extends ParamFrame {
 		int align = GridBagConstraints.CENTER;
 
 		setConstraints (c, eol, GridBagConstraints.NONE, align, 0,0, 0,0, 0,2,2,1);
-		add (new ColoredLabel("Parameters", Label.CENTER, Color.darkGray), gbl, c);
+		add (new ColoredLabel(TGlobals.getTranslation("Parameters"), Label.CENTER, Color.darkGray), gbl, c);
 		setConstraints (c, eol, GridBagConstraints.BOTH, align, 30,30, 1,1, 0,4,4,4);
 		add (new SeqHelpPanel (), gbl, c);
 		setConstraints (c, eol, GridBagConstraints.NONE, align, 20,0, 1,0, 0,5,5,2);

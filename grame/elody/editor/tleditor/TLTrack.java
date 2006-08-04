@@ -15,7 +15,7 @@ import java.io.Serializable;
 	--donnent des infos, mais sans effet de bord
 
 	t.getDate() 	-> date		donne la date courante (date de l'événement courant), c'est à dire la somme 
-								des durées des événements qui préc?dent. En fin de piste l'événement courant est nul et
+								des durées des événements qui précèdent. En fin de piste l'événement courant est nul et
 								la date courante est la durée totale de la piste.
 	t.getEvent() 	-> ev		donne l'événement courant (ou null si en fin de piste)
 	t.getFullDur()	-> fulldur	donne la durée totale de la piste (somme des durées des événements) ou 0 
@@ -25,7 +25,7 @@ import java.io.Serializable;
 	  ajustant la durée totale de la piste.
 
 	t.insert(ev)				insére un événement à la date courante (protégée contre pointeur null)
-	t.remove() 		-> ev		enleve et retourne l'événement courant (ou null si apr?s le dernier événement)
+	t.remove() 		-> ev		enleve et retourne l'événement courant (ou null si après le dernier événement)
 
 	--changent la position courante  (protégées contre les positions hors bornes)
 
@@ -88,7 +88,7 @@ public final class TLTrack implements Serializable {
 	}
 	
 	//------------------------------------------------------------------------------
-	// fonctions d'acc?s aux différents champs
+	// fonctions d'accès aux différents champs
 	//------------------------------------------------------------------------------
 	final public TLEvent 	getEvent()				{ return fCurEvent; }
 	final public int 		getDate()				{ return fCurDate; }
@@ -323,7 +323,7 @@ public final class TLTrack implements Serializable {
 			} else {
 				// c'était des silences en cours de piste
 				// on les remplace par un seul silence et
-				// on se place apr?s
+				// on se place après
 				fCurEvent = cur;
 				fPrevEvent = new TLRest(dst);
 				fPrevEvent.fLink = prv;
@@ -336,7 +336,7 @@ public final class TLTrack implements Serializable {
 	
 		
 	//==========================================================================================
-	// fonctions de recherche de la plus proche fronti?re
+	// fonctions de recherche de la plus proche frontière
 	// 		frontier(dv) -> df 	  : recherche la frontiere la plus proche
 	//==========================================================================================
 	
@@ -438,7 +438,7 @@ public final class TLTrack implements Serializable {
 				int fdur = 0;
 				while (ce != null && ce.hasAncestor(fe)) { fdur += ce.fDur; ce = ce.fLink; }
 				
-				// insertion du p?re
+				// insertion du père
 				fCurEvent = fe; fe.fLink = ce;
 				
 				// elimination vers le passé
@@ -487,7 +487,7 @@ public final class TLTrack implements Serializable {
 	}
 	
 	//==========================================================================================
-	// isCurDateInGroup() : indique si la date est entre deux événements d'un m?me groupe
+	// isCurDateInGroup() : indique si la date est entre deux événements d'un même groupe
 	//==========================================================================================
 	
 		

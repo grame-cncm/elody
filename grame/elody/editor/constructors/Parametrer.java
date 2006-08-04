@@ -3,6 +3,7 @@ package grame.elody.editor.constructors;
 import grame.elody.editor.constructors.parametrer.ParamExprHolder;
 import grame.elody.editor.constructors.parametrer.ParamPanel;
 import grame.elody.editor.misc.Define;
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.lang.texpression.expressions.TExp;
 
@@ -13,7 +14,7 @@ public class Parametrer extends BasicApplet {
 	ParamPanel param;
 	
 	public Parametrer() {
-		super("Parametrer");
+		super(TGlobals.getTranslation("Parametrer"));
 		setLayout(new BorderLayout());
 		setSize (100, 206);
 	} 

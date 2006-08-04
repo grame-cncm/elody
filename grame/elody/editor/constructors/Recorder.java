@@ -19,7 +19,7 @@ public final class Recorder extends BasicApplet implements Observer {
  	String name;
  	
 	public Recorder () {
-		super ("Recorder");
+		super (TGlobals.getTranslation("Recorder"));
 		holdTable= new ExprHolderPanel[size];
 	}
 	

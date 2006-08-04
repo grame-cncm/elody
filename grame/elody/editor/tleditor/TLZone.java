@@ -5,6 +5,7 @@ import grame.elody.editor.misc.draganddrop.TExpContent;
 import grame.elody.editor.tleditor.tlevent.TLEvent;
 import grame.elody.editor.tleditor.tlevent.TLRest;
 import grame.elody.lang.TExpMaker;
+import grame.elody.lang.texpression.expressions.TEvent;
 import grame.elody.lang.texpression.expressions.TExp;
 
 public class TLZone implements TExpContent {
@@ -308,6 +309,9 @@ public class TLZone implements TExpContent {
 	// 					LES COMMANDES
 	//======================================================================================
 	
+	public void cmdSetScrap(TLTrack t) { fScrap = t; }
+	public TLTrack cmdGetScrap() { return fScrap; }
+	
 	public void cmdDuplicateTo(TLZone dst)
 	{
 		TLTrack t = this.copyContentToTrack();
@@ -333,7 +337,7 @@ public class TLZone implements TExpContent {
 		fEndTime = fStartTime;
 	}
 
-	public void cmdPasteFromScrap()
+	public TLZone cmdPasteFromScrap()
 	{
 		//System.out.println( "Paste");
 		TLTrack t = this.transfertIntoTrack(false); 
@@ -342,8 +346,10 @@ public class TLZone implements TExpContent {
 		}
 		this.suppressRestTime(fScrap.getFullDur());
 		this.insertTrack(fScrap.makeCopy());
+		TLZone r = new TLZone(this);
 		fStartTime += fScrap.getFullDur();
 		fEndTime = fStartTime;
+		return r;
 	}
 
 	public void cmdMoveTo(TLZone dst)
@@ -643,6 +649,16 @@ public class TLZone implements TExpContent {
 		return TLConverter.exp(this.transfertIntoTrack(true));
 	}
 	
+	public boolean isRestZone()
+	{
+		if (getExpression().unNameExp() instanceof TEvent)
+		{
+			TEvent ev = (TEvent) getExpression().unNameExp();
+			return (ev.getType()==1);
+		}
+		return false;
+	}
+	
 	static boolean onlyRest(TLTrack t)
 	{
 		for (t.end(); t.prev();) if (! (t.getEvent() instanceof TLRest) ) return false;
@@ -856,7 +872,7 @@ public class TLZone implements TExpContent {
 	// insere le contenu d'une track
 	//--------------------------------------------------------------------------
 	
-	void insertTrackToContent(TLTrack r)
+	public void insertTrackToContent(TLTrack r)
 	{
 		// on suppose la zone correctement normalisée
 		fMT.at(fVoice);
@@ -916,7 +932,7 @@ public class TLZone implements TExpContent {
 	// supprime du silence à partir de fStartTime si possible jusqu'a 
 	// concurrence de la durée dr. S'arrete au 1er evenement non-silence
 	//--------------------------------------------------------------------------
-	void suppressRestTime(int dr)
+	public void suppressRestTime(int dr)
 	{
 		// on suppose la zone correctement normalisée
 

@@ -1,6 +1,8 @@
 package grame.elody.editor.tleditor.tlaction;
 
+import grame.elody.editor.tleditor.TLActionItem;
 import grame.elody.editor.tleditor.TLPane;
+import grame.elody.editor.tleditor.TLZone;
 
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -29,8 +31,22 @@ public class TLResizeAction extends TLDragAction {
 	public void mouseReleased(MouseEvent m)
 	{ 
 		if ( (fNewEndTime != fPane.getFSelection().end()) && (fLine == fPane.getFSelection().voice()) ) {
+			/* getting useful informations for undo stack */
+			int prevEndTime = fPane.getFSelection().end();
+			TLZone sel = new TLZone(fPane.getFSelection());
+			fPane.getFSelection().selectEvent(prevEndTime+1, sel.topline());
+			int nextEventStart = fPane.getNextEvent(false).start();
+			fPane.getFSelection().set(sel);
+			/* ****************************************** */			
 			fPane.getFSelection().cmdResize(fNewEndTime);
 			fPane.multiTracksChanged();
+			/* margin computing for undo stack */
+			int margin=0;
+			if (fPane.getFSelection().end()>nextEventStart)
+				margin = fPane.getFSelection().end()-nextEventStart;
+			/* ******************************* */
+			fPane.fStack.push(new TLActionItem(TLActionItem.Action.RESIZE,
+					new Object[] {new TLZone (fPane.getFSelection()), new Integer(prevEndTime), new Integer(margin)}, fPane));			
 		}
 	}
 	public void drawVisualFeedback(Graphics g)

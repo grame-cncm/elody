@@ -5,6 +5,7 @@ import grame.elody.editor.constructors.document.NamedExprPanel;
 import grame.elody.editor.expressions.ExprHolder;
 import grame.elody.editor.expressions.TNotesVisitor;
 import grame.elody.editor.misc.Define;
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.file.parser.TFileContent;
 import grame.elody.file.parser.TFileParser;
@@ -34,12 +35,13 @@ public class Stock extends BasicApplet implements ActionListener {
 	ExprHolder [] expHolders; CmdsPanel cmdsPanel;
 	boolean fileBased, dirty; String path;
 	static int nRows = 5, nColumns = 7;
-	static String cmds[] = { "Load", "Save", "Save as", "Clear" };
+	static String cmds[] = { TGlobals.getTranslation("Load"), TGlobals.getTranslation("Save"),
+		TGlobals.getTranslation("Save_as"), TGlobals.getTranslation("Clear") };
 	static final int kLoad=0, kSave=1, kSaveAs=2, kClear=3;
 	 
 	//-------------------------------------------------
 	public Stock() {
-		super("Untitled");
+		super(TGlobals.getTranslation("Untitled"));
 		setLayout(new BorderLayout(4,4));
 		setSize (nColumns*65, nRows*70);
 		expHolders = new ExprHolder[nRows * nColumns];
@@ -109,7 +111,7 @@ public class Stock extends BasicApplet implements ActionListener {
     }
 	//-------------------------------------------------
     public void SaveAs (String file) {
-    	HTMLFileSelector fs = new HTMLFileSelector (getFrame(), "Enter the file name:", file, FileDialog.SAVE);
+    	HTMLFileSelector fs = new HTMLFileSelector (getFrame(), TGlobals.getTranslation("SaveAs_prompt"), file, FileDialog.SAVE);
     	if (fs.select ()) {
     		String fname = fs.getFile();
     		Save (fname, path = fs.getDirectory());
@@ -118,7 +120,7 @@ public class Stock extends BasicApplet implements ActionListener {
     }
 	//-------------------------------------------------
     public void Load () {
-     	HTMLFileSelector fs = new HTMLFileSelector (getFrame(),  "Select a file:", "", FileDialog.LOAD);
+     	HTMLFileSelector fs = new HTMLFileSelector (getFrame(),  TGlobals.getTranslation("Load_prompt"), "", FileDialog.LOAD);
     	if (fs.select ()) {
     		String fname = fs.getFile();
     		path = fs.getDirectory();

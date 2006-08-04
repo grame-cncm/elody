@@ -2,6 +2,7 @@ package grame.elody.editor.constructors;
 
 import grame.elody.editor.expressions.ExprHolder;
 import grame.elody.editor.expressions.TNotesVisitor;
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.file.parser.TFileContent;
 import grame.elody.file.parser.TFileParser;
@@ -34,9 +35,9 @@ import java.io.FileOutputStream;
 import java.net.URL;
 
 public final class FileSaver extends BasicApplet implements ActionListener {
-	static String saveCommand = "Save";
-	static String loadCommand = "Load";
-	static String fetchCommand = "Fetch";
+	static String saveCommand = TGlobals.getTranslation("Save");
+	static String loadCommand = TGlobals.getTranslation("Load");
+	static String fetchCommand = TGlobals.getTranslation("Fetch");
 	static String url = "http://java.grame.fr/Elody/Contributions/Contrib0.html";
  
 	FileOutputStream outfile = null;
@@ -48,7 +49,7 @@ public final class FileSaver extends BasicApplet implements ActionListener {
 	ExprHolder  displayer;
  
   	public FileSaver (){	
-  		super ("File Manager");
+  		super (TGlobals.getTranslation("File_Manager"));
   		displayer = new ExprHolder(null, new TNotesVisitor(),true);
   	}
   	
@@ -79,7 +80,7 @@ public final class FileSaver extends BasicApplet implements ActionListener {
     	Panel transportpanel = new Panel();
     	
     	filepanel.setLayout(new BorderLayout(5,0));
-    	filepanel.add("West",new PixelBorder (new Label( "URL:"),3));
+    	filepanel.add("West",new PixelBorder (new Label( TGlobals.getTranslation("URL")),3));
     	filepanel.add("Center", new PixelBorder(filename,3));
     	filepanel.add("East", new PixelBorder(fetch,3));
     	
