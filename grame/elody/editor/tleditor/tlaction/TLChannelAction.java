@@ -1,8 +1,11 @@
 package grame.elody.editor.tleditor.tlaction;
 
 import grame.elody.editor.misc.TGlobals;
+import grame.elody.editor.tleditor.TLActionItem;
 import grame.elody.editor.tleditor.TLConverter;
 import grame.elody.editor.tleditor.TLPane;
+import grame.elody.editor.tleditor.TLZone;
+import grame.elody.editor.tleditor.TLActionItem.Action;
 import grame.elody.lang.TExpMaker;
 import grame.elody.lang.texpression.expressions.TExp;
 
@@ -42,9 +45,9 @@ public class TLChannelAction extends TLDragAction {
 	{ 
 		if ( trp != 0)
 		{
+			fPane.toUndoStack(Action.TRACK);
 			fPane.getFSelection().cmdChannel(trp);
 			fPane.multiTracksChanged();
-			fPane.fStack.push(new String("channel"));	
 		}
 	}
 	public void drawVisualFeedback(Graphics g)

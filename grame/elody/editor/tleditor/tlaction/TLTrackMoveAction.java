@@ -4,6 +4,7 @@ import grame.elody.editor.tleditor.TLExportDrag;
 import grame.elody.editor.tleditor.TLPane;
 import grame.elody.editor.tleditor.TLTrack;
 import grame.elody.editor.tleditor.TLZone;
+import grame.elody.editor.tleditor.TLActionItem.Action;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -57,6 +58,7 @@ public class TLTrackMoveAction extends TLDragAction {
 		if (! fExternal) {
 			if ( (dstY != srcY) && (copymode || (dstLine != srcLine) && (dstLine != srcLine+1)) ) {
 				if (fPane.getFMultiTracks().at(srcLine)) {
+					fPane.toUndoStack(Action.MULTITRACKS);
 					if (copymode) {
 						TLTrack src = fPane.getFMultiTracks().getTrack();
 						TLTrack cpy = src.makeCopy();
@@ -65,7 +67,6 @@ public class TLTrackMoveAction extends TLDragAction {
 						fPane.getFMultiTracks().insert(cpy);
 						fPane.getFSelection().selectLine(dstLine);
 						fPane.selectionChanged();
-						fPane.fStack.push(new String("trackCopy"));
 					} else {
 						TLTrack trk = fPane.getFMultiTracks().getTrack();
 						fPane.getFMultiTracks().remove();
@@ -73,7 +74,6 @@ public class TLTrackMoveAction extends TLDragAction {
 						fPane.getFMultiTracks().insert(trk);
 						fPane.getFSelection().selectLine(fPane.getFMultiTracks().getPos());
 						fPane.selectionChanged();
-						fPane.fStack.push(new String("trackMove"));
 					}
 					fPane.multiTracksChanged();
 				}

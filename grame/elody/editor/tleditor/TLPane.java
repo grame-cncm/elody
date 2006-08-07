@@ -4,6 +4,7 @@ import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.draganddrop.ExtendedDropAble;
 import grame.elody.editor.misc.draganddrop.TExpContent;
 import grame.elody.editor.player.TRealTimePlayer;
+import grame.elody.editor.tleditor.TLActionItem.Action;
 import grame.elody.editor.tleditor.tlaction.TLChannelAction;
 import grame.elody.editor.tleditor.tlaction.TLDragAction;
 import grame.elody.editor.tleditor.tlaction.TLExtendSelectionAction;
@@ -19,11 +20,9 @@ import grame.elody.editor.tleditor.tlaction.TLZoomAction;
 import grame.elody.editor.tleditor.tlevent.TLEvent;
 import grame.elody.editor.tleditor.tlevent.TLRest;
 import grame.elody.lang.TEvaluator;
-import grame.elody.lang.texpression.expressions.TEvent;
 import grame.elody.lang.texpression.expressions.TExp;
 import grame.elody.lang.texpression.expressions.TNamedExp;
 import grame.elody.lang.texpression.expressions.TNullExp;
-import grame.elody.lang.texpression.expressions.TSequenceExp;
 import grame.elody.util.MsgNotifier;
 import grame.midishare.Midi;
 import grame.midishare.MidiAppl;
@@ -59,6 +58,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Observer;
 import java.util.Stack;
+import java.util.Vector;
 
 public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	MouseMotionListener, KeyListener, ActionListener, FocusListener, 
@@ -118,6 +118,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	double				fScoreDur;				// durée de la partition en seconde
 	Panel				fControlPanel;			// panneau de contrôle
 	TextField			fName;					// nom éventuel de la partition
+	String				fTempValue;
 	ButtonPanel			fBtnPan;				// boutons de contrôle
 	
 	// les scrollbar externes
@@ -206,6 +207,17 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		fHSB = hsb;
 		fControlPanel = controlPan;
 		fName = name;
+		fTempValue = fName.getText();
+		fName.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent arg0) {}
+			public void focusLost(FocusEvent arg0) {
+				if ( !fTempValue.equals(fName.getText()) )
+				{
+					fStack.push(new TLActionItem(TLActionItem.Action.TEXT, new Object [] {new String(fTempValue)}, getThis()));
+					fTempValue = fName.getText();
+				}
+			}		
+		});
 		fBtnPan = new ButtonPanel(this);
 		fBtnPan.setSize(100,30);
 		controlPan.add("West", fBtnPan);
@@ -237,6 +249,70 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		fTask = new TimeLineTask (this);
 		fCurExp = null;
 		
+	}
+	
+	protected TLPane getThis() { return this; }
+	
+	public void toUndoStack(Action type) {
+		TLZone selectionSav = new TLZone(fSelection);
+		switch (type) {
+		case MULTITRACKS:
+			Vector tracksVect = new Vector();
+			int pos = fMultiTracks.getPos();
+			for (int i=0; i<fMultiTracks.getCount(); i++)
+			{
+				fMultiTracks.at(i);
+				TLTrack t = fMultiTracks.getTrack();
+				TLTrack tSav = TLConverter.track(TLConverter.exp(t));
+				tSav.setTrackMode(t.getTrackMode());
+				tSav.setMuteFlag(t.getMuteFlag());
+				tracksVect.add(tSav);
+			}
+			fStack.push(new TLActionItem(Action.MULTITRACKS, new Object [] {tracksVect, new String(fName.getText()), selectionSav}, this));
+			fMultiTracks.at(pos);
+			break;
+		case TRACK:
+			TLTrack t = fMultiTracks.getTrack();
+			TLTrack tSav = TLConverter.track(TLConverter.exp(t));
+			tSav.setTrackMode(t.getTrackMode());
+			tSav.setMuteFlag(t.getMuteFlag());
+			fStack.push(new TLActionItem(TLActionItem.Action.TRACK, new Object[]{tSav, new Integer(fMultiTracks.getPos()), selectionSav}, this));
+			break;
+		case COPY:
+			TLTrack prevScrap = fSelection.cmdGetScrap();
+			fStack.push(new TLActionItem(TLActionItem.Action.COPY, new Object[] {prevScrap, selectionSav}, this));
+			break;
+		case CUT:
+			t = fMultiTracks.getTrack();
+			tSav = TLConverter.track(TLConverter.exp(t));
+			prevScrap = fSelection.cmdGetScrap();
+			tSav.setTrackMode(t.getTrackMode());
+			tSav.setMuteFlag(t.getMuteFlag());
+			fStack.push(new TLActionItem(TLActionItem.Action.CUT, new Object[]{tSav, new Integer(fMultiTracks.getPos()), prevScrap, selectionSav}, this));
+			break;
+		default:
+			break;
+		}
+	}
+	public void toUndoStack(Action type, int from, int to) {
+		TLZone selectionSav = new TLZone(fSelection);
+		switch (type) {
+		case MOVE:
+			fMultiTracks.at(from);
+			TLTrack t = fMultiTracks.getTrack();
+			TLTrack t1Sav = TLConverter.track(TLConverter.exp(t));
+			t1Sav.setTrackMode(t.getTrackMode());
+			t1Sav.setMuteFlag(t.getMuteFlag());
+			fMultiTracks.at(to);
+			t = fMultiTracks.getTrack();
+			TLTrack t2Sav = TLConverter.track(TLConverter.exp(t));
+			t2Sav.setTrackMode(t.getTrackMode());
+			t2Sav.setMuteFlag(t.getMuteFlag());
+			fStack.push(new TLActionItem(TLActionItem.Action.MOVE, new Object[]{t1Sav, t2Sav, new Integer(from), new Integer(to), selectionSav}, this));
+			break;
+		default:
+			break;
+		}
 	}
 	
 	public void notifyContentChanged()
@@ -435,6 +511,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		drawHRule(offGraphics, 0, 0, dim.width, fRuleHeight);
 		//drawVRule(offGraphics, 0, fRuleHeight, fRuleWidth-1, dim.height-fRuleHeight);
 		drawSQRule(offGraphics, -1, -1, fRuleWidth-1, fRuleHeight);
+		drawTarget(offGraphics);
 	}
 	
 	// affichage du curseur de jeu
@@ -736,6 +813,26 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		return s1+s2+s3;
 	}
 	
+	// dessine la cible du coin
+	public void drawTarget(Graphics g)
+	{
+		g.setColor(Color.BLACK);
+		g.drawLine(8, 1, 8, 5);
+		g.drawLine(8, 13, 8, 17);
+		g.drawLine(0, 9, 5, 9);
+		g.drawLine(11, 9, 16, 9);
+		g.drawLine(6, 3, 10, 3);
+		g.drawLine(6, 15, 10, 15);
+		g.drawLine(2, 7, 2, 11);
+		g.drawLine(14, 7, 14, 11);
+		g.drawLine(6, 3, 2, 7);
+		g.drawLine(2, 11, 6, 15);
+		g.drawLine(10, 15, 14, 11);
+		g.drawLine(14, 7, 10, 3);
+		g.setColor(Color.RED);
+		g.drawLine(8, 8, 8, 10);
+		g.drawLine(7, 9, 9, 9);
+	}
 	
 	// dessine la règle horizontale du temps
 	public void drawHRule(Graphics g, int x, int y, int w, int h)
@@ -918,49 +1015,36 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 					if (fCurDDExp instanceof TNamedExp) {
 						exp = fCurDDExp.getArg1();
 						name =((TNamedExp)fCurDDExp).getName();
-						System.out.println("cas 1.1.1");
 					} else {
 						exp = fCurDDExp;
 						name = "";
-						System.out.println("cas 1.1.2");
 					}
+					toUndoStack(Action.MULTITRACKS);
 					internalSetMultiTracks(TLConverter.multi(exp));
 					fName.setText(name);
 					
 				} else {											// drop d'une piste complète
+					fMultiTracks.at(y2line(where.y));
+					toUndoStack(Action.TRACK);
 					setTrack(y2line(where.y), TLConverter.track(fCurDDExp));
-					System.out.println("cas 1.2");
 				}
 				
 			} else if (fCurDDApplFlag) {
 				if (fSelection.contains(x2time(where.x), y2line(where.y))) {
+					/* getting useful informations for undo stack */
+				
+					/* ****************************************** */
 					fSelection.cmdApply(fCurDDExp);
-					System.out.println("cas 2.1");
 				} else {
 					TLZone dest = new TLZone (fMultiTracks, x2time(where.x), y2line(where.y));
 					dest.cmdApply(fCurDDExp);
 					fSelection.set(dest);
-					System.out.println("cas 2.2");
 				}
 				
 			} else {
-				/* getting useful informations about margin computing */
-				fSelection.selectEvent(fCurDDITime, fCurDDLine);
-				boolean empty = fSelection.empty();
-				int nextEventStart = getNextEvent(true).start();		
-				/* ************************************************** */
-				
 				fSelection.selectDstPoint(fCurDDITime, fCurDDLine);
+				toUndoStack(Action.TRACK);
 				fSelection.cmdInsert(fCurDDExp);
-			
-				/* margin computing for undo stack */
-				int margin=0;
-				if ((!empty)&&(fSelection.end()>nextEventStart))
-					margin = fSelection.end()-nextEventStart;
-				/* ******************************* */
-				
-				fStack.push(new TLActionItem(TLActionItem.Action.SIMPLEDROP, new Object [] {new TLZone(fSelection), new Integer(margin)}, this));
-				
 			}
 			fCurDDExp = null;
 			fCurDDFlag = false;
@@ -969,6 +1053,8 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 			fUpdater.doUpdates();
 		}
 	}
+
+
 
 	public void feedback (int x, int y)		
 	{ 
@@ -1081,8 +1167,12 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	void drawDDVisualFeedback(int line, int time, int itime, int dur)
 	{
 		Graphics g = getGraphics();
-		g.setXORMode(fArgColorBkg); g.setColor(fTraitColor); 		
-		if (time >= fTimePos && line >= fLinePos) {
+		g.setColor(fRuleColor);
+		g.fillRect(0, 0, 18, 19);
+		drawTarget(g);
+		g.setXORMode(fArgColorBkg); g.setColor(fTraitColor);
+		if (time > fTimePos && line >= fLinePos) {
+			
 			// il s'agit d'un drag sur le contenu d'une piste
 			
 			// calcule les positions graphiques du rectangle et du point d'insertion
@@ -1141,8 +1231,15 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 			// il s'agit d'un drag dans le coin
 			Dimension dim = getSize();
 			// ombre du coin & du reste
+			g.setPaintMode();
+			g.setColor(Color.yellow);
+			g.fillRect(0, 0, 18, 19);
+			drawTarget(g);
+			g.setXORMode(fArgColorBkg);
+			g.setColor(Color.black);
 			g.drawRect(1, 1, fRuleWidth-2, fRuleHeight-2);
 			g.drawRect(fRuleWidth, fRuleHeight+1, dim.width - fRuleWidth - 1, dim.height - fRuleHeight - 2);
+
 		}
 		g.setPaintMode();
 		g.dispose();
@@ -1274,87 +1371,73 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	
 	void clearAllTracks()
 	{
+		toUndoStack(Action.MULTITRACKS);
 		fMultiTracks.clear();
 		fName.setText("");
 		multiTracksChanged();
 		fCurExp = TLConverter.exp(fMultiTracks);
 		notifier.notifyObservers (fCurExp);
 		fUpdater.doUpdates();
-//		fStack.push(new ActionItem(Action.STYLE_2, null, this));
 	}
 
-	public void normalModeSelTrack() { normalModeSelTrack(false); } 
-	public void normalModeSelTrack(boolean undo)
+	public void normalModeSelTrack()
 	{
 		if (fMultiTracks.at(fTrackNum)) {
-			if (!(undo||(fMultiTracks.getTrack().getTrackMode()==TLTrack.NORMAL)))
-				fStack.push(new TLActionItem(TLActionItem.Action.NORMALMODESELTRACK, new Integer [] {fTrackNum, fMultiTracks.getTrack().getTrackMode()}, this));
+			toUndoStack(Action.TRACK);
 			fMultiTracks.getTrack().setTrackMode(TLTrack.NORMAL);
 			multiTracksChanged();
 		}
 	}
 
-	public void seqFunModeSelTrack() { seqFunModeSelTrack(false); };
-	public void seqFunModeSelTrack(boolean undo)
+	public void seqFunModeSelTrack()
 	{
 		if (fMultiTracks.at(fTrackNum)) {
-			if (!(undo||(fMultiTracks.getTrack().getTrackMode()==TLTrack.SEQFUNCTION)))
-				fStack.push(new TLActionItem(TLActionItem.Action.SEQFUNMODESELTRACK, new Integer [] {fTrackNum, fMultiTracks.getTrack().getTrackMode()}, this));
+			toUndoStack(Action.TRACK);
 			fMultiTracks.getTrack().setTrackMode(TLTrack.SEQFUNCTION);
 			multiTracksChanged();
 		}
 	}
 	
-	public void mixFunModeSelTrack() { mixFunModeSelTrack(false); };
-	public void mixFunModeSelTrack(boolean undo)
+	public void mixFunModeSelTrack()
 	{
 		if (fMultiTracks.at(fTrackNum)) {
-			if (!(undo||(fMultiTracks.getTrack().getTrackMode()==TLTrack.MIXFUNCTION)))
-				fStack.push(new TLActionItem(TLActionItem.Action.MIXFUNMODESELTRACK, new Integer [] {fTrackNum, fMultiTracks.getTrack().getTrackMode()}, this));
+			toUndoStack(Action.TRACK);
 			fMultiTracks.getTrack().setTrackMode(TLTrack.MIXFUNCTION);
 			multiTracksChanged();
 		}
 	}
 
-	public void parModeSelTrack() { parModeSelTrack(false); };
-	public void parModeSelTrack(boolean undo)
+	public void parModeSelTrack()
 	{
 		if (fMultiTracks.at(fTrackNum)) {
-			if (!(undo||(fMultiTracks.getTrack().getTrackMode()==TLTrack.PARAMETER)))
-				fStack.push(new TLActionItem(TLActionItem.Action.PARMODESELTRACK, new Integer [] {fTrackNum, fMultiTracks.getTrack().getTrackMode()}, this));
+			toUndoStack(Action.TRACK);
 			fMultiTracks.getTrack().setTrackMode(TLTrack.PARAMETER);
 			multiTracksChanged();
 		}
 	}
 	
-	public void absModeSelTrack() { absModeSelTrack(false); };
-	public void absModeSelTrack(boolean undo)
+	public void absModeSelTrack()
 	{
 		if (fMultiTracks.at(fTrackNum)) {
-			if (!(undo||(fMultiTracks.getTrack().getTrackMode()==TLTrack.ABSTRACTION)))
-				fStack.push(new TLActionItem(TLActionItem.Action.ABSMODESELTRACK, new Integer [] {fTrackNum, fMultiTracks.getTrack().getTrackMode()}, this));
+			toUndoStack(Action.TRACK);
 			fMultiTracks.getTrack().setTrackMode(TLTrack.ABSTRACTION);
 			multiTracksChanged();
 		}
 	}
 
-	public void muteSelTrack() { muteSelTrack(false); }
-	public void muteSelTrack(boolean undo)
+	public void muteSelTrack()
 	{
 		if (fMultiTracks.at(fTrackNum)) {
-			if ((!undo)&&(!fMultiTracks.getTrack().getMuteFlag()))
-				fStack.push(new TLActionItem(TLActionItem.Action.MUTESELTRACK, new Integer[] {fTrackNum}, this));
+			toUndoStack(Action.TRACK);
 			fMultiTracks.getTrack().setMuteFlag(true);
 			multiTracksChanged();
 		}
 	}
 
-	public void unmuteSelTrack() { unmuteSelTrack(false); }
-	public void unmuteSelTrack(boolean undo)
+	public void unmuteSelTrack()
 	{
 		if (fMultiTracks.at(fTrackNum)) {
-			if ((!undo)&&(fMultiTracks.getTrack().getMuteFlag()))
-				fStack.push(new TLActionItem(TLActionItem.Action.UNMUTESELTRACK, new Integer[]{fTrackNum}, this));
+			toUndoStack(Action.TRACK);
 			fMultiTracks.getTrack().setMuteFlag(false);
 			multiTracksChanged();
 		}
@@ -1376,13 +1459,13 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	void clearSelTrack() 
 	{
 		if (fMultiTracks.at(fTrackNum)) {
+			toUndoStack(Action.TRACK);
 			TLTrack t = fMultiTracks.remove();
 			t.clear();
 			fMultiTracks.insert(t);
 			if (fSelection.voice() == fTrackNum) fSelection.normalizeZone();
 				
 			multiTracksChanged();
-//			fStack.push(new ActionItem(Action.STYLE_2, null, this));
 		}
 	}
 
@@ -1391,14 +1474,10 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		fSelection.cmdPlay();
 	}
 
-	public void clearSelEvent() { clearSelEvent(false); }
-	public void clearSelEvent(boolean undo)
+	public void clearSelEvent()
 	{
-		if (!undo)
-		{
-			TLTrack buffer = fSelection.copyContentToTrack();
-			fStack.push(new TLActionItem(TLActionItem.Action.CLEARSELEVENT, new Object[]{new TLZone(fSelection), buffer}, this));	
-		}
+		fMultiTracks.at(fSelection.topline());
+		toUndoStack(Action.TRACK);	
 		fSelection.cmdClear();
 		multiTracksChanged();
 	}
@@ -1407,28 +1486,24 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	{
 		fSelection.cmdGroup();
 		multiTracksChanged(); 
-//		fStack.push(new ActionItem(Action.STYLE_2, null, this));
 	}
 
 	void evaluateSelEvent()
 	{
 		fSelection.cmdEvaluate();
 		multiTracksChanged();
-//		fStack.push(new ActionItem(Action.STYLE_2, null, this));
 	}
 
 	void unevaluateSelEvent()
 	{
 		fSelection.cmdUnevaluate();
 		multiTracksChanged();
-//		fStack.push(new ActionItem(Action.STYLE_2, null, this));
 	}
 
 	void reifySelEvent()
 	{
 		fSelection.cmdReify();
 		multiTracksChanged();
-//		fStack.push(new ActionItem(Action.STYLE_2, null, this));
 	}
 
 	void maxZoom()
@@ -1474,55 +1549,34 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 				clearAllTracks();
 			}
 			else if (kc == KeyEvent.VK_X /*88*/) {			// Ctrl+X
-				TLTrack buffer = fSelection.copyContentToTrack();
-				TLTrack prevScrap = fSelection.cmdGetScrap();
-				fStack.push(new TLActionItem(TLActionItem.Action.CUT, new Object[] {new TLZone (fSelection), buffer, prevScrap}, this));
+				
+				fMultiTracks.at(fSelection.topline());
+				toUndoStack(Action.CUT);
 				fSelection.cmdCutToScrap();
 				multiTracksChanged();
 				fUpdater.selectionChanged();
 				fUpdater.doUpdates();
 
 			} else if (kc == KeyEvent.VK_C /*67*/) {		// Ctrl+C
-				TLTrack prevScrap = fSelection.cmdGetScrap();
-				fStack.push(new TLActionItem(TLActionItem.Action.COPY, new Object[] {prevScrap}, this));
+	
+				toUndoStack(Action.COPY);
 				fSelection.cmdCopyToScrap();
 				multiTracksChanged();
 				fUpdater.selectionChanged();
 				fUpdater.doUpdates();
-//				fStack.push(new ActionItem(Action.STYLE_2, null, this));
 
 			} else if (kc == KeyEvent.VK_V /*86*/) {		// Ctrl+V
 				
-				/* getting useful informations about margin computing */
-				TLZone targetZone = new TLZone(fSelection);
-				TLTrack previousContent = null;
-				boolean empty = targetZone.empty();
-				boolean isRest = targetZone.isRestZone();
-
-				if (!empty)
-					previousContent = targetZone.copyContentToTrack();
-
-				fSelection.selectEvent(targetZone.end()+1, targetZone.topline());
-				int nextEventStart = getNextEvent(true).start();
-				/* ************************************************** */
-				
-				fSelection.set(targetZone);
+				fMultiTracks.at(fSelection.topline());
+				toUndoStack(Action.TRACK);
 				TLZone finalState = fSelection.cmdPasteFromScrap();
 				multiTracksChanged();
 				fUpdater.selectionChanged();
 				fUpdater.doUpdates();
 				
-				/* margin computing for undo stack */
-				int margin=0;
-				if ((finalState.end()>nextEventStart)||(isRest && (!empty) && (finalState.end()<nextEventStart)))
-					margin = finalState.end()-nextEventStart;
-				/* ******************************* */
-				System.out.println(finalState.end()+" "+nextEventStart);
-				fStack.push(new TLActionItem(TLActionItem.Action.PASTE, new Object[] {finalState, new Integer(margin), previousContent}, this));
-				
 			} else if (kc == KeyEvent.VK_Z /*90*/) {		// Ctrl+Z
 				TLActionItem act = (TLActionItem) fStack.pop();
-				act.print();
+				//act.print();
 				act.undo();
 			}
 		}
@@ -1763,7 +1817,12 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 					fDragAction = new TLChannelAction (this, mx, my); 
 					break;
 				
-				case COIN 			:  fDragAction = new TLScoreMoveAction(this); break;
+				case COIN 			:
+					Graphics g = getGraphics();
+					g.setColor(Color.yellow);
+					g.fillRect(0, 0, 18, 19);
+					drawTarget(g);   
+					fDragAction = new TLScoreMoveAction(this); break;
 				case PISTE 			:  fDragAction = new TLTrackMoveAction(this, fSelection, my); break;
 				case TEMPS 			:  fDragAction = new TLZoomAction(this, mx, my); break;
 
@@ -1796,6 +1855,9 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	public void mouseReleased(MouseEvent m)
 	{ 
 		Graphics g = getGraphics();
+		g.setColor(fRuleColor);
+		g.fillRect(0, 0, 18, 19);
+		drawTarget(g);   
 		fDragAction.drawVisualFeedback(g);
 		g.dispose();
 		fDragAction.mouseReleased(m);
@@ -1843,24 +1905,6 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		return sAuxEvent;
 	}
 	
-	public TLZone getNextEvent(boolean selectionIncluded)
-	// returne la prochaine zone de non-silence à partir de la sélection actuelle
-	{
-		TLZone initialState = new TLZone(fSelection);
-		if (!selectionIncluded)
-			fSelection.selectEvent(fSelection.end()+1, fSelection.topline());
-		TLZone result = new TLZone(fSelection);
-		
-		if (fSelection.isRestZone())
-		{
-			// évènement de type SILENCE
-			fSelection.selectEvent(fSelection.end()+1, fSelection.topline());
-			result = getNextEvent(true); // plusieurs évènements de type SILENCE peuvent se succéder
-			fSelection.set(initialState);
-		}
-		return result;
-	}
-
 	public static Color getFArgColorBkg() { return fArgColorBkg; }
 	public static int getFLineHeight() { return fLineHeight; }
 	public int getFLinePos() { return fLinePos; }

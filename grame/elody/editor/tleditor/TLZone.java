@@ -649,16 +649,6 @@ public class TLZone implements TExpContent {
 		return TLConverter.exp(this.transfertIntoTrack(true));
 	}
 	
-	public boolean isRestZone()
-	{
-		if (getExpression().unNameExp() instanceof TEvent)
-		{
-			TEvent ev = (TEvent) getExpression().unNameExp();
-			return (ev.getType()==1);
-		}
-		return false;
-	}
-	
 	static boolean onlyRest(TLTrack t)
 	{
 		for (t.end(); t.prev();) if (! (t.getEvent() instanceof TLRest) ) return false;
