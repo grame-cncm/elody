@@ -61,7 +61,7 @@ public class Channel {
 	
 	private short num;			// channel number
 	private Button bt;			// open-close the shell
-	private Shell s = null;		// channel SWT window (shell)
+	private Shell sh = null;		// channel SWT window (shell)
 	private Window w = null;	// generic window
 	public Color bgColor;	
 	private Vector keygroups;
@@ -114,19 +114,19 @@ public class Channel {
 		for (int i=0; i<availKeyb.length; i++)
 			availKeyb[i] = true;
 		sampler.setOutputDeviceGroupEnable(false);
-		s = new Shell();
-		w = new Window(s);
+		sh = new Shell();
+		w = new Window(sh);
 		BasicApplet.screen.addWindow(w);
-		s.setRedraw(false);
-		s.addShellListener(new ShellAdapter() {
+		sh.setRedraw(false);
+		sh.addShellListener(new ShellAdapter() {
 			public void shellClosed(final ShellEvent e) {
 				envelope.shellClose();
 				bt.setSelection(false);
 				keygroups.clear();
 				sampler.configSav.writeAll();
 				BasicApplet.screen.delWindow(w);
-				s.dispose();
-				s=null;
+				sh.dispose();
+				sh=null;
 				shellOpened = false;
 				if (sampler.getChannelsOpenedCount()==0)
 					sampler.setOutputDeviceGroupEnable(true);
@@ -136,13 +136,13 @@ public class Channel {
 			}
 		});
 
-		s.setSize(500, 450);
-		s.setLocation(s.getLocation().x, s.getLocation().y+340);
-		s.setText(TGlobals.getTranslation("Sampler")+ " - "+ TGlobals.getTranslation("Channel")+" "+num);
-		s.setBackground(bgColor);
-		s.setLayout(new FormLayout());
+		sh.setSize(500, 450);
+		sh.setLocation(sh.getLocation().x, sh.getLocation().y+340);
+		sh.setText(TGlobals.getTranslation("Sampler")+ " - "+ TGlobals.getTranslation("Channel")+" "+num);
+		sh.setBackground(bgColor);
+		sh.setLayout(new FormLayout());
 		// Keygroups can be added with drag-and-drop operations on audio files
-		final DropTarget target = new DropTarget(s, DND.DROP_NONE);
+		final DropTarget target = new DropTarget(sh, DND.DROP_NONE);
 		target.setTransfer(new Transfer[] {FileTransfer.getInstance()});
 		target.addDropListener(new DropTargetAdapter() {
 			public void drop(final DropTargetEvent e) {
@@ -160,27 +160,28 @@ public class Channel {
 		 		addKeygroup(result,filter);
 			}
 		});
-		s.setVisible(true);
-		s.setActive();
+		sh.setVisible(true);
+		sh.setActive();
+		int a = 0; 		int d = 0;		double s = 0.0;	int r = 300;
 		if (sampler.configSav.isSet(num))
 		{
 			// getting the settings from config file
 			setOutput(sampler.configSav.getOutput(num, 0));
 			setVol(sampler.configSav.getVol(num, 0));
 			setPan(sampler.configSav.getPan(num, 0));
-			int a = sampler.configSav.getAttack(num, 0);
-			int d = sampler.configSav.getDecay(num, 0);
-			double s = sampler.configSav.getSustain(num, 0);
-			int r = sampler.configSav.getRelease(num, 0);
-			envelope = new Envelope(a,d,s,r, this);
-			/* each keygroup has an ouput, volume and panoramic,
-			 * and envelope informations, but in interface, only the
-			 * first keygroup in a channel is considered as the main
-			 * information of this channel (others are ignored)
-			 */
+			a = sampler.configSav.getAttack(num, 0);
+			d = sampler.configSav.getDecay(num, 0);
+			s = sampler.configSav.getSustain(num, 0);
+			r = sampler.configSav.getRelease(num, 0);
 		}
+		envelope = new Envelope(a,d,s,r, this);
+		/* each keygroup has an ouput, volume and panoramic,
+		 * and envelope informations, but in interface, only the
+		 * first keygroup in a channel is considered as the main
+		 * information of this channel (others are ignored)
+		 */
 		buildInterface();
-		s.addControlListener(new ControlAdapter() {
+		sh.addControlListener(new ControlAdapter() {
 			public void controlResized(final ControlEvent e) 
 			{
 				keygCompositeRefresh(false);
@@ -200,20 +201,20 @@ public class Channel {
 				addKeygroup(false, i, file, ref, plus, minus);
 			}
 		}
-		s.layout();
-		s.setRedraw(true);
+		sh.layout();
+		sh.setRedraw(true);
 		keygCompositeRefresh(false);
 		shellOpened = true;
 	}
 	
 	public void shellClose() {
-		if (s!=null)
-			s.close();
+		if (sh!=null)
+			sh.close();
 		// see ShellAdapter "shellClosed"
 	}
 	
 	public short getNum()				{return num;}
-	public Shell getShell()				{ return s;	}
+	public Shell getShell()				{ return sh;	}
 	public boolean getAvailKeyb(int i)	{ return availKeyb[i]; }
 	public Vector getKeygroups() 		{ return keygroups; }
 	public int getOutput()				{ return output; }
@@ -245,7 +246,7 @@ public class Channel {
 			outputSpinner.setSelection(output);
 		else
 		{
-			final MessageBox mb = new MessageBox(s, SWT.OK);
+			final MessageBox mb = new MessageBox(sh, SWT.OK);
 			mb.setMessage(TGlobals.getTranslation("not_enough_outputs")+num);
 			mb.open();
 		}
@@ -281,8 +282,8 @@ public class Channel {
 	public void setAvailKeyb(int i, boolean value) { availKeyb[i] = value; }
 	public void addKeygroup(File[] files, AudioExtensionFilter filter)
 	{
-		Cursor cursor = new Cursor(s.getDisplay(), SWT.CURSOR_WAIT);
-		s.setCursor(cursor);
+		Cursor cursor = new Cursor(sh.getDisplay(), SWT.CURSOR_WAIT);
+		sh.setCursor(cursor);
 		for (int i=0; i<files.length; i++)
 		{
 			if (files[i].isDirectory())
@@ -299,7 +300,7 @@ public class Channel {
 
 		}
 		keygCompositeRefresh(true);
-		s.setCursor(null);
+		sh.setCursor(null);
 		cursor.dispose();
 	}
 	
@@ -366,10 +367,10 @@ public class Channel {
 	}
 	
 	private void buildInterface() {
-		Composite keybComposite = keybCompositeCreate(s);
-		Composite menuComposite1 = menuComposite1Create(s, keybComposite);
-		Composite menuComposite2 = menuComposite2Create(s, menuComposite1);
-		scrolledCompositeCreate(s, menuComposite2);	
+		Composite keybComposite = keybCompositeCreate(sh);
+		Composite menuComposite1 = menuComposite1Create(sh, keybComposite);
+		Composite menuComposite2 = menuComposite2Create(sh, menuComposite1);
+		scrolledCompositeCreate(sh, menuComposite2);	
 	}
 
 	private Composite keybCompositeCreate(Composite parent) {

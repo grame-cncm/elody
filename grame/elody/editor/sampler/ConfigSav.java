@@ -42,8 +42,23 @@ public class ConfigSav {
 			w.write("#----------------------------------------------------------");
 			w.newLine();
 			for (int i=0; i<=list.maxChannels(); i++)
-			{
+			{ 
 				Integer ch = Integer.valueOf(i);
+				if (list.isSet(ch))
+				{
+					for (int j=0; j<=list.maxKeygroups(ch); j++)
+						// elimination of the keygroups without an audio file
+						if (list.getKeyg(ch, j)!=null)
+						{
+							File f = list.getFile(ch, j);
+							if (f==null)
+							{
+								list.delKeygroup(ch, j);
+								if (list.isSet(ch))	continue;
+								else	break;
+							}
+						}
+				}
 				if (list.isSet(ch))
 				{
 					w.newLine();
@@ -54,9 +69,9 @@ public class ConfigSav {
 						if (list.getKeyg(ch, j)!=null)
 						{
 							int ref = list.getRef(ch, j);
+							File f = list.getFile(ch, j);
 							int minus = list.getMinus(ch, j);
 							int plus = list.getPlus(ch, j);
-							File f = list.getFile(ch, j);
 							int output = list.getOutput(ch, j)-1;
 							int pan = list.getPan(ch, j);
 							int vol = list.getVol(ch, j);
@@ -70,7 +85,8 @@ public class ConfigSav {
 								w.newLine();
 								double speed = Math.pow(2, k/12.0);
 								int key = ref+k;
-								w.write((ch.intValue()-1)+"\t"+key+"\t"+f.getPath()+"\t"+speed+"\t"+output+"\t"+
+								if (f!=null)
+									w.write((ch.intValue()-1)+"\t"+key+"\t"+f.getPath()+"\t"+speed+"\t"+output+"\t"+
 										pan+"\t"+vol+"\t"+attack+"\t"+decay+"\t"+sustain+"\t"+release+"\t"+sensit);
 							}
 						}
