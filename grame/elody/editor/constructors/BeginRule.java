@@ -8,7 +8,7 @@ public class BeginRule extends RuleApplet
     public BeginRule () { super(TGlobals.getTranslation("Begin")); }
     public void init() {
     	super.init();
-		add (new RulePanel( new BeginOp (getRuleImage("begin.jpg")),  
+		add (new RulePanel( new BeginOp (getRuleImage("begin.png")),  
 					result = new BeginResultHolder()));
 		moveFrame (50, 50);
    }

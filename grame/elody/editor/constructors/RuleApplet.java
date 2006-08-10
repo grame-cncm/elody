@@ -31,7 +31,7 @@ public class RuleApplet extends BasicApplet {
     }
     public void init() {
     	if (RulePanel.eqImage == null)
-    		RulePanel.eqImage = getRuleImage ("equal.jpg");
+    		RulePanel.eqImage = getRuleImage ("equal.png");
 	}   
 	public void decompose (TExp exp) {
 		if (result != null) {

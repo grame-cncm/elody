@@ -49,8 +49,8 @@ public abstract class Operateur extends Panel {
 		else {
 			int w; do { w = image.getWidth(null);  } while (w < 0);
 			int h; do { h = image.getHeight(null); } while (h < 0);
-			if (w > d.width)  w = d.width;
-			if (h > d.height) h = d.height;
+		/*	if (w > d.width)  w = d.width;
+			if (h > d.height) h = d.height; */
 			g.drawImage (image, offset+(d.width-w)/2, offset+(d.height-h)/2, w, h, this);
 		}
     }

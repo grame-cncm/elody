@@ -116,10 +116,10 @@ public class Define {
 			try {
 				URL base = applet.getDocumentBase();
 				MediaTracker mTrk = new MediaTracker(applet);
-				mTrk.addImage (pitchButton = applet.getImage(base, "Images/RotatifRouge.gif"), 1);
-				mTrk.addImage (velButton = applet.getImage(base, "Images/RotatifBleu.gif"), 2);
-				mTrk.addImage (durButton = applet.getImage(base, "Images/RotatifVert.gif"), 3);
-				mTrk.addImage (chanButton = applet.getImage(base, "Images/RotatifOrange.gif"), 4);
+				mTrk.addImage (pitchButton = applet.getImage(base, "Images/rotatifRouge.png"), 1);
+				mTrk.addImage (velButton = applet.getImage(base, "Images/rotatifBleu.png"), 2);
+				mTrk.addImage (durButton = applet.getImage(base, "Images/rotatifVert.png"), 3);
+				mTrk.addImage (chanButton = applet.getImage(base, "Images/rotatifOrange.png"), 4);
 				mTrk.waitForAll (10000);
 				if (/*!mTrk.checkAll (true) || */ mTrk.isErrorAny()) {
 	  				System.err.println( "getImages failed !!");

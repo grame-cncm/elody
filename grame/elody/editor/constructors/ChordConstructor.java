@@ -111,7 +111,7 @@ public class ChordConstructor extends BasicApplet implements ActionListener {
 		south.setLayout (new GridLayout(2,1,5,5));
 
 		south.add (buildControlers(chordEh));
-//		south.add (buildButtons (colorHolder, checkbox));
+		south.add (buildButtons (colorHolder, checkbox));
 
 		east.add (chordEh);
 		east.add (south);

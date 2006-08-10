@@ -8,7 +8,7 @@ public class YAbstrRule extends RuleApplet
     public YAbstrRule () { super(TGlobals.getTranslation("Y-Abstraction")); }
     public void init() {
     	super.init();
-		add (new RulePanel( new YAbstractionOp (getRuleImage("yabstr.jpg")), 
+		add (new RulePanel( new YAbstractionOp (getRuleImage("yabstr.png")), 
 					result = new YAbstrResultHolder()));
 		moveFrame (80, 80);
    }

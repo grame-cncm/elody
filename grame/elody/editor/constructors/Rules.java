@@ -36,15 +36,15 @@ public class Rules extends BasicApplet {
 			try {
 				URL base = getDocumentBase();
 				MediaTracker mTrk = new MediaTracker(this);
-				mTrk.addImage (abstr = getImage(base, "Images/abstr.jpg"), 1);
-				mTrk.addImage (appl = getImage(base, "Images/appl.jpg"), 2);
-				mTrk.addImage (seq = getImage(base, "Images/seq.jpg"), 3);
-				mTrk.addImage (mix = getImage(base, "Images/mix.jpg"), 4);
-				mTrk.addImage (yabstr = getImage(base, "Images/yabstr.jpg"), 5);
-				mTrk.addImage (equal = getImage(base, "Images/equal.jpg"), 6);
-				mTrk.addImage (begin = getImage(base, "Images/begin.jpg"), 7);
-				mTrk.addImage (reste = getImage(base, "Images/rest.jpg"), 8);
-				mTrk.addImage (stretch = getImage(base, "Images/stretch.jpg"), 9);
+				mTrk.addImage (abstr = getImage(base, "Images/abstr.png"), 1);
+				mTrk.addImage (appl = getImage(base, "Images/appl.png"), 2);
+				mTrk.addImage (seq = getImage(base, "Images/seq.png"), 3);
+				mTrk.addImage (mix = getImage(base, "Images/mix.png"), 4);
+				mTrk.addImage (yabstr = getImage(base, "Images/yabstr.png"), 5);
+				mTrk.addImage (equal = getImage(base, "Images/equal.png"), 6);
+				mTrk.addImage (begin = getImage(base, "Images/begin.png"), 7);
+				mTrk.addImage (reste = getImage(base, "Images/rest.png"), 8);
+				mTrk.addImage (stretch = getImage(base, "Images/stretch.png"), 9);
 				mTrk.waitForAll ();
 				if (mTrk.checkAll (true) && !mTrk.isErrorAny()) {
 					RulePanel.eqImage = equal;
@@ -95,8 +95,8 @@ class EqualSign extends Panel
 		else {
 			int w; do { w = image.getWidth(null);  } while (w < 0);
 			int h; do { h = image.getHeight(null); } while (h < 0);
-			if (w > d.width)  w = d.width;
-			if (h > d.height) h = d.height;
+		/*	if (w > d.width)  w = d.width;
+			if (h > d.height) h = d.height; */
 			g.drawImage (image, offset+(d.width-w)/2, offset+(d.height-h)/2, w, h, null);
 		}
     }

@@ -8,7 +8,7 @@ public class StretchRule extends RuleApplet
     public StretchRule () { super(TGlobals.getTranslation("Stretch")); }
     public void init() {
     	super.init();
-		add (new RulePanel( new StretchOp (getRuleImage("stretch.jpg")),  
+		add (new RulePanel( new StretchOp (getRuleImage("stretch.png")),  
 					result = new StretchResultHolder()));
 		moveFrame (70, 70);
    }

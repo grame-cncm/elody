@@ -8,7 +8,7 @@ public class ApplyRule extends RuleApplet
     public ApplyRule () { super(TGlobals.getTranslation("Application")); }
     public void init() {
     	super.init();
- 		add (new RulePanel( new ApplicationOp (getRuleImage("appl.jpg")),  
+ 		add (new RulePanel( new ApplicationOp (getRuleImage("appl.png")),  
 					result = new ApplResultHolder()));
 		moveFrame (20, 20);
    }
