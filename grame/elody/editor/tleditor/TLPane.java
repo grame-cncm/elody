@@ -1876,14 +1876,19 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	
 	public void mouseWheelMoved(MouseWheelEvent e)
 	{
+		int n = e.getWheelRotation();
 		if (e.isControlDown()||e.isMetaDown())
 		{
-			int n = e.getWheelRotation();
 			int xpos = time2x(fSelection.start());
 			setZoom(fZoom * Math.pow(fZoomWheelFactor,n));
 			setScrollPos(xt2timePos(xpos,fSelection.start()), fLinePos);
 			fUpdater.doUpdates();
-		}	
+		}
+		else
+		{
+			setScrollPos(fTimePos, fLinePos+n);
+			fUpdater.doUpdates();
+		}
 	}
 	
 	public void adjustSelection(int ctime, int cline)
