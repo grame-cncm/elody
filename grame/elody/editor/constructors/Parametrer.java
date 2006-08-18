@@ -16,11 +16,11 @@ public class Parametrer extends BasicApplet {
 	public Parametrer() {
 		super(TGlobals.getTranslation("Parametrer"));
 		setLayout(new BorderLayout());
-		setSize (100, 206);
+		setSize (180, 260);
 	} 
     public void init() {
 		Define.getButtons(this);
-    	param = new ParamPanel();
+    	param = new ParamPanel(true);
     	param.init (new ParamExprHolder(), 60, 60);
 		add("Center", param);
 		moveFrame (200, 240);

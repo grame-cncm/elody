@@ -29,7 +29,6 @@ public class TLMoveAction extends TLDragAction {
 	public TLMoveAction(TLPane pane, int xOffset) {
 		super(pane);
 		vXOffset = xOffset;
-
 		fDestZone = new TLZone(fPane.getFSelection());
 		fTime = fDestZone.start();
 		fLine = fDestZone.voice();
@@ -40,6 +39,7 @@ public class TLMoveAction extends TLDragAction {
 
 	public void mouseDragged(MouseEvent m) {
 		fExternal = fExport.mouseDragged(m);
+		
 		if (!fExternal) {
 			fLine = fPane.y2line(m.getY());
 			if (fLine < 0)
@@ -47,6 +47,8 @@ public class TLMoveAction extends TLDragAction {
 			else if (fLine > 127)
 				fLine = 127;
 			fTime = fPane.x2AlignedTime(fLine, m.getX() + vXOffset);
+			
+			fPane.fUpdater.scrollDrop(fTime, fLine, fPane.getFSelection().duration());
 
 			if (!m.isAltDown() && fPane.getFSelection().contains(fTime, fLine)) {
 				fDestZone.selectFreePoint(fTime, fLine);

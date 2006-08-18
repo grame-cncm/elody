@@ -37,6 +37,7 @@ public final class TLUpdater {
 	}
 	public final void doUpdates(boolean wantSBUpdate)
 	{
+		if (fSelectionChanged)					scrollSelection();
 		if (fContentChanged) 					fTarget.notifyContentChanged();
 		if (fContentChanged | fViewChanged) 	fTarget.prepareOffscreen();
 		if (fDurationChanged | fViewChanged) 	fNeedSBUpdate = true;
@@ -53,5 +54,84 @@ public final class TLUpdater {
 		fDurationChanged 	= false;
 		fViewChanged 		= false;
 		fSelectionChanged 	= false;
+	}
+	
+	public final void scrollSelection()
+	{
+		boolean change = false;
+		if (fTarget.getFSelection().start()<fTarget.fTimePos)
+		{
+			fTarget.fTimePos = fTarget.getFSelection().start();
+			change = true;
+		}
+		if (fTarget.getFSelection().end()>fTarget.getTimePosEnd())
+		{
+			int marginX = fTarget.time2x(fTarget.getFSelection().end())-fTarget.getWidth()+50;
+			fTarget.fTimePos = fTarget.x2time(marginX);
+			change = true;
+		}
+
+		if (fTarget.getFSelection().topline()<=fTarget.fLinePos)
+		{
+			fTarget.fLinePos = fTarget.getFSelection().topline();
+			change = true;
+		}
+		if (fTarget.getFSelection().topline()>=fTarget.getLinePosEnd())
+		{
+			fTarget.fLinePos += fTarget.getFSelection().topline()-fTarget.getLinePosEnd()+1;
+			change = true;
+		}
+		if (change)
+		{
+			contentChanged();
+			fTarget.adjustScrollbars();
+		}
+	}
+	
+	public final void scrollDrop(int time, int line, int dur)
+	{
+		boolean change = false;
+
+		if (time<fTarget.fTimePos)
+		{
+			fTarget.fTimePos = time;
+			change = true;
+		}
+		if ((time+dur)>fTarget.getTimePosEnd())
+		{
+			int marginX = fTarget.time2x(time+dur)-fTarget.getWidth()+50;
+			fTarget.fTimePos = fTarget.x2time(marginX);
+			change = true;
+		}
+
+		if ((line==fTarget.fLinePos)&&(fTarget.fLinePos>0))
+		{
+			fTarget.fLinePos--;
+			change = true;
+		}
+		if (line>=fTarget.getLinePosEnd())
+		{
+			fTarget.fLinePos ++;
+			change = true;
+		}
+
+
+		if (change)
+		{
+			contentChanged();
+			fTarget.adjustScrollbars();
+			doUpdates();
+		}
+	}
+	
+	public final void scrollCursor(int time)
+	{
+		if ( (time<fTarget.fTimePos)||(time>fTarget.getTimePosEnd()) )
+		{
+			fTarget.fTimePos = time;
+			contentChanged();
+			fTarget.adjustScrollbars();
+			doUpdates();
+		}
 	}
 }

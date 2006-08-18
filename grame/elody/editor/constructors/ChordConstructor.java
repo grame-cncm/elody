@@ -48,8 +48,7 @@ public class ChordConstructor extends BasicApplet implements ActionListener {
     	setFont (new Font("Times", Font.PLAIN, 12));
 		setSize(490, 300);
 	}
-    public void add (Container c, Component p, int x, int y, int w, int h) {
-		c.add(p);
+    public void add (Container c, Component p, int x, int y, int w, int h) {		c.add(p);
 		p.setSize(w, h);
 		p.setLocation(x, y);
     }

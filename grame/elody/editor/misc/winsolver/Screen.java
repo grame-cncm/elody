@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Shell;
 public class Screen {
 	
 	protected Rectangle screen;
+	protected Point screenCenter;
 	protected Vector vectWindow;
 	protected TreeSet vect1Window;
 	protected TreeSet vect2Window;
@@ -24,11 +25,14 @@ public class Screen {
 	protected Vector resultRect;
 	protected Vector anchPoints;
 	
+	/* indicateurs à TRUE si les fenêtres n'ont
+	   pas bougé depuis la dernière réorganisation : */
 	public boolean c1 = false;
 	public boolean c2 = false;
 
 	public Screen() {
 		screen = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+		screenCenter = new Point((int)screen.getCenterX(), (int)screen.getCenterY());
 		vectWindow = new Vector();
 		resultRect = new Vector();
 	}
@@ -59,7 +63,30 @@ public class Screen {
 			}
 	}
 	
+	public void showAll()
+	/* affiche toutes les fenêtres */
+	{
+		for (int i=0; i<vectWindow.size(); i++)
+		{
+			Window w = (Window) vectWindow.get(i);
+			w.show();
+		}
+	}
+	
+	public void closeAll()
+	/* ferme toutes les fenêtres à l'exception du menu Elody */
+	{
+		for (int i=1; i<vectWindow.size(); i++)
+		{
+			Window w = (Window) vectWindow.get(i);
+			w.close();
+		}
+	}
+	
 	public void compute1()
+	/* réorganise les fenêtres en optimisant l'espace occupé par une attraction
+	   vers le coin en haut à gauche de l'écran OU en cascade s'il n'y a pas
+	   assez d'espace */
 	{
 		if (!c1)
 		{
@@ -152,6 +179,9 @@ public class Screen {
 	}
 	
 	public void compute2()
+	/* réorganise les fenêtres de manière heuristique en optimisant l'espace
+	   occupé par une attraction vers la fenêtre la plus grande
+	   en empêchant toute sortie de l'écran */
 	{
 		if (!c2)
 		{
@@ -182,6 +212,18 @@ public class Screen {
 							r.goRepuls(cr.getCenter());
 						}
 					}
+					if (!screen.contains(getBar(r)))
+					{
+						int nx = (int) r.getX();
+						int ny = (int) r.getY();
+						if (nx < screen.x)	nx = screen.x;
+						if (ny < screen.y)	ny = screen.y;
+						if ( (nx+r.getWidth()) > (screen.getX()+screen.getWidth()) )
+							nx=(int)(screen.getX()+screen.getWidth()-r.getWidth());
+						if ( (ny+r.getHeight()) > (screen.getY()+screen.getHeight()) )
+							ny=(int)(screen.getY()+screen.getHeight()-r.getHeight());
+						r.setLocation(nx, ny);
+					}
 				}
 			}
 			Iterator iR = vect2Rect.iterator();
@@ -196,7 +238,6 @@ public class Screen {
 			c2 = true;
 		}
 	}
-
 	
 	protected boolean canAnchor(Rect r, Point p)
 	{
@@ -213,6 +254,11 @@ public class Screen {
 				return false;
 		}
 		return true;
+	}
+	
+	static public Rect getBar(Rect r)
+	{
+		return new Rect(r.x, r.y, (int) r.getWidth(), 30);
 	}
 	
 }

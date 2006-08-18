@@ -99,11 +99,17 @@ class FunctionKeyListener implements AWTEventListener {
 		if (event.getID() == KeyEvent.KEY_PRESSED) {
 			KeyEvent e = (KeyEvent) event;
 			int kc = e.getKeyCode();
+			if (kc == KeyEvent.VK_F9) {
+				BasicApplet.screen.closeAll();
+			}
+			if (kc == KeyEvent.VK_F10) {
+				BasicApplet.screen.showAll();
+			}
 			if (kc == KeyEvent.VK_F11) {
 				BasicApplet.screen.compute1();
 			}
 			if (kc == KeyEvent.VK_F12) {
-					BasicApplet.screen.compute2();
+				BasicApplet.screen.compute2();
 			}
 		}
 	}

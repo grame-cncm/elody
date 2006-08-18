@@ -24,7 +24,7 @@ public class TLExportAction extends TLDragAction implements DragAble {
 	public TLExportAction (TLPane pane, MouseEvent m, BasicApplet aplt, DragAble action){
 		super(pane);
 		fApplet = aplt;
-		fPane.setFAutoSroll(false);
+		fPane.setFAutoScroll(false);
 		fAction = action;
 		fDrag = new DragAndDrop (aplt, this, m.getX(), m.getY());
 		
@@ -60,7 +60,7 @@ public class TLExportAction extends TLDragAction implements DragAble {
 	public void mouseReleased(MouseEvent m) {
 		Point p = globalOffset(fApplet);
 		fDrag.stopDrag (m.getX()+p.x, m.getY()+p.y);
-		fPane.setFAutoSroll(true);
+		fPane.setFAutoScroll(true);
 	}
 	
 	public void mouseClicked(MouseEvent m) {}

@@ -33,12 +33,10 @@ public class Window {
 				System.out.println("keypressed "+e.getSource().getClass().getName());
 				if (e.keyCode == SWT.F11)
 				{
-					System.out.println("SWT F11");
 					BasicApplet.screen.compute1();
 				}
 				else if (e.keyCode == SWT.F12)
 				{
-					System.out.println("SWT F12");
 					BasicApplet.screen.compute2();
 				}
 			}
@@ -77,6 +75,29 @@ public class Window {
 			frame.setBounds(x, y, width, height);
 		else
 			shell.setBounds(x, y, width, height);
+		show();
+	}
+	
+	public void show()
+	{
+		if (isFrame)
+		{
+			frame.setState(Frame.NORMAL);
+			frame.setVisible(true);
+		}
+		else
+		{
+			shell.setMinimized(false);
+			shell.setVisible(true);
+		}
+	}
+	
+	public void close()
+	{
+		if (isFrame)
+			frame.dispose();
+		else
+			shell.dispose();
 	}
 	
 	public java.awt.Rectangle getBounds()

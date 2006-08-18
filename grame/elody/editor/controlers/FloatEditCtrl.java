@@ -10,6 +10,9 @@ public class FloatEditCtrl extends EditControler {
 	public FloatEditCtrl (Controler ctrl, int cols) {
 		super (ctrl, cols);
 	}
+	public FloatEditCtrl (Controler ctrl, int cols, boolean displayAbs) {
+		super (ctrl, cols, displayAbs);
+	}
   	public void update (Observable o, Object arg) {
   		MsgNotifier mn = (MsgNotifier)o;
   		switch (mn.message()) {

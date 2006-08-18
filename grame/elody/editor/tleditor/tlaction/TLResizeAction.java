@@ -42,6 +42,8 @@ public class TLResizeAction extends TLDragAction {
 	{
 		if ( (fNewEndTime != fPane.getFSelection().end()) && (fLine == fPane.getFSelection().voice()) ) {
 
+			fPane.fUpdater.scrollDrop(fNewEndTime, fLine, 0);
+			
 			int rx = fPane.time2x(fPane.getFSelection().start());
 			int tx = fPane.time2x(fNewEndTime);
 			int ry = fPane.line2y(fLine), h = fPane.getSize().height;

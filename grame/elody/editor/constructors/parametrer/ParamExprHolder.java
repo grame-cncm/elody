@@ -13,8 +13,8 @@ import java.util.Observable;
 
 public class ParamExprHolder extends DelayedExprHolder
 {
-	int pitch, vel, chan;
-	protected float dur;
+	int pitch, pitchAbs, vel, velAbs, chan, chanAbs;
+	protected float dur, durAbs;
 	TExp original;
 		
 	public ParamExprHolder () {

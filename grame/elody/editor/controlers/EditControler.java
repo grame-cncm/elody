@@ -14,30 +14,51 @@ import java.util.Observer;
 
 public class EditControler extends Panel implements Observer {
 
-	TextBarField edit;
-	Controler ctrl;
-	MsgNotifier notifier;
+	protected boolean displayAbs;
+	protected TextBarField edit;
+	protected TextBarField editAbs;
+	protected Controler ctrl;
+	protected MsgNotifier notifier;
 	
 	public EditControler (Controler ctrl, int cols) {
+		this.displayAbs = false;
+		construct(ctrl, cols);
+	}
+	public EditControler (Controler ctrl, int cols, boolean displayAbs) {
+		this.displayAbs = displayAbs;
+		construct(ctrl, cols);
+	}
+	
+	private void construct(Controler ctrl, int cols)
+	{
 		this.ctrl = ctrl;
 		notifier = new MsgNotifier (Define.EditBarControlerMsg);
 		edit = new TextBarField (cols);
 		edit.setBackground (Color.white);
 		edit.setFont (new Font("Times", Font.PLAIN, 10));
-		ctrl.addObserver (this);
 		edit.addObserver (this);
+		if (displayAbs)
+		{
+			editAbs= new TextBarField (cols);
+			editAbs.setBackground (Color.white);
+			editAbs.setFont (new Font("Times", Font.PLAIN, 10));
+			editAbs.addObserver (this);
+		}
+		ctrl.addObserver (this);
 		setLayout (new BorderLayout (2,2));
 		Panel p = new Panel ();
 		if (ctrl.getDirection() == Controler.kVertical) {
 			p.setLayout (new FlowLayout (FlowLayout.CENTER, 0,0));
 			p.add (edit);
+			if (displayAbs)	p.add (editAbs);	
 			add ("North", p);
 			add ("Center", ctrl);
 		} else {
 			p.setLayout (new BorderLayout (2,2));
-			p.add ("Center", ctrl);
-			p.add ("East", edit);
-			add ("North", p);
+			p.add (edit);
+			if (displayAbs)	p.add (editAbs);
+			add ("Center", ctrl);
+			add ("East", p);
 		}
 	}
 

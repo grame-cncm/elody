@@ -56,12 +56,14 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.Observer;
 import java.util.Stack;
 import java.util.Vector;
 
 public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
-	MouseMotionListener, KeyListener, ActionListener, FocusListener, 
+	MouseMotionListener, MouseWheelListener, KeyListener, ActionListener, FocusListener, 
 	/*ComponentListener,*/ ExtendedDropAble
 {
 	// les actions
@@ -105,6 +107,8 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	// zoom sur echelle du temps
 	final static int	kExtraDur = 60000;		// @@@@@@@@@
 	final static double	fZoomMax = 8.0;
+	final static double fZoomWheelFactor = 0.9;	// coefficient de réduction pour 1 incrément de la roulette de la souris 
+	final static double fZoomFactor = 0.5;		// coefficient de réduction pour un Zoom Out
 	final static double	fZoomMin = 0.001;
 	final static int	fUnitMin = 5;			// les petits traits ne sont dessinés que s'il y a cet espace minimum
 	double				fOldZoom = 1.0;			// fZoom et fUnit sont modifiables par setZoom(double zoom)
@@ -124,13 +128,13 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	// les scrollbar externes
 	Scrollbar			fVSB;					// références aux scrollbars pour pouvoir les
 	Scrollbar			fHSB;					// ajuster quand la taille de la partition change
-	final static int	kSBMax = 1000;			// valeur max du sb du temps (fixe, mis a l'echelle)
+//	final static int	kSBMax = 1000;			// valeur max du sb du temps (fixe, mis a l'echelle)
 	
 	// position du scroll : coord de ce qui est affiché en haut a gauche
 	// pour scroller il suffit de modifier ces valeurs et de redessiner
 	int			fTimePos = 0;						// date du pixel à gauche juste apres la règle verticale
 	int			fLinePos = 0;						// numéro de piste en haut juste en dessous de la règle horizontale
-	boolean 	fAutoSroll = true;                  // autorise l'autoscroll
+	boolean 	fAutoScroll = true;                 // autorise l'autoscroll
 	
 	
 	
@@ -187,7 +191,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	TRealTimePlayer fPlayer;    // Player associé au Time Line editeur
 	TimeLineTask 	fTask;      // Tache d'affichage pendant le jeu
 	//int          	fOldDateX;  // Date de la dernière tache
-	int          	fOldDate;  // Date de la dernière tache
+	int          	fOldDate;   // Date de la dernière tache
 	int 		 	fDuration;  // Durée de l'expression en cours de jeu
 	int				fPosMs;		// date courante dans le règle de temps
 	TExp 		 	fCurExp;    // Expression en cours de jeu
@@ -236,6 +240,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		addKeyListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		addMouseWheelListener(this);
 		
 		fVSB.addAdjustmentListener(this);
 		fHSB.addAdjustmentListener(this);
@@ -426,6 +431,8 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		if (fZoom != fOldZoom) fUpdater.viewChanged();
 	}
 	
+	public int getTimePosEnd()	{ return x2time(this.getWidth()); }
+	public int getLinePosEnd()	{ return y2line(this.getHeight()); }
 		
 	void setScoreSize(int contentDur )
 	{
@@ -473,8 +480,8 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	
 	public void initScrollbars()
 	{
-		fHSB.setValues(0,1,0,1000);
-		fVSB.setValues(0,1,0,127);
+		fHSB.setValues(0,200,0,5000);
+		fVSB.setValues(0,20,0,127);
 	}
 	
 	public void adjustScrollbars()
@@ -519,6 +526,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	public void drawTimeLine(Graphics g) 
 	{
 		g.setXORMode (fArgColorBkg);
+		g.setColor(fTraitColor);
 		drawDate (g, time2x(fOldDate),  getSize().height);
   		g.setPaintMode ();
 	}
@@ -527,11 +535,13 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
     {
     	try {
     		int time = fPlayer.getState().date;
+    		fUpdater.scrollCursor(time);
     		Graphics g = getGraphics();
+    		g.setColor(fTraitColor);
     		int h = getSize().height;
     		g.setXORMode (fArgColorBkg);
-    		drawDate (g, time2x(fOldDate),  getSize().height);
-			drawDate (g, time2x(time), h);
+   			drawDate (g, time2x(fOldDate),  getSize().height);
+    		drawDate (g, time2x(time), h);
 			fOldDate = time;
 			g.setPaintMode ();
 			return (time < fDuration);
@@ -1166,6 +1176,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		
 	void drawDDVisualFeedback(int line, int time, int itime, int dur)
 	{
+		fUpdater.scrollDrop(time, line, dur);
 		Graphics g = getGraphics();
 		g.setColor(fRuleColor);
 		g.fillRect(0, 0, 18, 19);
@@ -1342,6 +1353,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		}else if (fPlayer.getState().date < fDuration) {  // Si le rendu n'est pas terminé
 			fTask.Forget();
 			fPlayer.contPlayer();
+			fBtnPan.setClearEnabled(false);
 			TGlobals.midiappl.ScheduleTask(fTask, Midi.GetTime());
 		}
 	}
@@ -1356,6 +1368,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 			fDuration = (int)TEvaluator.gEvaluator.Duration(fCurExp); 
 			fTask.Forget();
 			fPlayer.startPlayer (fCurExp);
+			fBtnPan.setClearEnabled(false);
 			TGlobals.midiappl.ScheduleTask(fTask, Midi.GetTime());
 			notifier.notifyObservers (fCurExp);
 		}
@@ -1366,18 +1379,21 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		if (fPlayer.getState().state == MidiPlayer.kPlaying) {
 			fTask.Forget();
 			fPlayer.stopPlayer();
+			fBtnPan.setClearEnabled(true);
 		}
 	}
 	
 	void clearAllTracks()
 	{
-		toUndoStack(Action.MULTITRACKS);
-		fMultiTracks.clear();
-		fName.setText("");
-		multiTracksChanged();
-		fCurExp = TLConverter.exp(fMultiTracks);
-		notifier.notifyObservers (fCurExp);
-		fUpdater.doUpdates();
+		if (fPlayer.getState().state != MidiPlayer.kPlaying) {
+			toUndoStack(Action.MULTITRACKS);
+			fMultiTracks.clear();
+			fName.setText("");
+			multiTracksChanged();
+			fCurExp = TLConverter.exp(fMultiTracks);
+			notifier.notifyObservers (fCurExp);
+			fUpdater.doUpdates();
+		}
 	}
 
 	public void normalModeSelTrack()
@@ -1453,33 +1469,39 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 			tr.setTrackMode(savedTrackMode);
 			notifier.notifyObservers (res);
 			TGlobals.player.startPlayer (res);
+			fBtnPan.setClearEnabled(false);
 		}
 	}
 
 	void clearSelTrack() 
 	{
-		if (fMultiTracks.at(fTrackNum)) {
-			toUndoStack(Action.TRACK);
-			TLTrack t = fMultiTracks.remove();
-			t.clear();
-			fMultiTracks.insert(t);
-			if (fSelection.voice() == fTrackNum) fSelection.normalizeZone();
-				
-			multiTracksChanged();
+		if (fPlayer.getState().state != MidiPlayer.kPlaying) {
+			if (fMultiTracks.at(fTrackNum)) {
+				toUndoStack(Action.TRACK);
+				TLTrack t = fMultiTracks.remove();
+				t.clear();
+				fMultiTracks.insert(t);
+				if (fSelection.voice() == fTrackNum) fSelection.normalizeZone();
+
+				multiTracksChanged();
+			}
 		}
 	}
 
 	void playSelEvent()
 	{
 		fSelection.cmdPlay();
+		fBtnPan.setClearEnabled(false);
 	}
 
 	public void clearSelEvent()
 	{
-		fMultiTracks.at(fSelection.topline());
-		toUndoStack(Action.TRACK);	
-		fSelection.cmdClear();
-		multiTracksChanged();
+		if (fPlayer.getState().state != MidiPlayer.kPlaying) {
+			fMultiTracks.at(fSelection.topline());
+			toUndoStack(Action.TRACK);	
+			fSelection.cmdClear();
+			multiTracksChanged();
+		}
 	}
 
 	void groupSelEvent()
@@ -1518,12 +1540,12 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 
 	void zoomIn()
 	{
-		setZoomAt(fZoom*2, fZoomX);
+		setZoomAt(fZoom/fZoomFactor, fZoomX);
 	}
 
 	void zoomOut()
 	{
-		setZoomAt(fZoom/2, fZoomX);
+		setZoomAt(fZoom*fZoomFactor, fZoomX);
 	}
 	
 	
@@ -1542,7 +1564,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 
 		if (e.isControlDown() || e.isMetaDown()) {
 
-			if (kc == KeyEvent.VK_SPACE) {
+			if (kc == KeyEvent.VK_SPACE) {					// Ctrl+Espace
 				startAllTracks();
 			}
 			else if (kc == KeyEvent.VK_DELETE) {			// Ctrl+Suppr
@@ -1569,7 +1591,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 				
 				fMultiTracks.at(fSelection.topline());
 				toUndoStack(Action.TRACK);
-				TLZone finalState = fSelection.cmdPasteFromScrap();
+				fSelection.cmdPasteFromScrap();
 				multiTracksChanged();
 				fUpdater.selectionChanged();
 				fUpdater.doUpdates();
@@ -1578,6 +1600,62 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 				TLActionItem act = (TLActionItem) fStack.pop();
 				//act.print();
 				act.undo();
+				
+			} else if (kc == KeyEvent.VK_D ) {				// Ctrl+D
+				fTrackNum = fSelection.topline();
+				fMultiTracks.at(fTrackNum);
+				clearSelTrack();
+				fUpdater.doUpdates();
+				
+			} else if (kc == KeyEvent.VK_LEFT /*37*/) {		// Ctrl+Gauche
+				if (e.isShiftDown()) { 
+					fSelection.extendBegin();
+				}else{
+					fSelection.moveBegin();
+				}
+				fUpdater.selectionChanged();
+				fUpdater.doUpdates();
+
+			} else if (kc == KeyEvent.VK_RIGHT /*39*/) { 	// Ctrl+Droite
+				if (e.isShiftDown()) { 
+					fSelection.extendEnd();
+				}else{
+					fSelection.moveEnd();
+				}
+				fUpdater.selectionChanged();
+				fUpdater.doUpdates();
+				
+			} else if (kc == KeyEvent.VK_UP /*38*/) {		// Ctrl+Haut
+				fTrackNum = fSelection.topline();
+				fMultiTracks.at(fTrackNum);
+				toUndoStack(Action.TRACK);
+				int mode = fMultiTracks.getTrack().getTrackMode();
+				if (mode==0)	mode=4;
+				else			mode--;	
+				fMultiTracks.getTrack().setTrackMode(mode);
+				multiTracksChanged();
+				fUpdater.doUpdates();
+				
+			} else if (kc == KeyEvent.VK_DOWN /*40*/) {		// Ctrl+Bas
+				fTrackNum = fSelection.topline();
+				fMultiTracks.at(fTrackNum);
+				toUndoStack(Action.TRACK);
+				int mode = fMultiTracks.getTrack().getTrackMode();
+				if (mode==4)	mode=0;
+				else			mode++;	
+				fMultiTracks.getTrack().setTrackMode(mode);
+				multiTracksChanged();
+				fUpdater.doUpdates();
+				
+			} else if (kc == KeyEvent.VK_ADD /*107*/) { 	// Ctrl+Plus
+				fZoomX = time2x(fSelection.start());
+				zoomIn();
+				fUpdater.doUpdates();
+				
+			} else if (kc == KeyEvent.VK_SUBTRACT /*129*/) { // Ctrl+Moins
+				fZoomX = time2x(fSelection.start());
+				zoomOut();
+				fUpdater.doUpdates();
 			}
 		}
 		else
@@ -1585,8 +1663,8 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 			if (kc == KeyEvent.VK_SPACE) {
 				if (fPlayer.getState().state == MidiPlayer.kPlaying) { stopAllTracks(); }
 				else { playAllTracks(); }
-			}
-			else if (kc == KeyEvent.VK_BACK_SPACE) {
+				
+			} else if (kc == KeyEvent.VK_BACK_SPACE) {
 				if (fSelection.empty()) {
 					fSelection.extendLeft(fUnit);
 				}
@@ -1595,8 +1673,11 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 				}
 				fUpdater.selectionChanged();
 				fUpdater.doUpdates();
-
+				
 			} else if (kc == KeyEvent.VK_DELETE) {
+				if (fSelection.empty()) {
+					fSelection.extendRight(fUnit);
+				}
 				if (!fSelection.empty()) {
 					clearSelEvent();
 				}
@@ -1630,8 +1711,51 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 				fSelection.moveDown();
 				fUpdater.selectionChanged();
 				fUpdater.doUpdates();
-
-			}
+				
+			} else if (kc == KeyEvent.VK_PAGE_UP) {
+				int dest = 0;
+				if ((fSelection.topline()-10)>=0)
+					dest = fSelection.topline()-10;
+				fSelection.moveTo(fSelection.start(), dest);
+				fUpdater.selectionChanged();
+				fUpdater.doUpdates();
+				
+			} else if (kc == KeyEvent.VK_PAGE_DOWN) {
+				int dest = 127;
+				if ((fSelection.topline()+10)<=127)
+					dest = fSelection.topline()+10;
+				fSelection.moveTo(fSelection.start(), dest);
+				fUpdater.selectionChanged();
+				fUpdater.doUpdates();
+				
+			} else if (kc == KeyEvent.VK_HOME) {
+				if (e.isShiftDown()) { 
+					fSelection.extendBegin();
+				}else{
+					fSelection.moveBegin();
+				}
+				fUpdater.selectionChanged();
+				fUpdater.doUpdates();
+				
+			} else if (kc == KeyEvent.VK_END) {
+				if (e.isShiftDown()) {
+					fSelection.extendEnd();
+				}else{
+					fSelection.moveEnd();
+				}
+				fUpdater.selectionChanged();
+				fUpdater.doUpdates();
+				
+			} else if (kc == KeyEvent.VK_M) {
+				fTrackNum = fSelection.topline();
+				fMultiTracks.at(fTrackNum);
+				if (!fMultiTracks.getTrack().getMuteFlag())
+					muteSelTrack();
+				else
+					unmuteSelTrack();
+				fUpdater.doUpdates();
+			
+			}		
 		}
 	}
 
@@ -1748,6 +1872,18 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 			case RIEN 			:  setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); return;
 		} 
 	
+	}
+	
+	public void mouseWheelMoved(MouseWheelEvent e)
+	{
+		if (e.isControlDown()||e.isMetaDown())
+		{
+			int n = e.getWheelRotation();
+			int xpos = time2x(fSelection.start());
+			setZoom(fZoom * Math.pow(fZoomWheelFactor,n));
+			setScrollPos(xt2timePos(xpos,fSelection.start()), fLinePos);
+			fUpdater.doUpdates();
+		}	
 	}
 	
 	public void adjustSelection(int ctime, int cline)
@@ -1915,7 +2051,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	public double getFZoom() { return fZoom; }
 
 	public void setFOldZoom(double oldZoom) { fOldZoom = oldZoom; }	
-	public void setFAutoSroll(boolean autoSroll) { fAutoSroll = autoSroll; }
+	public void setFAutoScroll(boolean autoScroll) { fAutoScroll = autoScroll; }
 }
 
 /*******************************************************************************************
@@ -1968,6 +2104,8 @@ final class ButtonPanel extends Canvas implements MouseListener {
 	final protected int PLAY = 2;
 	final protected int CLEAR = 3;
 	
+	protected boolean[] enabled = {true, true, true, true};
+	
 	protected int pressed = NULL;
 
 	public ButtonPanel(TLPane tl)
@@ -1976,6 +2114,13 @@ final class ButtonPanel extends Canvas implements MouseListener {
 		this.tl = tl;
 		addMouseListener(this);
 	}
+
+	public void setClearEnabled(boolean b)
+	{
+		enabled[CLEAR] = b;
+		update(getGraphics());
+	}
+	
     public void paint(Graphics g) {update(g);}
     
     public void update(Graphics g) 
@@ -2038,6 +2183,16 @@ final class ButtonPanel extends Canvas implements MouseListener {
     		g.drawLine(p.x+siz.x-2,p.y+2, p.x+siz.x-2, p.y+siz.y-2);
     	}
     	drawPattern(pattern, p, siz, margin, g);
+    	if (!enabled[pattern])
+    	{
+    		g.setColor(Color.gray);
+    		for (int i=1; i<siz.x; i=i+2)
+    			for (int j=1; j<siz.y; j=j+2)
+    				g.drawRect(pos.x+i, pos.y+j, 0, 0);
+    		for (int i=2; i<siz.x; i=i+2)
+    			for (int j=2; j<siz.y; j=j+2)
+    				g.drawRect(pos.x+i, pos.y+j, 0, 0);
+    	}
     }
     
     private void drawPattern(int pattern, Point p, Point siz, Point margin, Graphics g)
@@ -2073,7 +2228,6 @@ final class ButtonPanel extends Canvas implements MouseListener {
 			}
 			
 			break;
-
 		default:
 			break;
 		}
@@ -2086,16 +2240,16 @@ final class ButtonPanel extends Canvas implements MouseListener {
 	public void mousePressed(MouseEvent e)
 	{
 		Point s = e.getPoint();
-		if ((s.x>startP.x)&&(s.x<startP.x+startSiz.x)
+		if (enabled[START]&&(s.x>startP.x)&&(s.x<startP.x+startSiz.x)
 				&&(s.y>startP.y)&&(s.y<startP.y+startSiz.y))
 			pressed = START;
-		else if ((s.x>stopP.x)&&(s.x<stopP.x+stopSiz.x)
+		else if (enabled[STOP]&&(s.x>stopP.x)&&(s.x<stopP.x+stopSiz.x)
 				&&(s.y>stopP.y)&&(s.y<stopP.y+stopSiz.y))
 			pressed = STOP;
-		else if ((s.x>playP.x)&&(s.x<playP.x+playSiz.x)
+		else if (enabled[PLAY]&&(s.x>playP.x)&&(s.x<playP.x+playSiz.x)
 				&&(s.y>playP.y)&&(s.y<playP.y+playSiz.y))
 			pressed = PLAY;
-		else if ((s.x>clearP.x)&&(s.x<clearP.x+clearSiz.x)
+		else if (enabled[CLEAR]&&(s.x>clearP.x)&&(s.x<clearP.x+clearSiz.x)
 				&&(s.y>clearP.y)&&(s.y<clearP.y+clearSiz.y))
 			pressed = CLEAR;
 		else
