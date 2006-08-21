@@ -18,14 +18,22 @@ import grame.elody.util.fileselector.HTMLFileSelector;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.FileDialog;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.Label;
 import java.awt.Panel;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Observable;
@@ -53,6 +61,17 @@ public class Stock extends BasicApplet implements ActionListener {
   
     public void init() {
     	Container center = new Panel ();
+    	WindowListener[] l = getFrame().getWindowListeners();
+    	getFrame().removeWindowListener(l[0]);
+    	getFrame().addWindowListener(new WindowAdapter() {
+
+			public void windowClosing(WindowEvent e) {
+				if (dirty)
+					new ConfirmDialog(getFrame(), getThis());
+				else
+					getFrame().dispose();
+			} 		
+    	});
     	add ("Center", center);
 		center.setLayout(new GridLayout(nRows, nColumns, 5, 5));
 		for (int i=0, n=nRows*nColumns; i < n; i++) {
@@ -66,6 +85,8 @@ public class Stock extends BasicApplet implements ActionListener {
 		}
 		moveFrame (80, 130);
 	}   
+    
+    public Stock getThis()	{ return this; }
 	
 	//-------------------------------------------------
     public void enableCmd (int command, boolean state) {
@@ -83,6 +104,9 @@ public class Stock extends BasicApplet implements ActionListener {
   			if (!dirty) {
   				dirty = true;
   				enableCmd (kSave, true);
+  				String title = getFrame().getTitle();
+  				title += "*";
+  				getFrame().setTitle(title);
   			}
   		}
 	}
@@ -105,7 +129,8 @@ public class Stock extends BasicApplet implements ActionListener {
 			TFileSaver saver = new TFileSaver();
 			saver.writeFile (new TFileContent("","","",ae), file, "HTML");
 			fileBased = true;
-  			enableCmd (kSave, dirty = false);
+			enableCmd (kSave, dirty = false);
+			getFrame().setTitle(name);
 		} catch (Exception e) { System.err.println( "While saving " + name + " : " + e); } 
    		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
@@ -115,7 +140,6 @@ public class Stock extends BasicApplet implements ActionListener {
     	if (fs.select ()) {
     		String fname = fs.getFile();
     		Save (fname, path = fs.getDirectory());
-    		getFrame().setTitle(fname);
     	}
     }
 	//-------------------------------------------------
@@ -154,6 +178,8 @@ public class Stock extends BasicApplet implements ActionListener {
 	//-------------------------------------------------
     public void actionPerformed (ActionEvent e) {
     	String title = getFrame().getTitle();
+		if (title.charAt(title.length()-1)=='*')
+		title = title.substring(0, title.length()-1);
     	String action = e.getActionCommand();
     	if (action.equals(cmds[kClear])) {
 			Clear();
@@ -188,5 +214,53 @@ class CmdsPanel extends Panel
 				return button[i];
 		}
 		return null;
+	}
+}
+
+class ConfirmDialog extends Dialog
+{
+	public ConfirmDialog(Frame owner, final Stock s) {
+		super(owner, "Elody", true);
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) { dispose(); }
+		});
+		
+		setSize(280, 80);
+		setResizable(false);
+		setBackground(Color.white);
+		Rectangle r = owner.getBounds();
+		setLocation((int)(r.x+(r.width-280)/2), (int)(r.y+(r.height-130)/2));
+		setLayout(new BorderLayout());
+		Panel p = new Panel(new GridLayout(1,3,10,10));
+		Button yesBtn = new Button(TGlobals.getTranslation("Yes"));
+		yesBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			   	String title = s.getFrame().getTitle();
+				if (title.charAt(title.length()-1)=='*')
+				title = title.substring(0, title.length()-1);
+				s.SaveAs(title);
+				s.getFrame().dispose();
+				dispose();
+			}	
+		});
+		p.add(yesBtn);
+		Button noBtn = new Button(TGlobals.getTranslation("No"));
+		noBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				s.getFrame().dispose();
+				dispose();
+			}	
+		});
+		p.add(noBtn);
+		Button cancelBtn = new Button(TGlobals.getTranslation("Cancel"));
+		cancelBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}	
+		});
+		p.add(cancelBtn);
+		add(new Label(TGlobals.getTranslation("wanna_save"), Label.CENTER), BorderLayout.NORTH);
+		add(p, BorderLayout.SOUTH);
+	    setVisible(true);
 	}
 }

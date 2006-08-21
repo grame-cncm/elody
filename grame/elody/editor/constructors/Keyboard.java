@@ -56,7 +56,7 @@ public class Keyboard extends BasicApplet {
 		kbCtrl = new KeyboardCtrlPanel (kp, octavesCount);
 		add ("North", kp);
 		add ("Center", kbCtrl);
-		setSize (376,206);
+		setSize (380,210);
 		moveFrame (100, 180);
 	}
 	public void decompose (TExp exp) {
