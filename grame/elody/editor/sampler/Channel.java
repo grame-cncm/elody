@@ -61,10 +61,11 @@ public class Channel {
 	
 	private short num;			// channel number
 	private Button bt;			// open-close the shell
-	private Shell sh = null;		// channel SWT window (shell)
+	private Shell sh = null;	// channel SWT window (shell)
 	private Window w = null;	// generic window
 	public Color bgColor;	
 	private Vector keygroups;
+	private boolean full = false;	// indicates if the keyboard is full of keygroups
 	private boolean[] availKeyb;	// array indicating the keys (0..127) availability
 				// to prevent from Keygroups collisions (true=available / false=busy)
 	public Sampler sampler;
@@ -279,7 +280,14 @@ public class Channel {
 		}
 	}
 	public boolean isShellOpened() {return shellOpened; }
-	public void setAvailKeyb(int i, boolean value) { availKeyb[i] = value; }
+	public void setAvailKeyb(int i, boolean value)
+	{
+		availKeyb[i] = value;
+		full = false;
+		for (int j=0; j<availKeyb.length; j++)
+			if (availKeyb[j])	return;
+		full = true;
+	}
 	public void addKeygroup(File[] files, AudioExtensionFilter filter)
 	{
 		Cursor cursor = new Cursor(sh.getDisplay(), SWT.CURSOR_WAIT);
@@ -317,23 +325,26 @@ public class Channel {
 	
 	public void addKeygroup(boolean refresh, int index)
 	{	
-		boolean sav=true; // need to be added in config file
-		int keygIndex = 1;
-		Composite relative = null;
-		if (!keygroups.isEmpty())
+		if (!full)
 		{
-			Keygroup last = (Keygroup) keygroups.lastElement();
-			keygIndex = last.getIndex()+1;
-			relative = last.getGroup();
+			boolean sav=true; // need to be added in config file
+			int keygIndex = 1;
+			Composite relative = null;
+			if (!keygroups.isEmpty())
+			{
+				Keygroup last = (Keygroup) keygroups.lastElement();
+				keygIndex = last.getIndex()+1;
+				relative = last.getGroup();
+			}
+			if (index!=-1) // keygroup already indexed
+			{
+				keygIndex=index;
+				sav=false; // no need to be added in config file
+			} 
+			keygroups.add(new Keygroup(keygIndex, keygComposite, relative, bgColor, this, sav));
+			if (refresh) { keygCompositeRefresh(true); }
+			sampler.needToReset=true;
 		}
-		if (index!=-1) // keygroup already indexed
-		{
-			keygIndex=index;
-			sav=false; // no need to be added in config file
-		} 
-		keygroups.add(new Keygroup(keygIndex, keygComposite, relative, bgColor, this, sav));
-		if (refresh) { keygCompositeRefresh(true); }
-		sampler.needToReset=true;
 	}
 
 	public void delKeygroup(Keygroup k)

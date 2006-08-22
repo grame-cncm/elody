@@ -46,8 +46,8 @@ public class Sampler extends BasicShellSWT {
  ******************************************************/	
 	private PaJniConnect jni = null;
 	
-	private File file = new File("soundplayer.conf");
-	public ConfigSav configSav = new ConfigSav(file);
+	private File file;
+	public ConfigSav configSav;
 	private int sampleRate;
 	private int framesPerBuffer;
 	private PaDeviceInfo device = null;
@@ -76,6 +76,9 @@ public class Sampler extends BasicShellSWT {
 
 	public Sampler() {
 		super(TGlobals.getTranslation("Sampler"));
+		file = new File("soundplayer.conf");
+		try { file.createNewFile(); } catch (IOException e) {}
+		configSav = new ConfigSav(file);
 		jni = new PaJniConnect();
 		setDevice(jni.GetDevice());
 		sampleRate = jni.GetSampleRate();

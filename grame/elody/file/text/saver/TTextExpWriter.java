@@ -86,7 +86,7 @@ public final class TTextExpWriter extends TExpVisitor {
 	
 	public void  writeFileHeader() {
 		out.println ("% Generated from Elody");
-		out.println ("% Web : http://www.grame.fr/english/Research/Elody/Elody.html");
+		out.println ("% Web : http://www.grame.fr/Elody/");
 	}
 	
 	public void  writeTitle(String title) {

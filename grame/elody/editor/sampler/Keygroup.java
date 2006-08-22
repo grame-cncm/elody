@@ -465,8 +465,7 @@ public class Keygroup {
 	
 	private void fileLoad(Text fileText, FileDialog fd)
 	{
-		System.out.println();
-		if (file!=null) { fd.setFileName(file.getName()); }
+		if (file!=null) { fd.setFileName(file.getPath()); }
 		String path = fd.open();
 		
 		if (!(path==null))

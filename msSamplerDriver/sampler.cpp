@@ -221,6 +221,13 @@ static bool readConfigFile(TSampler* s, char* fname, int sampleRate)
 			printf ("ERREUR : ligne non reconnue %s\n", line);
 			exit(0);
 		}
+		char * pch;
+		pch=strchr(sndfilename,'\'');
+		while (pch!=NULL)
+		{
+			sndfilename[pch-sndfilename] = ' ';
+			pch=strchr(pch+1,'\''); // simple quote represente un espace dans un nom de fichier
+		}
 		s->fChanVol[midiChan] = vol / 127.0;
 		s->fChanPan[midiChan] = pan / 127.0;
 		s->fChanEnvelope[midiChan].setEnvelope(attack, decay, (double) sustain, release, sampleRate); // valeur de samplerate à récupérer

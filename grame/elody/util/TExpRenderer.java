@@ -9,7 +9,7 @@ import java.io.StringWriter;
 
 /*******************************************************************************************
 *
-*	 TExpRenderer (classe) : object global pour obtenir la représentation textuelle d'une expression
+*	 TExpRenderer (classe) : objet global pour obtenir la représentation textuelle d'une expression
 * 
 *******************************************************************************************/
 

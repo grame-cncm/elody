@@ -149,7 +149,7 @@ public final class TNoteConverter {
 	String convertDur (float fdur) {
 		if (fdur != currentDur) {
 			if (state) currentDur = fdur;
-			Vector vector =  quantizeSymb((int) fdur, durTable[durTable.length -1]);
+		/*	Vector vector =  quantizeSymb((int) fdur, durTable[durTable.length -1]);
 			TRational res = new TRational(0,1);
 			for (Enumeration e = vector.elements() ; e.hasMoreElements() ;){ 
 				res  = TRational.Add(res, (TRational)(e.nextElement()));
@@ -161,6 +161,9 @@ public final class TNoteConverter {
 			} else {
 				return  "*" + res.toString();
 			}
+		*/
+		// =====>>>> NO MUSICAL TIME, BUT ABSOLUTE TIME !
+			return "  d="+(int)fdur;
 		}else {
 			return "";
 		} 

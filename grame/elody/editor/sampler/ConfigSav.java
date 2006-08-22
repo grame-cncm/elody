@@ -86,7 +86,7 @@ public class ConfigSav {
 								double speed = Math.pow(2, k/12.0);
 								int key = ref+k;
 								if (f!=null)
-									w.write((ch.intValue()-1)+"\t"+key+"\t"+f.getPath()+"\t"+speed+"\t"+output+"\t"+
+									w.write((ch.intValue()-1)+"\t"+key+"\t"+f.getPath().replaceAll(" ", "\'")+"\t"+speed+"\t"+output+"\t"+
 										pan+"\t"+vol+"\t"+attack+"\t"+decay+"\t"+sustain+"\t"+release+"\t"+sensit);
 							}
 						}
@@ -141,7 +141,7 @@ public class ConfigSav {
 					StringTokenizer st = new StringTokenizer(line," \t");
 				    channel = Integer.valueOf(Integer.valueOf(st.nextToken()).intValue()+1);
 				    int key = Integer.parseInt(st.nextToken());
-				    file = new File(st.nextToken());
+				    file = new File(st.nextToken().replaceAll("\'", " "));
 				    double speed = Double.parseDouble(st.nextToken());
 				    output = Integer.parseInt(st.nextToken())+1;
 				    pan = Integer.parseInt(st.nextToken());
