@@ -50,7 +50,7 @@ public class TLActionItem {
 			fPane.getFMultiTracks().begin();
 			for (int i=tracksVect.size()-1; i>=0; i--)
 			{
-				fPane.getFMultiTracks().insert((TLTrack)tracksVect.get(i));
+				fPane.getFMultiTracks().insert((TLTrack) tracksVect.get(i));
 			}
 			fs.set(sel);
 			fPane.multiTracksChanged();

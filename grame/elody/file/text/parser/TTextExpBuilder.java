@@ -8,8 +8,8 @@ import java.util.Hashtable;
 
 
 public class TTextExpBuilder implements TTextParserVisitor {
-	Hashtable identTable = new Hashtable();
-	Hashtable noteTable = new Hashtable();
+	Hashtable<String, TExp> identTable = new Hashtable<String, TExp>();
+	Hashtable<String, String> noteTable = new Hashtable<String, String>();
 
 	public TTextExpBuilder() {
 		noteTable.put("c", "0");
@@ -110,7 +110,7 @@ public class TTextExpBuilder implements TTextParserVisitor {
   
   	public Object visit(ASTvar node, Object data){
   		TExp ident;
-  		if ((ident = (TExp)identTable.get(node.name)) != null) {
+  		if ((ident = identTable.get(node.name)) != null) {
   			return ident;
   		}else {
   			ident = TExpMaker.gExpMaker.createIdent(null);
@@ -147,7 +147,7 @@ public class TTextExpBuilder implements TTextParserVisitor {
   		if (node.name.equals("_")) /* SILENCE */
   			return TExpMaker.gExpMaker.createSilence(Color.blue,0,0,0,4000);
   		else
-  			return TExpMaker.gExpMaker.createNote( Color.blue,Integer.parseInt((String)noteTable.get(node.name)),100,0,4000);
+  			return TExpMaker.gExpMaker.createNote( Color.blue,Integer.parseInt(noteTable.get(node.name)),100,0,4000);
   	}
   	
   	public Object visit(ASTmute node, Object data){

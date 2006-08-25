@@ -4,6 +4,7 @@ import grame.elody.editor.misc.TGlobals;
 
 import java.applet.Applet;
 import java.awt.Button;
+import java.awt.Component;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -11,11 +12,12 @@ public class ArgsReader {
 	
 	final String menuFlag = "Menu:";
 	final String langFlag = "Language:";
-  	Vector v, actifs;
+  	Vector<Component> v;
+  	Vector<ComponentLauncher> actifs;
 	
 	public ArgsReader (Applet applet, String str) {
-  		v = new Vector ();
-  		actifs = new Vector ();
+  		v = new Vector<Component> ();
+  		actifs = new Vector<ComponentLauncher> ();
   		for (StringTokenizer t = new StringTokenizer(str, ","); t.hasMoreTokens(); ) {
 			String token = t.nextToken().trim();
 			if (token.startsWith(langFlag))
@@ -62,6 +64,6 @@ public class ArgsReader {
 		v.addElement (button);
 	}
 
-	public Vector components ()		{ return v; }
-	public Vector actifs ()			{ return actifs; }
+	public Vector<Component> components ()		{ return v; }
+	public Vector<ComponentLauncher> actifs ()	{ return actifs; }
 }

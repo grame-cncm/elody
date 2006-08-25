@@ -53,15 +53,15 @@ de nom lors la restauration.
 *******************************************************************************************/
 
 public final class TExpSaver {
-	Hashtable expTable;
-	Hashtable identTable;
+	Hashtable<TExp, TRefExp> expTable;
+	Hashtable<TIdent, TRefExp> identTable;
 	TExpWriter streamwriter;
 	THashtableWriter tablewriter;
 	TExpChecker  expchecker;
 	
 	public TExpSaver (OutputStream out) { 
-		expTable = new Hashtable();
-		identTable = new Hashtable();
+		expTable = new Hashtable<TExp, TRefExp>();
+		identTable = new Hashtable<TIdent, TRefExp>();
 		tablewriter = new THashtableWriter(expTable,identTable);
 		expchecker  = new TExpChecker(expTable);
 		streamwriter = new TExpWriter (out, expTable,identTable);
@@ -74,8 +74,8 @@ public final class TExpSaver {
 	TExp getLetClause () {
 		TExp key;
 		
-		for (Enumeration e = expTable.keys(); e.hasMoreElements();) {
-			key = (TExp)e.nextElement();
+		for (Enumeration<TExp> e = expTable.keys(); e.hasMoreElements();) {
+			key = e.nextElement();
 	      	if (expchecker.checkExp(key)) {return key;}
 	    } 
 	    return null;
@@ -85,9 +85,9 @@ public final class TExpSaver {
 		TExp key;
 		TRefExp ref;
 		
-		for (Enumeration e = expTable.keys(); e.hasMoreElements();) {
-			key = (TExp)e.nextElement();
-			ref = (TRefExp)expTable.get(key);
+		for (Enumeration<TExp> e = expTable.keys(); e.hasMoreElements();) {
+			key = e.nextElement();
+			ref = expTable.get(key);
 			if (ref.count == 1) {expTable.remove (key);}
 			 
 		}
@@ -155,7 +155,7 @@ public final class TExpSaver {
 			   */
 			    
 				while ((key = getLetClause ()) != null) { 
-					ref = (TRefExp)expTable.get(key);
+					ref = expTable.get(key);
 					streamwriter.writeLetClause(ref, key);
 					ref.saved = true;
 				}
@@ -177,19 +177,19 @@ partagés sont deja sauvés.
 
 final class TExpChecker{
 	
-	Hashtable table;
+	Hashtable<TExp, TRefExp> table;
 	
-	public TExpChecker (Hashtable table) { this.table = table; TNullExp.defaultRes = Boolean.TRUE; }
+	public TExpChecker (Hashtable<TExp, TRefExp> table) { this.table = table; TNullExp.defaultRes = Boolean.TRUE; }
 	
 	boolean  checkNode (TExp exp) {
-		TRefExp ref  = (TRefExp)table.get(exp);
+		TRefExp ref  = table.get(exp);
 		return ((ref == null) 
 				|| (ref.count == 1)
 				|| ((ref.count > 1) && ref.saved));
 	}
 	
 	public boolean checkExp(TExp s) {
-		TRefExp ref = (TRefExp)table.get(s);
+		TRefExp ref = table.get(s);
 		return (ref.count > 1) && (!ref.saved) && checkArg(s.getArg1()) && checkArg(s.getArg2());
 	}
 		
@@ -228,11 +228,11 @@ final  class TRefExp {
 
 
 final class THashtableWriter extends TExpVisitor {
-	Hashtable expTable;
-	Hashtable identTable;
+	Hashtable<TExp, TRefExp> expTable;
+	Hashtable<TIdent, TRefExp> identTable;
 	boolean letClause = false;
 	
-	public THashtableWriter (Hashtable exptable,Hashtable identtable) { 
+	public THashtableWriter (Hashtable<TExp, TRefExp> exptable, Hashtable<TIdent, TRefExp> identtable) { 
 		this.expTable = exptable;
 		this.identTable = identtable;
 	}
@@ -242,7 +242,7 @@ final class THashtableWriter extends TExpVisitor {
 	// si un arbre est partagé, pas besoin de tester le partage des sous arbres
 
 	boolean  firstRefExp (TExp  exp) {
-		TRefExp ref = (TRefExp) expTable.get(exp);
+		TRefExp ref = expTable.get(exp);
 		
 		if (ref == null) {
 			expTable.put(exp, new TRefExp(exp));
@@ -255,7 +255,7 @@ final class THashtableWriter extends TExpVisitor {
 	}
 	
 	boolean  firstRefIdent (TIdent  ident) {
-		TRefExp ref = (TRefExp) identTable.get(ident);
+		TRefExp ref = identTable.get(ident);
 		
 		if (ref == null) {
 			identTable.put(ident, new TRefExp(ident));
@@ -381,8 +381,8 @@ final class THashtableWriter extends TExpVisitor {
 	
 	public Object Visite( TArrayExp s,Object arg){
 		if (firstRefExp (s)) {
-			for (Enumeration e = s.arg1.elements(); e.hasMoreElements();) {
-				TExp res = (TExp)e.nextElement();
+			for (Enumeration<TExp> e = s.arg1.elements(); e.hasMoreElements();) {
+				TExp res = e.nextElement();
 				res.Accept(this,arg);
 			}	
 		}
@@ -414,20 +414,20 @@ class TWriteState {
 
 final class TExpWriter extends TExpVisitor{
 	PrintWriter out = null;
-	Hashtable expTable = null;
-	Hashtable identTable = null;
+	Hashtable<TExp, TRefExp> expTable = null;
+	Hashtable<TIdent, TRefExp> identTable = null;
 	String version = "100";
 	
 	public TExpWriter (OutputStream out) { this.out = new PrintWriter(out);}
 	
-	public TExpWriter (OutputStream out, Hashtable exptable, Hashtable identtable) { 
+	public TExpWriter (OutputStream out, Hashtable<TExp, TRefExp> exptable, Hashtable<TIdent, TRefExp> identtable) { 
 		this.out = new PrintWriter(out);
 		this.expTable = exptable;
 		this.identTable = identtable;
 	}
 	
 	boolean  checkNotSaved (TExp exp) {
-		TRefExp ref = (TRefExp)expTable.get(exp);
+		TRefExp ref = expTable.get(exp);
 		return (ref == null) || (!ref.saved);
 	}
 		
@@ -498,7 +498,7 @@ final class TExpWriter extends TExpVisitor{
 		//System.out.println ("writeId " + key);
 	
 	
-	 	TRefExp  ref = (TRefExp)expTable.get(key);
+	 	TRefExp  ref = expTable.get(key);
 	 	
 	 	//System.out.println ("ref " + ref);
 	 	
@@ -544,7 +544,7 @@ final class TExpWriter extends TExpVisitor{
 	}
 	
 	public  Object Visite (TIdent s,Object arg) {
-		TRefExp  ref = (TRefExp)identTable.get(s);
+		TRefExp ref = identTable.get(s);
 	 	out.println ("<LI> <B> Id" + ref.num + "</B> ");
 		return null;
 	}
@@ -762,8 +762,8 @@ final class TExpWriter extends TExpVisitor{
 		if (checkNotSaved(s)) {
 			if (checkNeedLine(arg)) out.print ("<LI>");
 			out.println ("<B> Array </B>[" + s.arg1.size() + "]<UL>");	
-			for (Enumeration e = s.arg1.elements(); e.hasMoreElements();) {
-				TExp res = (TExp)e.nextElement();
+			for (Enumeration<TExp> e = s.arg1.elements(); e.hasMoreElements();) {
+				TExp res = e.nextElement();
 				res.Accept(this,TWriteState.DEFAULT);
 			}	
 			out.println ("</UL>");

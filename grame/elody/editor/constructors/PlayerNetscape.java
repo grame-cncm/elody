@@ -162,7 +162,7 @@ public class PlayerNetscape extends Applet implements Runnable {
 			while (!stopThread) {
 				updateState();
 				try{
-					Thread.currentThread().sleep(200);
+					Thread.sleep(200);
 				}catch (InterruptedException e) {}
 			}
 		 	if (msplayer != null) {

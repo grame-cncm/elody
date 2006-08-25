@@ -48,7 +48,7 @@ public class TLTrackMoveAction extends TLDragAction {
 		if (! fExternal ) {
 			copymode = m.isAltDown();
 			dstY = m.getY();
-			dstLine = fPane.y2line(dstY + fPane.getFLineHeight()/2);
+			dstLine = fPane.y2line(dstY + TLPane.getFLineHeight()/2);
 			if (dstLine < 0) dstLine = 0; else if (dstLine > 127) dstLine = 127;
 		}
 	}
@@ -85,17 +85,17 @@ public class TLTrackMoveAction extends TLDragAction {
 		if (! fExternal ) {
 			Dimension dim = fPane.getSize();
 			//Graphics g = getGraphics();
-			g.setXORMode(fPane.getFArgColorBkg()); g.setColor(fPane.getFTraitColor()); 				
+			g.setXORMode(TLPane.getFArgColorBkg()); g.setColor(TLPane.getFTraitColor()); 				
 			// ombre de la piste source
 			int x0 = 0, y0 = fPane.line2y(srcLine);
-			g.drawRect(x0, y0+1, dim.width, fPane.getFLineHeight()-2);
+			g.drawRect(x0, y0+1, dim.width, TLPane.getFLineHeight()-2);
 			
 			if ( (dstY != srcY) && (copymode || (dstLine != srcLine) && (dstLine != srcLine+1)) ) {
 				// hilite de la destination
 				int y1 = fPane.line2y(dstLine);
-				y0 = y1 - fPane.getFLineHeight()/2;
-				g.drawRect(x0, y0+1, dim.width, fPane.getFLineHeight()-2);
-				g.drawRect(x0+1, y0+2, dim.width-2, fPane.getFLineHeight()-4);
+				y0 = y1 - TLPane.getFLineHeight()/2;
+				g.drawRect(x0, y0+1, dim.width, TLPane.getFLineHeight()-2);
+				g.drawRect(x0+1, y0+2, dim.width-2, TLPane.getFLineHeight()-4);
 				g.drawLine(0, y1-1, dim.width, y1-1);
 				g.drawLine(0, y1, dim.width, y1);
 			}

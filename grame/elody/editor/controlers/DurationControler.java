@@ -16,6 +16,18 @@ public class DurationControler extends FloatEditCtrl {
 		super (new JamButtonControler(1,19,10,inColor,img), Define.TextCtrlSize, displayAbs);
 		setMessage (msg);
 	}
+    public void initAbsValue (int v) {
+    	if (v!=-1)
+    	{
+    		absRef = v*10/ctrl.getValue();
+    		editAbs.setText(String.valueOf(v));
+    	}
+    	else
+    	{
+    		absRef = -1;
+    		editAbs.setText("");
+    	}
+    }
   	public void update (Observable o, Object arg) {
   		MsgNotifier mn = (MsgNotifier)o;
   		if (mn.message() == Define.ResetMsg) 

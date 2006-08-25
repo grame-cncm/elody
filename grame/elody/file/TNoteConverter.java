@@ -77,7 +77,7 @@ public final class TNoteConverter {
 		return new TRational(1,1);
 	}
 		
-	Vector quantizeSymbAux(int v, Vector res, int limit) {
+	Vector<TRational> quantizeSymbAux(int v, Vector<TRational> res, int limit) {
 		int d1 = getSup(v);
 		int d2 = getInf(v);
 		if ((v - d2) < limit) {
@@ -97,8 +97,8 @@ public final class TNoteConverter {
 		}
 	}
 	
-	Vector quantizeSymb(int val , int limit) {
-		Vector res = new Vector();
+	Vector<TRational> quantizeSymb(int val , int limit) {
+		Vector<TRational> res = new Vector<TRational>();
 		
 		if (val < limit) {
 			if (val < (limit / 2)) {
@@ -134,10 +134,10 @@ public final class TNoteConverter {
 	String STEPHconvertDur (float fdur) {
 		if (fdur != currentDur) {
 			if (state) currentDur = fdur;
-			Vector vector =  quantizeSymb((int) fdur, durTable[durTable.length -1]);
+			Vector<TRational> vector =  quantizeSymb((int) fdur, durTable[durTable.length -1]);
 			TRational res = new TRational(0,1);
-			for (Enumeration e = vector.elements() ; e.hasMoreElements() ;){ 
-				res  = TRational.Add(res, (TRational)(e.nextElement()));
+			for (Enumeration<TRational> e = vector.elements() ; e.hasMoreElements() ;){ 
+				res  = TRational.Add(res, e.nextElement());
 			} 
 			return  "*" + res.toString();
 		}else {
@@ -151,8 +151,8 @@ public final class TNoteConverter {
 			if (state) currentDur = fdur;
 		/*	Vector vector =  quantizeSymb((int) fdur, durTable[durTable.length -1]);
 			TRational res = new TRational(0,1);
-			for (Enumeration e = vector.elements() ; e.hasMoreElements() ;){ 
-				res  = TRational.Add(res, (TRational)(e.nextElement()));
+			for (Enumeration<TRational> e = vector.elements() ; e.hasMoreElements() ;){ 
+				res  = TRational.Add(res, e.nextElement());
 			} 
 			if (res.num() == 1) {
 				return "/" + res.denom();

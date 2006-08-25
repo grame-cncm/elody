@@ -21,6 +21,7 @@ import java.util.Observer;
 
 public class ExprHolder extends DragHolder implements Observer {
 	protected boolean uptodate, refresh;
+	protected boolean recentlyDropped = false;
     protected Offscreen offscreen;
 	protected TGraphVisitor visitor;
 	protected MsgNotifier notifier;
@@ -39,6 +40,10 @@ public class ExprHolder extends DragHolder implements Observer {
     	refresh = true;
     }
   	public void 	update (Observable o, Object arg) { }
+  	
+	public boolean isRecentlyDropped()	{ return recentlyDropped; }
+	public void setRecentlyDropped(boolean b)	{ recentlyDropped = b; }
+	
 	public Object 	getObject () 		{ return getExpression(); }
 	public TExp 	buildExpression() 	{ return expr; }
 	public void 	changed () { 
@@ -106,7 +111,11 @@ public class ExprHolder extends DragHolder implements Observer {
 
 	public void drop (Object o, Point where) {
 //		if (o instanceof TExp)  setExpression ((TExp)o);
-		if (o instanceof TExpContent) setExpression (((TExpContent)o).getExpression());
+		if (o instanceof TExpContent)
+		{
+			setRecentlyDropped(true);
+			setExpression (((TExpContent)o).getExpression());
+		}
 	}
 	public DragAble getDragObject (int x, int y) {
 		return (contains(x,y) && (getExpression()!=null)) ? this : null;

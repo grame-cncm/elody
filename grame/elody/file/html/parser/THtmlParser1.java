@@ -16,10 +16,10 @@ import java.util.Hashtable;
 
 public class THtmlParser1 extends TBasicHtmlParser {
 
-	protected static Hashtable parseTable = new Hashtable();
-	protected Hashtable identTable;
+	protected static Hashtable<String, ParseOperator> parseTable = new Hashtable<String, ParseOperator>();
+	protected Hashtable<String, TExp> identTable;
 		
-	protected THtmlParser1 () {identTable = new Hashtable(); }// contient les expressions associées aux ident et aux letIdent
+	protected THtmlParser1 () {identTable = new Hashtable<String, TExp>(); }// contient les expressions associées aux ident et aux letIdent
 
 	// FILE VERSION 100
 	
@@ -85,7 +85,7 @@ public class THtmlParser1 extends TBasicHtmlParser {
 			return parseLetIdent1(str);
 		}else if (str.startsWith("ELink")) { 
 			return parseUrl(str.substring(5));
-		}else if ((op = (ParseOperator)parseTable.get(str)) != null ) {
+		}else if ((op = parseTable.get(str)) != null ) {
 			return  op.parseExp(this);
 		}else{
 			return parseExpression();
@@ -96,10 +96,10 @@ public class THtmlParser1 extends TBasicHtmlParser {
 	
 	// retourne l'expression associée à un LetIdent dans la table
 	
-	final TExp parseLetIdent1( String val) { return (TExp)identTable.get(val);}
+	final TExp parseLetIdent1( String val) { return identTable.get(val);}
 
 	final TExp parseIdent( String val) {
-		TExp res = (TExp)identTable.get(val);
+		TExp res = identTable.get(val);
 		
 		if (res == null) {
 			res =  TExpMaker.gExpMaker.createIdent(null); // cree un Ident sans expression associée

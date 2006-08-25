@@ -297,7 +297,6 @@ public class TLZone implements TExpContent {
 	public void moveBegin()
 	{
 		if ( fMT.at(fVoice) ) {
-			TLTrack t = fMT.getTrack();
 			fStartTime = fEndTime = 0;
 		}
 	}

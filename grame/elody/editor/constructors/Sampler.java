@@ -64,7 +64,7 @@ public class Sampler extends BasicShellSWT {
 	private Group outputDeviceGroup = null;
 	private Group channelsToDisplayGroup = null;
 	
-	private Vector channels = new Vector();
+	private Vector<Channel> channels = new Vector<Channel>();
 	
 	public boolean needToReset = false;
 
@@ -423,12 +423,12 @@ public class Sampler extends BasicShellSWT {
 		return v.toString();
 	}
 
-	private void OutputDevicesTreeCreate(Vector apiList, Composite parent) {
+	private void OutputDevicesTreeCreate(Vector<PaHostApiInfo> apiList, Composite parent) {
 
 		Control relative = null;
 		for (int i=0; i<apiList.size(); i++)
 		{
-			relative = ApiTreeCreate((PaHostApiInfo) apiList.get(i), parent, relative);
+			relative = ApiTreeCreate(apiList.get(i), parent, relative);
 		}
 	}
 
@@ -454,7 +454,7 @@ public class Sampler extends BasicShellSWT {
 		Control rel = apiIcon;
 		for (int i=0; i<api.getDevList().size(); i++)
 		{
-			rel = DeviceCreate(i, parent, rel, (PaDeviceInfo) api.getDevList().get(i));
+			rel = DeviceCreate(i, parent, rel, api.getDevList().get(i));
 		}
 		return rel;
 	}
@@ -535,18 +535,18 @@ public class Sampler extends BasicShellSWT {
 	{
 		for (int i=0; i<channels.size(); i++)
 		{
-			Channel c = (Channel) channels.get(i);
+			Channel c = channels.get(i);
 			c.shellClose();
 		}
 	}
 	private void refreshSampleRates()
 	{
-		Vector sampleArray = jni.getAvailableSampleRates(STD_SAMPLERATES);
+		Vector<Integer> sampleArray = jni.getAvailableSampleRates(STD_SAMPLERATES);
 		String[] items = new String[sampleArray.size()];
 		int defaultSelect = 0;
 		for (int i=0; i< sampleArray.size(); i++)
 		{
-			Integer n = (Integer) sampleArray.get(i);
+			Integer n = sampleArray.get(i);
 			items[i]=n.toString()+" Hz";
 			if (n.intValue()==sampleRate) { defaultSelect=i; }
 		}
@@ -562,7 +562,7 @@ public class Sampler extends BasicShellSWT {
 		int n=0;
 		for (int i=0; i<channels.size(); i++)
 		{
-			Channel c = (Channel) channels.get(i);
+			Channel c = channels.get(i);
 			if (c.isShellOpened())	n++;
 		}
 		return n;

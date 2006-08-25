@@ -19,7 +19,6 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -64,7 +63,7 @@ public class Channel {
 	private Shell sh = null;	// channel SWT window (shell)
 	private Window w = null;	// generic window
 	public Color bgColor;	
-	private Vector keygroups;
+	private Vector<Keygroup> keygroups;
 	private boolean full = false;	// indicates if the keyboard is full of keygroups
 	private boolean[] availKeyb;	// array indicating the keys (0..127) availability
 				// to prevent from Keygroups collisions (true=available / false=busy)
@@ -85,7 +84,7 @@ public class Channel {
 	public Channel(Group parent, final short num, Color bgColor, Sampler samp) {
 		sampler = samp;
 		this.bgColor=bgColor;
-		keygroups = new Vector();
+		keygroups = new Vector<Keygroup>();
 		buttonCreate(parent, num);
 		availKeyb = new boolean[128];
 	}
@@ -148,7 +147,7 @@ public class Channel {
 		target.addDropListener(new DropTargetAdapter() {
 			public void drop(final DropTargetEvent e) {
 		        String[] filesPaths = (String[])e.data;
-		        Vector files = new Vector(filesPaths.length);
+		        Vector<File> files = new Vector<File>(filesPaths.length);
 		        AudioExtensionFilter filter = new AudioExtensionFilter();
 		 		for (int i=0; i<filesPaths.length; i++)
 				{
@@ -214,14 +213,14 @@ public class Channel {
 		// see ShellAdapter "shellClosed"
 	}
 	
-	public short getNum()				{return num;}
-	public Shell getShell()				{ return sh;	}
-	public boolean getAvailKeyb(int i)	{ return availKeyb[i]; }
-	public Vector getKeygroups() 		{ return keygroups; }
-	public int getOutput()				{ return output; }
-	public int getPan()					{ return pan; }
-	public int getVol()					{ return vol; }
-	public double getSensit()			{ return sensit; }
+	public short getNum()					{return num;}
+	public Shell getShell()					{ return sh;	}
+	public boolean getAvailKeyb(int i)		{ return availKeyb[i]; }
+	public Vector<Keygroup> getKeygroups() 	{ return keygroups; }
+	public int getOutput()					{ return output; }
+	public int getPan()						{ return pan; }
+	public int getVol()						{ return vol; }
+	public double getSensit()				{ return sensit; }
 	// 4 envelope parameters:
 	public int getAttack()		{ return envelope.getAttack(); }
 	public int getDecay()		{ return envelope.getDecay(); }
@@ -233,7 +232,7 @@ public class Channel {
 		output=o;
 		for (int i=0; i<keygroups.size(); i++)
 		{
-			Keygroup k = (Keygroup) keygroups.get(i);
+			Keygroup k = keygroups.get(i);
 			k.setOutput(o);
 		}
 	}
@@ -257,7 +256,7 @@ public class Channel {
 		vol=v;
 		for (int i=0; i<keygroups.size(); i++)
 		{
-			Keygroup k = (Keygroup) keygroups.get(i);
+			Keygroup k = keygroups.get(i);
 			k.setVol(v);
 		}
 	}
@@ -266,7 +265,7 @@ public class Channel {
 		pan=p;
 		for (int i=0; i<keygroups.size(); i++)
 		{
-			Keygroup k = (Keygroup) keygroups.get(i);
+			Keygroup k = keygroups.get(i);
 			k.setPan(p);
 		}
 	}
@@ -275,7 +274,7 @@ public class Channel {
 		sensit=(s/100.0)-1; // sensit value is a 0..200 integer in interface
 		for (int i=0; i<keygroups.size(); i++)
 		{
-			Keygroup k = (Keygroup) keygroups.get(i);
+			Keygroup k = keygroups.get(i);
 			k.setSensit(sensit);
 		}
 	}
@@ -301,7 +300,7 @@ public class Channel {
 			else
 			{
 				addKeygroup(false, -1);
-				Keygroup k = (Keygroup) keygroups.lastElement();
+				Keygroup k = keygroups.lastElement();
 				k.setFile(files[i]);
 				sampler.configSav.writeAll();
 			}
@@ -315,7 +314,7 @@ public class Channel {
 	public void addKeygroup(boolean refresh, int index, File file, int ref, int plus, int minus)
 	{
 		addKeygroup(refresh, index);
-		Keygroup k = (Keygroup) keygroups.lastElement();
+		Keygroup k = keygroups.lastElement();
 		k.setFile(file);
 		k.setRef(ref);
 		k.setPlus(plus);
@@ -332,7 +331,7 @@ public class Channel {
 			Composite relative = null;
 			if (!keygroups.isEmpty())
 			{
-				Keygroup last = (Keygroup) keygroups.lastElement();
+				Keygroup last = keygroups.lastElement();
 				keygIndex = last.getIndex()+1;
 				relative = last.getGroup();
 			}
@@ -358,10 +357,10 @@ public class Channel {
 		{
 			/* this keygroup is not the last added, we need to reconnect
 			   the linked list before deleting */
-			Keygroup next = (Keygroup) keygroups.get(currentIndex+1);
+			Keygroup next = keygroups.get(currentIndex+1);
 			if (currentIndex>0)
 			{
-				Keygroup prev = (Keygroup) keygroups.get(currentIndex-1);
+				Keygroup prev = keygroups.get(currentIndex-1);
 				next.relocate(prev.getGroup());
 			}
 			else

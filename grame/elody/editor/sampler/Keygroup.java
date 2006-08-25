@@ -513,7 +513,7 @@ public class Keygroup {
 //the function of the methods below is to manage absolute and relative file paths
 	
 	private static List getPathList(File f) {
-		List l = new ArrayList();
+		List<String> l = new ArrayList<String>();
 		File r;
 		try {
 			r = f.getCanonicalFile();

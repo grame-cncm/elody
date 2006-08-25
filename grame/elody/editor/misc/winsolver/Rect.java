@@ -55,12 +55,12 @@ public class Rect extends Rectangle {
 		else if ( p.y < getCenter().y )
 			setLocation(x, y+2);	
 	}
-	public Vector checkCollision(Vector rectangles)
+	public Vector<Rect> checkCollision(Vector<Rect> rectangles)
 	{
-		Vector result = new Vector();
+		Vector<Rect> result = new Vector<Rect>();
 		for (int j=0; j<rectangles.size(); j++)
 		{
-			Rect r = (Rect) rectangles.get(j);
+			Rect r = rectangles.get(j);
 			if (this.intersects(r))
 				result.add(r);
 		}

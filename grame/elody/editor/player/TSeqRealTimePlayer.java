@@ -139,7 +139,7 @@ class TExpTask extends MidiTask {
 	public TExpTask (TSeqRealTimePlayer player) { this.player = player; }
 	public void Execute (MidiAppl appl, int date) { 
 		try {
-			int delta = Midi.GetTime() - (date + player.ADVANCE + 100);
+			int delta = Midi.GetTime() - (date + TSeqRealTimePlayer.ADVANCE + 100);
 			if (delta > 0) player.offset += delta;
 			player.playNextExp();
 		}catch (Throwable e) {

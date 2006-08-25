@@ -38,7 +38,7 @@ public final class HtmlTag {
 	// if (value != null)
 	// process value == image.gif
 	public String GetParam(String name) {
-		return (String) m_params.get(name);
+		return m_params.get(name);
 	}
 
 	public static HtmlTag ParseTag(StringBuffer sbuf) throws HtmlException {
@@ -80,11 +80,11 @@ public final class HtmlTag {
 			tag.append('/');
 		tag.append(m_tag);
 
-		Enumeration keys = m_params.keys();
-		Enumeration elements = m_params.elements();
+		Enumeration<String> keys = m_params.keys();
+		Enumeration<String> elements = m_params.elements();
 		while (keys.hasMoreElements()) {
-			String name = (String) keys.nextElement();
-			String value = (String) elements.nextElement();
+			String name = keys.nextElement();
+			String value = elements.nextElement();
 			tag.append(" " + name + "=\"" + value + "\"");
 		}
 		tag.append('>');
@@ -350,9 +350,9 @@ public final class HtmlTag {
 
 	public boolean m_endtag = false;
 
-	public Hashtable m_params = new Hashtable();
+	public Hashtable<String, String> m_params = new Hashtable<String, String>();
 
-	public static Hashtable m_tags = new Hashtable();
+	public static Hashtable<String, Integer> m_tags = new Hashtable<String, Integer>();
 
 	static {
 		m_tags.put(new String("A"), new Integer(T_A));

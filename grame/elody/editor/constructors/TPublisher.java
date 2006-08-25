@@ -55,12 +55,12 @@ public class TPublisher extends BasicApplet implements Runnable, ActionListener
 	BufferedReader in = null;
 	PrintStream out = null;
 //	PrintWriter out = null;
-	Hashtable urlTable;
+	Hashtable<String, String> urlTable;
 	Panel bottomPanel1;
 		
 	public TPublisher (){	
 		super ("Publisher");
-		urlTable = new Hashtable();
+		urlTable = new Hashtable<String, String>();
 		setSize(270,300);
 	}
 	
@@ -296,7 +296,7 @@ public class TPublisher extends BasicApplet implements Runnable, ActionListener
 		try {
 			setCursor(new Cursor(Cursor.WAIT_CURSOR));
 			TFileParser parser = new TFileParser();	
-			URL url = new URL((String)urlTable.get(filelist.getSelectedItem()));
+			URL url = new URL(urlTable.get(filelist.getSelectedItem()));
 			TFileContent content  =  parser.readFile(url);
 	   		if (content != null) {
 	   			clearTextZone();
@@ -333,8 +333,8 @@ public class TPublisher extends BasicApplet implements Runnable, ActionListener
 	   
 	public void updateUrlList(){
 		clearChoice();
-		for (Enumeration e = urlTable.keys(); e.hasMoreElements(); ){
-			String key = (String)e.nextElement();
+		for (Enumeration<String> e = urlTable.keys(); e.hasMoreElements(); ){
+			String key = e.nextElement();
 			filelist.add(key);
 		}
 	}

@@ -90,23 +90,32 @@ public class ParamPanel extends ParamFrame implements Observer {
 		reset.addObserver (this);
 		add (reset);
 	}
+	public void initControls (int pitch, int vel, float dur, int chan)
+	{
+		pitchCtrl.initAbsValue(pitch);
+		velCtrl.initAbsValue(vel);
+		durCtrl.initAbsValue((int)dur);
+		chanCtrl.initAbsValue(chan);
+	}
+	
+	
 	protected EditControler createPitchControl () {
-		EditControler e = new ExprControler (Define.pitchColor, Define.pitchButton, pitchMsg, false);
+		EditControler e = new ExprControler (Define.pitchColor, Define.pitchButton, pitchMsg, true);
 		e.setValue (0);
 		return e;
 	}
 	protected EditControler createVelControl () {
-		EditControler e = new ExprControler (Define.velColor, Define.velButton, velMsg, false);
+		EditControler e = new ExprControler (Define.velColor, Define.velButton, velMsg, true);
 		e.setValue (0);
 		return e;
 	}
 	protected EditControler createDurControl () {
-		EditControler e = new DurationControler (Define.durColor, Define.durButton, durMsg, false);
+		EditControler e = new DurationControler (Define.durColor, Define.durButton, durMsg, true);
 		e.setValue (1);
 		return e;
 	}
 	protected EditControler createChanControl () {
-		EditControler e = new ChanControler (Define.chanColor, Define.chanButton, chanMsg, false);
+		EditControler e = new ChanControler (Define.chanColor, Define.chanButton, chanMsg, true);
 		e.setValue (0);
 		return e;
 	}

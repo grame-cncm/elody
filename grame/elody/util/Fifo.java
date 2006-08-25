@@ -10,7 +10,7 @@ import java.util.Vector;
  * @author 	Jonathan Payne
  */
 
-public class Fifo extends Vector {
+public class Fifo extends Vector<Object> {
     /**
      * Pushes an item onto the stack.
      * @param item the item to be pushed on.

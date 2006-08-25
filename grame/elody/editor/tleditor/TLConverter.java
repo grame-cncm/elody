@@ -34,7 +34,7 @@ public final class TLConverter {
 	static final TExp 		evalLimit = emk.createNote(ignoreColor, 0, 0, 0, 200000);
 	static final int 		reifyLimit = 30000;
 	
-	static final Hashtable mixExpTable =  new Hashtable();
+	static final Hashtable<TExp, TExp> mixExpTable =  new Hashtable<TExp, TExp>();
 			
 	// outils pour gerer les fonctions identités et les silences à ignorer
 	//--------------------------------------------------------------------
@@ -295,7 +295,7 @@ public final class TLConverter {
 			e1 = emk.createSeq(e.getExp(),sil);
 		}
 		
-		if ((e2 = (TExp)mixExpTable.get(e1)) == null) {
+		if ((e2 = mixExpTable.get(e1)) == null) {
 			mixExpTable.put(e1,e1);
 			//System.out.println("Put in table");
 			return emk.createSeq(createIgnoreSil(date), e1);

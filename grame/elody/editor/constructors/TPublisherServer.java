@@ -48,8 +48,8 @@ public class TPublisherServer extends BasicApplet implements ActionListener,
 		static String resetCommand = "Reset";
 		static String debugCommand = "Debug";
 		
-		Vector clientList;
-		Vector urlList;
+		Vector<TConnection> clientList;
+		Vector<String> urlList;
 		
 		Button resetButton, debugButton, quitButton;
 		TextField clientnumber,portnumber;
@@ -81,8 +81,8 @@ public class TPublisherServer extends BasicApplet implements ActionListener,
 				listener = new TConnectionListener(Integer.parseInt(portnumber.getText()));
 				listener.addObserver(this);
 
-				clientList = new Vector();
-				urlList = new Vector();
+				clientList = new Vector<TConnection>();
+				urlList = new Vector<String>();
 				
 				parseConfig ();
 				parseIndexFile ();
@@ -187,8 +187,8 @@ public class TPublisherServer extends BasicApplet implements ActionListener,
 		
 		void writeUrls(PrintStream out) // Sauvegarde liste des URL
 		{
-			for (Enumeration e = urlList.elements(); e.hasMoreElements();){
-		   		String url = (String)e.nextElement();
+			for (Enumeration<String> e = urlList.elements(); e.hasMoreElements();){
+		   		String url = e.nextElement();
 		   		//System.out.println(url);
 	       		out.println(url);
 	   		}
@@ -364,9 +364,9 @@ public class TPublisherServer extends BasicApplet implements ActionListener,
 			TLogfile.printCurdate();
 			TLogfile.printMessage("Send URL list to all clients");
 			
-			for (Enumeration e = clientList.elements(); e.hasMoreElements();)
+			for (Enumeration<TConnection> e = clientList.elements(); e.hasMoreElements();)
 			{
-		   		TConnection client = (TConnection)e.nextElement();
+		   		TConnection client = e.nextElement();
 	       		sendUrlList(client);
 	   		}
 		}
@@ -385,9 +385,9 @@ public class TPublisherServer extends BasicApplet implements ActionListener,
 
 		private void sendData(Object obj)	// envoi d'un objet "obj" à tous les clients
 		{
-			for (Enumeration e = clientList.elements(); e.hasMoreElements();)
+			for (Enumeration<TConnection> e = clientList.elements(); e.hasMoreElements();)
 			{
-				TConnection client = (TConnection)e.nextElement();
+				TConnection client = e.nextElement();
 				client.sendData(obj);
 			}
 		}

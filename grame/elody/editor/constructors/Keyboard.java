@@ -138,10 +138,10 @@ class KeyboardPanel extends Panel implements MouseListener, MouseMotionListener
 		target.reset();
 	}
 	
-	public void setKeyboard(Enumeration en) {
+	public void setKeyboard(Enumeration<Integer> en) {
 		reset ();
 		while (en.hasMoreElements()) {
-			Integer i = (Integer)en.nextElement();
+			Integer i = en.nextElement();
 			int note = i.intValue();
 			if ((note >= 0) && (note < octaves * 12))
 				pressed[ note ] = true ;
@@ -149,7 +149,7 @@ class KeyboardPanel extends Panel implements MouseListener, MouseMotionListener
 		repaint();
 	}
 	
-	public void undo (Enumeration en) {
+	public void undo (Enumeration<Integer> en) {
 		if (mode == ChordMode) {
 			setKeyboard (en);
 		}
@@ -317,14 +317,14 @@ class KeyboardPanel extends Panel implements MouseListener, MouseMotionListener
 
 class KbdResultHolder extends DelayedExprHolder implements KeyboardTarget
 {
-	Vector notesList;
+	Vector<Integer> notesList;
 	int pitch, vel, chan; float dur;
 	int mode; Object keyMap; 
 	Component undoCtrl;
 
 	public KbdResultHolder () {
 		super (null, new TNotesVisitor(), false, 400);
-		notesList = new Vector(12,12);
+		notesList = new Vector<Integer>(12,12);
 		mode = KeyboardPanel.SeqMode;
 		keyMap = Color.blue;
 	}
@@ -394,11 +394,11 @@ class KbdResultHolder extends DelayedExprHolder implements KeyboardTarget
 	}
 	
 	public TExp buildExpression() {
-		Enumeration en =  notesList.elements();
+		Enumeration<Integer> en = notesList.elements();
 		TExpMaker maker = TExpMaker.gExpMaker;
 		TExp expr = null;
 		while (en.hasMoreElements()) {
-			Integer i = (Integer)en.nextElement();
+			Integer i = en.nextElement();
 			TExp step = createStep(i.intValue());
 			if (expr == null) expr = step;
 			else if (mode == KeyboardPanel.SeqMode)
@@ -454,8 +454,8 @@ class KbdResultHolder extends DelayedExprHolder implements KeyboardTarget
 			if (n == 0) undoCtrl.setEnabled (false);
 		}
 	}
-	public int countNotes () 		{ return notesList.size(); }
-	public Enumeration getList() 	{ return notesList.elements(); }
+	public int countNotes () 				{ return notesList.size(); }
+	public Enumeration<Integer> getList() 	{ return notesList.elements(); }
 }
 
 class KeyboardParams extends Panel implements Observer
@@ -551,7 +551,7 @@ class ExprAndColorHolder extends ExprHolder
 	Color color;
 	public ExprAndColorHolder (Observer obs) {
 		super(null, new TNotesVisitor(), true);
-		color = color.blue;
+		color = Color.blue;
 		addObserver (obs);
 		notifyObservers ();
 	}

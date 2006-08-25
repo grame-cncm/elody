@@ -7,7 +7,6 @@ import grame.elody.editor.misc.applets.BasicApplet;
 import grame.elody.editor.misc.applets.BasicStub;
 
 import java.awt.BorderLayout;
-import java.awt.Checkbox;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -64,11 +63,11 @@ public final class Elody extends BasicApplet {
 	 */
   	private void setupContent (String str) {
   		ArgsReader ar = new ArgsReader (this, str);
-  		Vector v = ar.components ();
+  		Vector<Component> v = ar.components ();
 		setLayout (new GridLayout( v.size()+1, 1, 0, 3));
 		int w=0, h=0;
 		for (int i=0; i<v.size(); i++) {
-		    Component c = (Component)v.elementAt(i);
+		    Component c = v.elementAt(i);
 		    add (c);
 		    Dimension d = c.getMinimumSize();
 		    if (d.width > w) w = d.width;
@@ -82,9 +81,9 @@ public final class Elody extends BasicApplet {
 		setSize (w+i.left+i.right, h+i.bottom+i.top);
 		activate (ar.actifs ());
 	}   
-	private void activate (Vector v) {
+	private void activate (Vector<ComponentLauncher> v) {
 		for (int i=0; i<v.size(); i++) {
-		    ComponentLauncher c = (ComponentLauncher)v.elementAt(i);
+		    ComponentLauncher c = v.elementAt(i);
 		    c.activate();
 		 }
 	}
@@ -115,7 +114,7 @@ public final class Elody extends BasicApplet {
 			}
 		} catch (Exception e) { System.err.println( "Elody main args reading : " + e); }
 		BasicStub.init (System.getProperty("user.dir") + "/");
-		Hashtable appletParams = new Hashtable();
+		Hashtable<String, String> appletParams = new Hashtable<String, String>();
 		appletParams.put ("EDITORS", sbuff.toString());
 		AppletFrame.startApplet("grame.elody.editor.main.Elody", appletParams);
 		storeErrsTo ("ElodyErr.txt");

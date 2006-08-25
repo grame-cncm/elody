@@ -177,7 +177,7 @@ public final class TMIDIFile {
 	 */
 
 	TExp parseSeq(int curNote, int date) {
-		Vector table = new Vector();
+		Vector<TExp> table = new Vector<TExp>();
 		Color c = tableColor[Midi.GetRefnum(curNote) % tableColor.length];
 
 		while (curNote != 0) {
@@ -195,8 +195,8 @@ public final class TMIDIFile {
 
 		TExp res = TExpMaker.gExpMaker.createNull();
 
-		for (Enumeration e = table.elements(); e.hasMoreElements();) {
-			res = TExpMaker.gExpMaker.createSeq((TExp) e.nextElement(), res);
+		for (Enumeration<TExp> e = table.elements(); e.hasMoreElements();) {
+			res = TExpMaker.gExpMaker.createSeq(e.nextElement(), res);
 		}
 		return res;
 	}

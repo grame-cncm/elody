@@ -53,7 +53,7 @@ public class TLVelocityAction extends TLDragAction {
 	public void drawVisualFeedback(Graphics g)
 	{
 		//Graphics g = getGraphics();
-		g.setXORMode(fPane.getFArgColorBkg()); g.setColor(fPane.getFTraitColor()); 			
+		g.setXORMode(TLPane.getFArgColorBkg()); g.setColor(TLPane.getFTraitColor()); 			
 		g.drawString(msg, oldx + 5, oldy + 12);
 		g.setPaintMode();
 	}

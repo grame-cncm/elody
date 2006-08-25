@@ -6,10 +6,10 @@ import java.awt.event.ItemListener;
 import java.util.Vector;
 
 public class ComponentMenu extends Choice implements ItemListener {
-	Vector v;
+	Vector<ComponentLauncher> v;
 	
 	public ComponentMenu (String title) {
-		v = new Vector();
+		v = new Vector<ComponentLauncher>();
 		addItemListener (this);
 		add (title.trim());
 		add ("----------------------");
@@ -22,7 +22,7 @@ public class ComponentMenu extends Choice implements ItemListener {
 	public void itemStateChanged(ItemEvent e) {
 		int i = getSelectedIndex () - 2;
 		if (i >= 0) {
-			ComponentLauncher cl = (ComponentLauncher)v.elementAt(i);
+			ComponentLauncher cl = v.elementAt(i);
 			cl.activate();
 		}
 		select (0);

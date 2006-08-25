@@ -33,7 +33,7 @@ public abstract class TExp implements Serializable {
 	public static final int INST  = 3;
 	public static final int XPND  = 4;
 	
-	protected static Hashtable absTable = new Hashtable(50); 	// hashtable por l'abstraction
+	protected static Hashtable<TExp, TExp> absTable = new Hashtable<TExp, TExp>(50); 	// hashtable por l'abstraction
 	
 	protected transient int hashcode = 0;						// hashcode utilisé dans les tables de hashage
    	
@@ -151,7 +151,7 @@ public abstract class TExp implements Serializable {
  	public TExp Rebuild(TExp e, TIdent id) { 
  		Debug.Trace( "Rebuild", this);
  		TExp res;
- 		if ((res = (TExp)absTable.get(this)) != null) {
+ 		if ((res = absTable.get(this)) != null) {
  			return res;
  		}else{
  			return  makeNewTree1 (e,id);
@@ -169,7 +169,7 @@ public abstract class TExp implements Serializable {
  		TExp res;
  		if (this.equals(e)) {
  			return id;
- 		}else if ((res = (TExp)absTable.get(this)) != null) {
+ 		}else if ((res = absTable.get(this)) != null) {
  			return res;
  		}else{
  			return makeNewTree (e,id);

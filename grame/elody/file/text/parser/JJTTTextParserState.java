@@ -1,9 +1,11 @@
 package grame.elody.file.text.parser;
 
-public class JJTTTextParserState {
-	private java.util.Stack nodes;
+import java.util.Stack;
 
-	private java.util.Stack marks;
+public class JJTTTextParserState {
+	private Stack<Node> nodes;
+
+	private Stack<Integer> marks;
 
 	private int sp; // number of nodes on stack
 
@@ -12,8 +14,8 @@ public class JJTTTextParserState {
 	private boolean node_created;
 
 	JJTTTextParserState() {
-		nodes = new java.util.Stack();
-		marks = new java.util.Stack();
+		nodes = new Stack<Node>();
+		marks = new Stack<Integer>();
 		sp = 0;
 		mk = 0;
 	}
@@ -42,7 +44,7 @@ public class JJTTTextParserState {
 	 * a successful parse.
 	 */
 	Node rootNode() {
-		return (Node) nodes.elementAt(0);
+		return nodes.elementAt(0);
 	}
 
 	/* Pushes a node on to the stack. */
@@ -56,14 +58,14 @@ public class JJTTTextParserState {
 	 */
 	Node popNode() {
 		if (--sp < mk) {
-			mk = ((Integer) marks.pop()).intValue();
+			mk = (marks.pop()).intValue();
 		}
-		return (Node) nodes.pop();
+		return nodes.pop();
 	}
 
 	/* Returns the node currently on the top of the stack. */
 	Node peekNode() {
-		return (Node) nodes.peek();
+		return nodes.peek();
 	}
 
 	/*
@@ -77,7 +79,7 @@ public class JJTTTextParserState {
 		while (sp > mk) {
 			popNode();
 		}
-		mk = ((Integer) marks.pop()).intValue();
+		mk = marks.pop().intValue();
 	}
 
 	void openNodeScope(Node n) {
@@ -92,7 +94,7 @@ public class JJTTTextParserState {
 	 * definite node. Then the definite node is pushed on to the stack.
 	 */
 	void closeNodeScope(Node n, int num) {
-		mk = ((Integer) marks.pop()).intValue();
+		mk = marks.pop().intValue();
 		while (num-- > 0) {
 			Node c = popNode();
 			c.jjtSetParent(n);
@@ -113,7 +115,7 @@ public class JJTTTextParserState {
 	void closeNodeScope(Node n, boolean condition) {
 		if (condition) {
 			int a = nodeArity();
-			mk = ((Integer) marks.pop()).intValue();
+			mk = marks.pop().intValue();
 			while (a-- > 0) {
 				Node c = popNode();
 				c.jjtSetParent(n);
@@ -123,7 +125,7 @@ public class JJTTTextParserState {
 			pushNode(n);
 			node_created = true;
 		} else {
-			mk = ((Integer) marks.pop()).intValue();
+			mk = marks.pop().intValue();
 			node_created = false;
 		}
 	}

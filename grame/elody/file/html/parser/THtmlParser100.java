@@ -15,10 +15,6 @@ import java.util.Vector;
 *******************************************************************************************/
 
 public final class THtmlParser100 extends THtmlParser1 {
-	THtmlParser100() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	static {
 		parseTable.put(new String("Event"), new ParseEvent100());
@@ -281,7 +277,7 @@ final class ParseMute100 extends ParseOperator {
 final class ParseArray100 extends ParseOperator {
 
 	public TExp parseExp (THtmlParser1 parser) {
-	 	Vector vector = new Vector();
+	 	Vector<TExp> vector = new Vector<TExp>();
 	 	String str= parser.nextToken(); // valeur numerique
 		parser.nextToken();  //  "UL"
 		

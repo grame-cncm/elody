@@ -5,6 +5,8 @@ import grame.elody.file.guido.parser.ParseException;
 import grame.elody.file.guido.parser.Token;
 import grame.elody.lang.texpression.expressions.TExp;
 
+import java.util.Vector;
+
 public class TTextParser /* @bgen(jjtree) */implements TTextParserTreeConstants,
 		TTextParserConstants {/* @bgen(jjtree) */
 	protected JJTTTextParserState jjtree = new JJTTTextParserState();
@@ -934,7 +936,7 @@ public class TTextParser /* @bgen(jjtree) */implements TTextParserTreeConstants,
 			return (jj_ntk = jj_nt.kind);
 	}
 
-	private java.util.Vector jj_expentries = new java.util.Vector();
+	private Vector<int[]> jj_expentries = new Vector<int[]>();
 
 	private int[] jj_expentry;
 
@@ -971,7 +973,7 @@ public class TTextParser /* @bgen(jjtree) */implements TTextParserTreeConstants,
 		}
 		int[][] exptokseq = new int[jj_expentries.size()][];
 		for (int i = 0; i < jj_expentries.size(); i++) {
-			exptokseq[i] = (int[]) jj_expentries.elementAt(i);
+			exptokseq[i] = jj_expentries.elementAt(i);
 		}
 		return new ParseException(token, exptokseq, tokenImage);
 	}

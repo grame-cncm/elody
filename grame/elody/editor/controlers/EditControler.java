@@ -17,6 +17,7 @@ public class EditControler extends Panel implements Observer {
 	protected boolean displayAbs;
 	protected TextBarField edit;
 	protected TextBarField editAbs;
+	protected int absRef = 0;
 	protected Controler ctrl;
 	protected MsgNotifier notifier;
 	
@@ -74,7 +75,10 @@ public class EditControler extends Panel implements Observer {
 	    		}
   				break;
   			case Define.BarControlerMsg:
-    			edit.setText (((Integer)arg).toString());
+    			int nArg = ((Integer)arg).intValue();
+    			edit.setText(String.valueOf(nArg));
+  				if (absRef!=-1)
+  					editAbs.setText (String.valueOf(nArg+absRef));					
   				break;
   			case Define.ShiftControlMsg:
     			shiftValue (((Integer)arg).intValue());
@@ -90,6 +94,19 @@ public class EditControler extends Panel implements Observer {
     	edit.setText (new Integer(ctrl.getValue()).toString());
      	notifyObservers ();
    }
+    public void initAbsValue (int v) {
+    	if (v!=-1)
+    	{
+    		absRef = v-ctrl.getValue();
+    		editAbs.setText(String.valueOf(v));
+    	}
+    	else
+    	{
+    		absRef = -1;
+    		editAbs.setText("");
+    	}
+    }
+    
     public void setRange (int min, int max, int newValue, int home) 
     										{ ctrl.setRange (min, max, newValue, home); }
     public void	shiftValue (int v) 			{ ctrl.shiftValue (v); }

@@ -25,14 +25,14 @@ public class PaJniConnect {
 	public native static String GetErrorText(int err);
 	private native static boolean testSampleRate(int sampleRate);
 	
-	private Vector apiList;
+	private Vector<PaHostApiInfo> apiList;
 	
 	public PaJniConnect()
 	{
 		int apiCount = GetHostAPICount();
 		PaHostApiInfo apiArray[] = new PaHostApiInfo[apiCount];
 		apiArray = GetHostAPIInfos(apiCount);
-		apiList = new Vector();
+		apiList = new Vector<PaHostApiInfo>();
 		for (int i=0; i<apiCount; i++)
 		{
 			if (apiArray[i]!=null)
@@ -43,11 +43,11 @@ public class PaJniConnect {
 			}
 		}
 	}
-	public Vector getApiList()		{ return apiList; }
-	public String GetFileName()		{ return GetCurrentFileName(); }
-	public int GetSampleRate()		{ return GetCurrentSampleRate(); }
-	public int GetFramesPerBuffer()	{ return GetCurrentFramesPerBuffer(); }
-	public PaDeviceInfo GetDevice()	{ return findByDevIndex(GetCurrentDeviceIndex()); }
+	public Vector<PaHostApiInfo> getApiList()	{ return apiList; }
+	public String GetFileName()					{ return GetCurrentFileName(); }
+	public int GetSampleRate()					{ return GetCurrentSampleRate(); }
+	public int GetFramesPerBuffer()				{ return GetCurrentFramesPerBuffer(); }
+	public PaDeviceInfo GetDevice()				{ return findByDevIndex(GetCurrentDeviceIndex()); }
 	
 	public int paDriverReload(int sampleRate, int framesPerBuffer, String configFile, int devIndex)
 	// stop and restart the driver: causes a new reading of the config file 
@@ -58,7 +58,7 @@ public class PaJniConnect {
 	public void setDevList(PaHostApiInfo api)
 	// add a devices list to an audio Host API structure
 	{
-		Vector v = new Vector();
+		Vector<PaDeviceInfo> v = new Vector<PaDeviceInfo>();
 		PaDeviceInfo devArray[] = new PaDeviceInfo[api.getDeviceCount()];
 		devArray = GetDeviceInfos(api.getApiIndex(), api.getDeviceCount());
 		for (int i=0; i<api.getDeviceCount(); i++)
@@ -77,10 +77,10 @@ public class PaJniConnect {
 	{
 		for (int i=0; i<apiList.size(); i++)
 		{
-			PaHostApiInfo p = (PaHostApiInfo) apiList.get(i);
+			PaHostApiInfo p = apiList.get(i);
 			for (int j=0; j<p.getDevList().size(); j++)
 			{
-				PaDeviceInfo d = (PaDeviceInfo) p.getDevList().get(j);
+				PaDeviceInfo d = p.getDevList().get(j);
 				if (d.getDevIndex()==index)
 					return d;
 			}
@@ -88,9 +88,9 @@ public class PaJniConnect {
 		return null;
 	}
 	
-	public Vector getAvailableSampleRates(int[] sampleArray)
+	public Vector<Integer> getAvailableSampleRates(int[] sampleArray)
 	{
-		Vector result = new Vector();
+		Vector<Integer> result = new Vector<Integer>();
 		for (int i=0; i<sampleArray.length; i++)
 		{
 			if (testSampleRate(sampleArray[i]))

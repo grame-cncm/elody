@@ -12,7 +12,7 @@ import java.util.Hashtable;
 public class BasicStub implements AppletStub {
 	static private Applet sharedStub = null;
 	static private String base = ".";
-	private Hashtable paramTable;
+	private Hashtable<String, String> paramTable;
 	private Frame frame;
 	
     static public void init (String doc) {
@@ -20,7 +20,7 @@ public class BasicStub implements AppletStub {
     }
     static public void share (Applet a) { sharedStub = a; }
 
-	public BasicStub (Frame f, Hashtable params) {
+	public BasicStub (Frame f, Hashtable<String, String> params) {
 		frame = f;
 		paramTable = params;
 	}
@@ -43,7 +43,7 @@ public class BasicStub implements AppletStub {
     	return null;
     }
     public String getParameter(String name)	
-    	{ return (paramTable != null) ? (String) paramTable.get(name.toUpperCase()) : null; }
+    	{ return (paramTable != null) ? paramTable.get(name.toUpperCase()) : null; }
     public AppletContext getAppletContext()	
     	{ return (sharedStub != null) ? sharedStub.getAppletContext() : null; }
     public boolean isActive()				

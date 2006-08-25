@@ -67,7 +67,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	/*ComponentListener,*/ ExtendedDropAble
 {
 	// les actions
-	public Stack		fStack = new Stack();	// pile des dernières modifications
+	public Stack<TLActionItem>		fStack = new Stack<TLActionItem>();	// pile des dernières modifications
 	// les couleurs utilisées
 	final static Color	fGrisClair 		= new Color(238, 238, 238);
 	final static Color	fGris 			= new Color(221, 221, 221);
@@ -262,7 +262,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		TLZone selectionSav = new TLZone(fSelection);
 		switch (type) {
 		case MULTITRACKS:
-			Vector tracksVect = new Vector();
+			Vector<TLTrack> tracksVect = new Vector<TLTrack>();
 			int pos = fMultiTracks.getPos();
 			for (int i=0; i<fMultiTracks.getCount(); i++)
 			{
@@ -1597,7 +1597,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 				fUpdater.doUpdates();
 				
 			} else if (kc == KeyEvent.VK_Z /*90*/) {		// Ctrl+Z
-				TLActionItem act = (TLActionItem) fStack.pop();
+				TLActionItem act = fStack.pop();
 				//act.print();
 				act.undo();
 				

@@ -14,8 +14,6 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -26,9 +24,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyListener;
 
 public class BasicApplet extends Applet implements Observer {
 	private static BasicContext context = new BasicContext();
@@ -84,13 +79,13 @@ class BasicContext implements AppletContext
     	return tk.getImage(url);
     }
     public Applet getApplet(String name)	{ return null; }
-    public Enumeration getApplets()			{ return null; }
+    public Enumeration<Applet> getApplets()			{ return null; }
     public void showDocument(URL url)					{ }
     public void showDocument(URL url, String target)	{ }
     public void showStatus(String status)				{ }
 	public void setStream(String arg0, InputStream arg1) throws IOException { }
 	public InputStream getStream(String arg0) { return null; }
-	public Iterator getStreamKeys() { return null; }
+	public Iterator<String> getStreamKeys() { return null; }
 }
 
 class FunctionKeyListener implements AWTEventListener {

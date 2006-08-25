@@ -105,9 +105,9 @@ public class DragAndDrop {
 	// trouve l'applet sous le point global gp
     static public AppletFrame global2AppletFrame (final Point gp) 
     {
-    	Enumeration	en = AppletFrame.getAppletList().elements();
+    	Enumeration<AppletFrame> en = AppletFrame.getAppletList().elements();
     	while (en.hasMoreElements()) {
-    		AppletFrame af = (AppletFrame) en.nextElement();
+    		AppletFrame af = en.nextElement();
     		if (af.contains(global2Local(af,gp))) {
     			 return af;
     		}

@@ -7,13 +7,13 @@ import java.util.Vector;
 
 
 public final class TArrayExp extends TExp {
-	public Vector arg1;
+	public Vector<TExp> arg1;
 	
- 	public TArrayExp ( Vector arg1) { this.arg1 = arg1; }
+ 	public TArrayExp ( Vector<TExp> arg1) { this.arg1 = arg1; }
  	
  	
  	public TValue 	Eval(TEnv env) { 
- 		return ((TExp)arg1.firstElement()).Eval(env);
+ 		return arg1.firstElement().Eval(env);
 	}
 	
  	public boolean equals(Object obj) {
@@ -30,5 +30,5 @@ public final class TArrayExp extends TExp {
  	public Object 	Accept(TExpVisitor v, Object arg) {return v.Visite(this, arg);}
 	
 	public  TExp getArg1() {return TNullExp.instance;}
-	public  Vector getArray() {return arg1;}
+	public  Vector<TExp> getArray() {return arg1;}
 }

@@ -24,6 +24,8 @@ public class FloatEditCtrl extends EditControler {
   				Integer i = (Integer)arg;
   				Float f = new Float(int2float(i.intValue()));
     			edit.setText (f.toString());
+    			if (absRef!=-1)
+    				editAbs.setText (String.valueOf((int)(f.floatValue()*absRef)));
   				break;
   			case Define.ShiftControlMsg:
     			shiftValue (float2shift(((Float)arg).floatValue()));
@@ -52,6 +54,7 @@ public class FloatEditCtrl extends EditControler {
     	edit.setText (new Float(int2float(ctrl.getValue())).toString());
   		notifyObservers ();
     }
+    
     public void setValue (int v) 	{ setValue ((float)v); }
     public float getFloatValue () 	{ return int2float(ctrl.getValue()); }
     public void notifyObservers () 	{ notifier.notifyObservers (new Float(getFloatValue())); }

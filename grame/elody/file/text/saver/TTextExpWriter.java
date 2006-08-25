@@ -42,9 +42,9 @@ public final class TTextExpWriter extends TExpVisitor {
 	static	final Object stateDEFAULT 		= new Object();
 	static	final Object stateLETCLAUSE 	= new Object();
 	
-	Hashtable identTable;   // table d'association ident : name
+	Hashtable<TExp, String> identTable;   // table d'association ident : name
 	
-	Stack stringTable;		// table de noms disponible 
+	Stack<String> stringTable;		// table de noms disponible 
 	String curName = "z";   // utilisé pour générer des noms supplémentaires si la stringTable est vide
 
 	StringBuffer buffer;
@@ -58,8 +58,8 @@ public final class TTextExpWriter extends TExpVisitor {
 	public TTextExpWriter (Writer  out) {
 		this.out = new PrintWriter(out);
 		noteConverter = new TNoteConverter(octaveOffset, wholeDur, wholeDur, false); 
-		identTable = new Hashtable();
-		stringTable = new Stack();
+		identTable = new Hashtable<TExp, String>();
+		stringTable = new Stack<String>();
 		
 		// liste de noms d'identifier
 		stringTable.push("w");
@@ -78,7 +78,7 @@ public final class TTextExpWriter extends TExpVisitor {
 			curName = curName + "z";	
 			return curName;
 		}else {
-			return (String)stringTable.pop();  // recupère le prochain nom disponible
+			return stringTable.pop();  // recupère le prochain nom disponible
 		}
 	}
 	
@@ -310,7 +310,7 @@ public final class TTextExpWriter extends TExpVisitor {
 	}
 	
 	public Object Visite( TIdent s ,Object arg){
-		String name = (String)identTable.get(s);
+		String name = identTable.get(s);
 		if (name == null) System.err.println("Error write Ident in TTextExpWriter");
 		out.print (name);
 		return null;

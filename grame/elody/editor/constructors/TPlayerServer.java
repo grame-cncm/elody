@@ -46,7 +46,8 @@ public class TPlayerServer extends BasicApplet implements Observer,
 	
 	SendTask sendTask = null;
 	TRealTimePlayer player = null;
-	Vector clientList, expressionList;
+	Vector<TPlayerConnection> clientList;
+	Vector<TFileContent> expressionList;
 	TextField[] adresses,ports;
 	String serverName;
 	Button stop,reset,next;
@@ -58,8 +59,8 @@ public class TPlayerServer extends BasicApplet implements Observer,
 			listener = new TConnectionListener(port);
 			listener.addObserver(this);
 
-			clientList = new Vector();
-			expressionList = new Vector();
+			clientList = new Vector<TPlayerConnection>();
+			expressionList = new Vector<TFileContent>();
 			adresses = new TextField[maxChan];
 			ports = new TextField[maxChan];
 			sendTask = new SendTask(this);
@@ -177,9 +178,9 @@ public class TPlayerServer extends BasicApplet implements Observer,
 
 	private void sendData(Object obj)	// envoi d'un objet "obj" à tous les clients
 	{
-		for (Enumeration e = clientList.elements(); e.hasMoreElements();)
+		for (Enumeration<TPlayerConnection> e = clientList.elements(); e.hasMoreElements();)
 		{
-			TConnection client = (TConnection)e.nextElement();
+			TConnection client = e.nextElement();
 			client.sendData(obj);
 		}
 	}
@@ -243,7 +244,7 @@ public class TPlayerServer extends BasicApplet implements Observer,
 	
 	void playNextFile() {
 		try {
-			TFileContent nextFile = (TFileContent)expressionList.firstElement();
+			TFileContent nextFile = expressionList.firstElement();
 			System.out.println("Play file");
 			expressionList.removeElement(nextFile);
 			sendData(nextFile);

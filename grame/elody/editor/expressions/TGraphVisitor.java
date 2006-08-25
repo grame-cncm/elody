@@ -36,7 +36,7 @@ public class TGraphVisitor implements TValueVisitor, Runnable
 	}
 	public void yield () {
 		if (nYield == 10) {
-			try { displayer.sleep(count*100 + (int)Math.random()*100) ; }
+			try { Thread.sleep(count*100 + (int)Math.random()*100) ; }
 			catch (Exception e) { System.err.println( "TGraphVisitor yield : " + e); }
 			nYield = 0;
 		}

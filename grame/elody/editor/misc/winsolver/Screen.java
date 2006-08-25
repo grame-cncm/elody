@@ -18,12 +18,12 @@ public class Screen {
 	
 	protected Rectangle screen;
 	protected Point screenCenter;
-	protected Vector vectWindow;
-	protected TreeSet vect1Window;
-	protected TreeSet vect2Window;
-	protected TreeSet vect2Rect;
-	protected Vector resultRect;
-	protected Vector anchPoints;
+	protected Vector<Window> vectWindow;
+	protected TreeSet<Window> vect1Window;
+	protected TreeSet<Window> vect2Window;
+	protected TreeSet<Rect> vect2Rect;
+	protected Vector<Rect> resultRect;
+	protected Vector<Point> anchPoints;
 	
 	/* indicateurs à TRUE si les fenêtres n'ont
 	   pas bougé depuis la dernière réorganisation : */
@@ -33,8 +33,8 @@ public class Screen {
 	public Screen() {
 		screen = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 		screenCenter = new Point((int)screen.getCenterX(), (int)screen.getCenterY());
-		vectWindow = new Vector();
-		resultRect = new Vector();
+		vectWindow = new Vector<Window>();
+		resultRect = new Vector<Rect>();
 	}
 	
 	public void addWindow(Frame frame)	{ addWindow(new Window(frame)); }
@@ -58,7 +58,7 @@ public class Screen {
 		else
 			for (int j=0; j<resultRect.size(); j++)
 			{
-				Rect r = (Rect) resultRect.get(j);
+				Rect r = resultRect.get(j);
 				System.out.println("x="+r.x+" ; y="+r.y+" ; l="+r.width+" ; h="+r.height);
 			}
 	}
@@ -68,7 +68,7 @@ public class Screen {
 	{
 		for (int i=0; i<vectWindow.size(); i++)
 		{
-			Window w = (Window) vectWindow.get(i);
+			Window w = vectWindow.get(i);
 			w.show();
 		}
 	}
@@ -78,7 +78,7 @@ public class Screen {
 	{
 		for (int i=1; i<vectWindow.size(); i++)
 		{
-			Window w = (Window) vectWindow.get(i);
+			Window w = vectWindow.get(i);
 			w.close();
 		}
 	}
@@ -90,20 +90,20 @@ public class Screen {
 	{
 		if (!c1)
 		{
-			vect1Window = new TreeSet(new WindowDiagComp());
+			vect1Window = new TreeSet<Window>(new WindowDiagComp());
 			vect1Window.addAll(vectWindow);
-			Iterator i = vect1Window.iterator();
-			resultRect = new Vector();
-			anchPoints = new Vector();
+			Iterator<Window> i = vect1Window.iterator();
+			resultRect = new Vector<Rect>();
+			anchPoints = new Vector<Point>();
 			anchPoints.add(new Point(0,0));
 			while (i.hasNext())
 			{
-				Window w = (Window) i.next();
+				Window w = i.next();
 				Rect r = new Rect(w);
-				Vector anchPointsEligible = new Vector();
+				Vector<PointEligible> anchPointsEligible = new Vector<PointEligible>();
 				for (int j=0; j<anchPoints.size(); j++)
 				{
-					Point p = (Point) anchPoints.get(j);
+					Point p = anchPoints.get(j);
 					if (canAnchor(r,p))
 					{
 						PointEligible pe = new PointEligible(p);
@@ -113,12 +113,12 @@ public class Screen {
 				int minArea=-1;
 				for (int j=0; j<anchPointsEligible.size(); j++)
 				{
-					TreeSet red = new TreeSet(new RedComp());
-					TreeSet blue = new TreeSet(new BlueComp());
-					PointEligible p0 = (PointEligible) anchPointsEligible.get(j);
+					TreeSet<Point> red = new TreeSet<Point>(new RedComp());
+					TreeSet<Point> blue = new TreeSet<Point>(new BlueComp());
+					PointEligible p0 = anchPointsEligible.get(j);
 					for (int k=0; k<anchPoints.size(); k++)
 					{
-						Point p1 = (Point) anchPoints.get(k);
+						Point p1 = anchPoints.get(k);
 						int crossProduct = p0.x*p1.y-p0.y*p1.x;
 						if ((crossProduct<0)&&(p1.x<(p0.x+r.width))) red.add(p1);
 						if ((crossProduct>0)&&(p1.y<(p0.y+r.height))) blue.add(p1);
@@ -143,7 +143,7 @@ public class Screen {
 				Point bestPoint=null;
 				for (int j=0; j<anchPointsEligible.size(); j++)
 				{
-					PointEligible p0 = (PointEligible) anchPointsEligible.get(j);
+					PointEligible p0 = anchPointsEligible.get(j);
 					if (p0.area==minArea)	bestPoint=new Point(p0);
 				}
 				if (bestPoint==null)
@@ -163,15 +163,16 @@ public class Screen {
 			}
 			if (resultRect==null)
 			{
+				resultRect = new Vector<Rect>();
 				for (int j=0; j<vectWindow.size(); j++)
 				{
-					Window w = (Window) vectWindow.get(j);
+					Window w = vectWindow.get(j);
 					Rect r = new Rect(w);
 					r.setLocation((15*j)%screen.width, (30*j)%screen.height);
 					w.setBounds(r);
 					w.requestFocus();
+					resultRect.add(r);
 				}
-				resultRect = new Vector(vectWindow);
 			}
 			//printResult();
 			c1 = true;
@@ -185,30 +186,30 @@ public class Screen {
 	{
 		if (!c2)
 		{
-			vect1Window = new TreeSet(new WindowAreaComp());
+			vect1Window = new TreeSet<Window>(new WindowAreaComp());
 			vect1Window.addAll(vectWindow);
 			Rect bigger = new Rect((Window) vect1Window.first());
 			Point bary = bigger.getCenter();
-			vect2Window = new TreeSet(new WindowMagnPtComp(bary));
-			vect2Rect = new TreeSet(new RectMagnPtComp(bary));
+			vect2Window = new TreeSet<Window>(new WindowMagnPtComp(bary));
+			vect2Rect = new TreeSet<Rect>(new RectMagnPtComp(bary));
 			vect2Window.addAll(vectWindow);
 			for (int i=0; i<vectWindow.size(); i++)
-				vect2Rect.add(new Rect((Window)vectWindow.get(i)));
+				vect2Rect.add(new Rect(vectWindow.get(i)));
 			for (int z=0; z<1000; z++)
 			{
-				Iterator i = vect2Rect.iterator();
+				Iterator<Rect> i = vect2Rect.iterator();
 				while (i.hasNext())
 				{
-					Rect r = (Rect) i.next();
+					Rect r = i.next();
 					if (!r.equals(bigger))
 					{
 						r.goAttract(bary);
-						Vector everyRect = new Vector(vect2Rect);
+						Vector<Rect> everyRect = new Vector<Rect>(vect2Rect);
 						everyRect.remove(r);
-						Vector collisionRect = r.checkCollision(everyRect);
+						Vector<Rect> collisionRect = r.checkCollision(everyRect);
 						for (int j=0; j<collisionRect.size(); j++)
 						{
-							Rect cr = (Rect) collisionRect.get(j);
+							Rect cr = collisionRect.get(j);
 							r.goRepuls(cr.getCenter());
 						}
 					}
@@ -226,14 +227,20 @@ public class Screen {
 					}
 				}
 			}
-			Iterator iR = vect2Rect.iterator();
-			Iterator iF = vect2Window.iterator();
+			Iterator<Rect> iR = vect2Rect.iterator();
+			Iterator<Window> iF = vect2Window.iterator();
 			while (iR.hasNext())
 			{
-				Window f = (Window) iF.next();
-				f.setBounds((Rect) iR.next());
+				iF.next().setBounds(iR.next());
 			}
-			resultRect = new Vector(vect2Window);
+			resultRect = new Vector<Rect>();
+			Vector<Window> v = new Vector<Window>(vect2Window); 
+			for (int j=0; j<v.size(); j++)
+			{
+				Window w = v.get(j);
+				Rect r = new Rect(w);
+				resultRect.add(r);
+			}
 			//printResult();
 			c2 = true;
 		}
@@ -248,7 +255,7 @@ public class Screen {
 			return false;
 		for (int i=0; i<resultRect.size(); i++)
 		{
-			Rect rVisit = (Rect) resultRect.get(i);
+			Rect rVisit = resultRect.get(i);
 			//if (rVisit.contains(p1)||rVisit.contains(p2))
 			if (r.intersects(rVisit))
 				return false;
@@ -273,34 +280,32 @@ class PointEligible extends Point {
 	
 }
 
-class WindowDiagComp implements Comparator {
+class WindowDiagComp implements Comparator<Window> {
 
-	public int compare(Object o0, Object o1) {
-		Window w0 = (Window) o0;
-		Window w1 = (Window) o1;
+	public int compare(Window w0, Window w1) {
 		int d0 = (int) (Math.pow(w0.getHeight(),2)+Math.pow(w0.getWidth(), 2));
 		int d1 = (int) (Math.pow(w1.getHeight(),2)+Math.pow(w1.getWidth(), 2));
 		return (d1-d0)==0 ? 1 : (d1-d0);
 	}	
 }
 
-class WindowAreaComp implements Comparator {
+class WindowAreaComp implements Comparator<Window> {
 
-	public int compare(Object o0, Object o1) {
-		Rect r0 = new Rect ((Window) o0);
-		Rect r1 = new Rect ((Window) o1);
+	public int compare(Window w0, Window w1) {
+		Rect r0 = new Rect(w0);
+		Rect r1 = new Rect(w1);
 		return (r1.getArea()-r0.getArea())==0 ? 1 : r1.getArea()-r0.getArea();
 	}	
 }
 
-class WindowMagnPtComp implements Comparator {
+class WindowMagnPtComp implements Comparator<Window> {
 
 	protected Point magnPt;
 	public WindowMagnPtComp(Point p) { super(); magnPt = p; }
 
-	public int compare(Object o0, Object o1) {
-		Rect r0 = new Rect ((Window) o0);
-		Rect r1 = new Rect ((Window) o1);
+	public int compare(Window w0, Window w1) {
+		Rect r0 = new Rect(w0);
+		Rect r1 = new Rect(w1);
 		Point p0 = r0.getCenter();
 		Point p1 = r1.getCenter();
 		int d0 = (int) p0.distance(magnPt);
@@ -309,14 +314,12 @@ class WindowMagnPtComp implements Comparator {
 	}	
 }
 
-class RectMagnPtComp implements Comparator {
+class RectMagnPtComp implements Comparator<Rect> {
 
 	protected Point magnPt;
 	public RectMagnPtComp(Point p) { super(); magnPt = p; }
 
-	public int compare(Object o0, Object o1) {
-		Rect r0 = (Rect) o0;
-		Rect r1 = (Rect) o1;
+	public int compare(Rect r0, Rect r1) {
 		Point p0 = r0.getCenter();
 		Point p1 = r1.getCenter();
 		int d0 = (int) p0.distance(magnPt);
@@ -325,20 +328,16 @@ class RectMagnPtComp implements Comparator {
 	}	
 }
 
-class RedComp implements Comparator {
+class RedComp implements Comparator<Point> {
 
-	public int compare(Object o0, Object o1) {
-		Point p0 = (Point) o0;
-		Point p1 = (Point) o1;
+	public int compare(Point p0, Point p1) {
 		return p0.x-p1.x;
 	}	
 }
 
-class BlueComp implements Comparator {
+class BlueComp implements Comparator<Point> {
 
-	public int compare(Object o0, Object o1) {
-		Point p0 = (Point) o0;
-		Point p1 = (Point) o1;
+	public int compare(Point p0, Point p1) {
 		return p0.y-p1.y;
 	}	
 }

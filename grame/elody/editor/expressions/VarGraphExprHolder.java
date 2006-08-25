@@ -99,6 +99,6 @@ public class VarGraphExprHolder extends ExprHolder {
 class TAdjustableVisitor extends TNotesVisitor
 {
 	public void setFactor (int date, int newPos) {
-		nb.factor = (int)(date / Math.tan((newPos*nb.coef) / nb.usedWidth()));
+		nb.factor = (int)(date / Math.tan((newPos*NotesBox.coef) / nb.usedWidth()));
 	}
 }

@@ -48,8 +48,8 @@ public class TLResizeAction extends TLDragAction {
 			int tx = fPane.time2x(fNewEndTime);
 			int ry = fPane.line2y(fLine), h = fPane.getSize().height;
 			//Graphics g = getGraphics();
-			g.setXORMode(fPane.getFArgColorBkg()); g.setColor(fPane.getFTraitColor()); 				
-			g.drawRect(rx, ry+2, tx - rx -1, fPane.getFLineHeight()-5);
+			g.setXORMode(TLPane.getFArgColorBkg()); g.setColor(TLPane.getFTraitColor()); 				
+			g.drawRect(rx, ry+2, tx - rx -1, TLPane.getFLineHeight()-5);
 
 			g.drawLine(tx, 0, tx, h);
 			int delta = fNewEndTime - fPane.getFSelection().start();

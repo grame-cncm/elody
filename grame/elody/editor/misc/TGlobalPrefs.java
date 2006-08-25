@@ -34,19 +34,19 @@ public class TGlobalPrefs {
 	static final String defaultAppl = "MidiShare";
 	int portNum = 0;
 	int eventNum = 30000;
-	Vector loadConnections;
-	Vector saveConnections;
-	Vector loadApplets;
-	Vector saveApplets;
+	Vector<String> loadConnections;
+	Vector<String> saveConnections;
+	Vector<String> loadApplets;
+	Vector<String> saveApplets;
 	
 	String inConnection = defaultAppl;
 	String outConnection = defaultAppl;
 
 	public TGlobalPrefs() {
-		loadConnections = new Vector();
-		saveConnections = new Vector();
-		loadApplets = new Vector();
-		saveApplets = new Vector();
+		loadConnections = new Vector<String>();
+		saveConnections = new Vector<String>();
+		loadApplets = new Vector<String>();
+		saveApplets = new Vector<String>();
 	}
 	
 	public int getPort() { return portNum;}
@@ -131,14 +131,14 @@ public class TGlobalPrefs {
 			
 			// Save connection state
 			out.println("__Connections__");
-			for (Enumeration e = saveConnections.elements(); e.hasMoreElements();){
-	   			out.println((String)e.nextElement());
+			for (Enumeration<String> e = saveConnections.elements(); e.hasMoreElements();){
+	   			out.println(e.nextElement());
 	   		}
 	   		
 	   		// Save applets state
 	   		out.println("__Applets__");
-	   		for (Enumeration e = saveApplets.elements(); e.hasMoreElements();){
-	   			out.println((String)e.nextElement());
+	   		for (Enumeration<String> e = saveApplets.elements(); e.hasMoreElements();){
+	   			out.println(e.nextElement());
 	   		}
 	   		
 			out.close();
@@ -166,8 +166,8 @@ public class TGlobalPrefs {
 		// restaure les connections du fichier de Prefs
 		
 		try {
-			for (Enumeration e = loadConnections.elements(); e.hasMoreElements();){
-		   		connection = (String)e.nextElement();
+			for (Enumeration<String> e = loadConnections.elements(); e.hasMoreElements();){
+		   		connection = e.nextElement();
 		   		st = new StringTokenizer(connection, "/");
 	       		source = st.nextToken();
 		   		destination = st.nextToken();
@@ -208,8 +208,8 @@ public class TGlobalPrefs {
 	
 	public void restoreAppletsState () {
 		
-	   	for (Enumeration e = loadApplets.elements(); e.hasMoreElements();){
-	   			String appletstate = (String)e.nextElement();
+	   	for (Enumeration<String> e = loadApplets.elements(); e.hasMoreElements();){
+	   			String appletstate = e.nextElement();
 	   			StringTokenizer st = new StringTokenizer(appletstate, "/");
        			String name = st.nextToken();
        			String x = st.nextToken();
@@ -228,9 +228,9 @@ public class TGlobalPrefs {
 		AppletList appletList = AppletFrame.getAppletList();
 		
 		// Save applets state
-	   	for (Enumeration e = appletList.elements(); e.hasMoreElements();){
+	   	for (Enumeration<AppletFrame> e = appletList.elements(); e.hasMoreElements();){
 	   		try {
-	   			AppletFrame frame = (AppletFrame)e.nextElement();
+	   			AppletFrame frame = e.nextElement();
 	   			BasicApplet applet = (BasicApplet)frame.applet;
 	   			Point pt = frame.getLocationOnScreen();
 				Rectangle rec = applet.getBounds();

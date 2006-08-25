@@ -55,7 +55,7 @@ public class TPublisherClient extends BasicApplet implements Observer,
 		 
 		TConnection connection = null;
 		
-		Hashtable urlTable;
+		Hashtable<String, String> urlTable;
 		Panel bottomPanel1;
 			
 		boolean receptionUrlList = false;
@@ -76,7 +76,7 @@ public class TPublisherClient extends BasicApplet implements Observer,
 			affich();	// de l'affichage
 			
 			//protocol = new TProtocolPublisher();	// des variables
-			urlTable = new Hashtable();
+			urlTable = new Hashtable<String, String>();
 	  	}
 	       	
 //	----------------------------------------------//
@@ -142,7 +142,7 @@ public class TPublisherClient extends BasicApplet implements Observer,
 				setCursor(new Cursor(Cursor.WAIT_CURSOR));
 				TFileParser parser = new TFileParser();	
 
-				URL url = new URL(((String)urlTable.get(filelist.getSelectedItem())));
+				URL url = new URL((urlTable.get(filelist.getSelectedItem())));
 
 				TFileContent content  =  parser.readFile(url);
 		   		
@@ -239,20 +239,20 @@ public class TPublisherClient extends BasicApplet implements Observer,
 			}
 			if (arg instanceof Vector) //s'il s'agit d'un Vecteur ->liste des URL
 			{
-				Vector List = (Vector)arg;
+				Vector<String> List = (Vector<String>) arg;
 				updateUrlTable(List);
 			}
 			updateCommands ();
 		}
 		
-		private void updateUrlTable(Vector list)
+		private void updateUrlTable(Vector<String> list)
 		{
 			String line;
-			urlTable = new Hashtable();
+			urlTable = new Hashtable<String, String>();
 			
 			for(int count = 0; count<list.size(); count ++)
 			{
-				line = (String)(list.elementAt(count));
+				line = list.elementAt(count);
 				urlTable.put(parseTitle (line), parseUrl (line));	
 			}
 			updateUrlList();
@@ -405,9 +405,9 @@ public class TPublisherClient extends BasicApplet implements Observer,
 		public void updateUrlList()	// mise à jour de la liste déroulante
 		{
 			clearChoice();
-			for (Enumeration e = urlTable.keys(); e.hasMoreElements(); )
+			for (Enumeration<String> e = urlTable.keys(); e.hasMoreElements(); )
 			{
-				String key = (String)e.nextElement();
+				String key = e.nextElement();
 				filelist.add(key);
 			}
 			

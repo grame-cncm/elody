@@ -9,7 +9,7 @@ import java.util.Stack;
 *******************************************************************************************/
 
 public final class TMemReuser {
-	Stack stack = new Stack();
+	Stack<Object> stack = new Stack<Object>();
  	Class  object;
  
   	public TMemReuser (String name) { 

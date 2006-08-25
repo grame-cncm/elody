@@ -62,8 +62,8 @@ public class TLMoveAction extends TLDragAction {
 		// verifie que l'on n'est pas dans un drag externe
 		if (!fExternal) {
 			// Graphics g = getGraphics();
-			g.setXORMode(fPane.getFArgColorBkg());
-			g.setColor(fPane.getFTraitColor());
+			g.setXORMode(TLPane.getFArgColorBkg());
+			g.setColor(TLPane.getFTraitColor());
 			if ((fDestZone.voice() != fPane.getFSelection().voice())
 					|| (fDestZone.start() != fPane.getFSelection().start())) {
 
@@ -71,14 +71,14 @@ public class TLMoveAction extends TLDragAction {
 				int rx = fPane.time2x(fTime);
 				int rx2 = fPane.time2x(fTime + fPane.getFSelection().duration());
 				int ry = fPane.line2y(fLine);
-				g.drawRect(rx, ry + 2, rx2 - rx - 1, fPane.getFLineHeight() - 5);
+				g.drawRect(rx, ry + 2, rx2 - rx - 1, TLPane.getFLineHeight() - 5);
 
 				if (fDestZone.empty()) {
 					// c'est une insertion
 					int tx = fPane.time2x(fDestZone.start());
 					if (rx == tx) {
 						g.drawLine(rx, 0, rx, ry);
-						g.drawLine(rx, ry + fPane.getFLineHeight(), rx, fPane
+						g.drawLine(rx, ry + TLPane.getFLineHeight(), rx, fPane
 								.getSize().height);
 						g.drawLine(rx2, 0, rx2, fPane.getSize().height);
 
@@ -104,7 +104,7 @@ public class TLMoveAction extends TLDragAction {
 					plg.addPoint(tx, ry + 1);
 					g.drawPolygon(plg);
 
-					g.drawLine(tx, ry + fPane.getFLineHeight(), tx,
+					g.drawLine(tx, ry + TLPane.getFLineHeight(), tx,
 							fPane.getSize().height);
 				}
 			}
@@ -117,11 +117,6 @@ public class TLMoveAction extends TLDragAction {
 			if ((fDestZone.voice() != fPane.getFSelection().voice())
 					|| (fDestZone.start() != fPane.getFSelection().start())) { // si
 				// mouvement
-				
-				/* getting useful informations about margin computing */
-				TLZone prevSelection = new TLZone(fPane.getFSelection());
-				int margin=0;
-				/* ************************************************** */
 				
 				if (!fDestZone.empty()) { // application
 					fPane.toUndoStack(Action.TRACK);
@@ -139,8 +134,6 @@ public class TLMoveAction extends TLDragAction {
 					fPane.getFSelection().cmdMoveTo(fDestZone);
 				}
 
-				/* fPane.fSelection = fDestZone; */
-
 				fPane.multiTracksChanged();
 			}
 		}
@@ -151,11 +144,8 @@ public class TLMoveAction extends TLDragAction {
 		if (m.getClickCount() == 2) {
 			if (m.isAltDown()) {
 				fPane.getFSelection().cmdUnevaluate();
-				fPane.fStack.push(new String("unevaluate"));
 			} else {
 				fPane.getFSelection().cmdEvaluate();
-				fPane.fStack.push(new String("evaluate"));
-				;
 			}
 			fPane.multiTracksChanged();
 		}

@@ -90,7 +90,7 @@ public class AppletFrame extends Frame implements WindowListener {
     * @param     className    le nom de l'applet à créer (package inclus)
 	*/
 	public static BasicApplet startApplet(String className) {
-		return startApplet(className, new Hashtable());
+		return startApplet(className, new Hashtable<String, String>());
 	}
 	/**
 	* crée une nouvelle applet,
@@ -98,7 +98,7 @@ public class AppletFrame extends Frame implements WindowListener {
     * @param     params       ses paramètres : ils seront ensuite accessibles
     *                         pour l'applet via sa méthode getParameter()
 	*/
-	public static BasicApplet startApplet(String className, Hashtable params) {
+	public static BasicApplet startApplet(String className, Hashtable<String, String> params) {
 		try {
 			BasicApplet a;
 			if (Singleton.isSingle (className)) {
@@ -146,7 +146,7 @@ public class AppletFrame extends Frame implements WindowListener {
 				}
 			}
 			a = (BasicApplet)Class.forName(className).newInstance();
-			BasicStub stub = new BasicStub(a.getFrame(), new Hashtable());
+			BasicStub stub = new BasicStub(a.getFrame(), new Hashtable<String, String>());
 			a.setStub (stub);
 			a.init();
 			a.start();
@@ -175,17 +175,14 @@ public class AppletFrame extends Frame implements WindowListener {
    		
    		TGlobals.quit ();
    		
-		Enumeration en = aList.elements();
+		Enumeration<AppletFrame> en = aList.elements();
 		while (en.hasMoreElements()) {
-			Object o = en.nextElement();
-			if (o instanceof AppletFrame) {
-				AppletFrame f = (AppletFrame)o;
-				if (f.applet instanceof Elody)
-					aList.remove(f);
-				else
-					f.close();
-				en = aList.elements();
-			}
+			AppletFrame f = en.nextElement();
+			if (f.applet instanceof Elody)
+				aList.remove(f);
+			else
+				f.close();
+			en = aList.elements();
 		}
 		
 		java.lang.Runtime.getRuntime().exit(0);

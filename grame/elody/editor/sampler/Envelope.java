@@ -203,7 +203,7 @@ public class Envelope {
 				canvas.redraw();
 				for (int i=0; i<ch.getKeygroups().size(); i++)
 				{
-					Keygroup k = (Keygroup) ch.getKeygroups().get(i);
+					Keygroup k = ch.getKeygroups().get(i);
 					k.setAttack(attack);
 				}
 				ch.sampler.configSav.writeAll();
@@ -231,7 +231,7 @@ public class Envelope {
 				canvas.redraw();
 				for (int i=0; i<ch.getKeygroups().size(); i++)
 				{
-					Keygroup k = (Keygroup) ch.getKeygroups().get(i);
+					Keygroup k = ch.getKeygroups().get(i);
 					k.setDecay(decay);
 				}
 				ch.sampler.configSav.writeAll();
@@ -260,7 +260,7 @@ public class Envelope {
 				canvas.redraw();
 				for (int i=0; i<ch.getKeygroups().size(); i++)
 				{
-					Keygroup k = (Keygroup) ch.getKeygroups().get(i);
+					Keygroup k = ch.getKeygroups().get(i);
 					k.setSustain(sustain);
 				}
 				ch.sampler.configSav.writeAll();
@@ -288,7 +288,7 @@ public class Envelope {
 				canvas.redraw();
 				for (int i=0; i<ch.getKeygroups().size(); i++)
 				{
-					Keygroup k = (Keygroup) ch.getKeygroups().get(i);
+					Keygroup k = ch.getKeygroups().get(i);
 					k.setRelease(release);
 				}
 				ch.sampler.configSav.writeAll();
@@ -313,7 +313,7 @@ public class Envelope {
 				canvas.redraw();
 				for (int i=0; i<ch.getKeygroups().size(); i++)
 				{
-					Keygroup k = (Keygroup) ch.getKeygroups().get(i);
+					Keygroup k = ch.getKeygroups().get(i);
 					k.setAttack(attack);
 				}
 				ch.sampler.configSav.writeAll();
@@ -338,7 +338,7 @@ public class Envelope {
 				canvas.redraw();
 				for (int i=0; i<ch.getKeygroups().size(); i++)
 				{
-					Keygroup k = (Keygroup) ch.getKeygroups().get(i);
+					Keygroup k = ch.getKeygroups().get(i);
 					k.setDecay(decay);
 				}
 				ch.sampler.configSav.writeAll();
@@ -367,7 +367,7 @@ public class Envelope {
 				canvas.redraw();
 				for (int i=0; i<ch.getKeygroups().size(); i++)
 				{
-					Keygroup k = (Keygroup) ch.getKeygroups().get(i);
+					Keygroup k = ch.getKeygroups().get(i);
 					k.setSustain(sustain);
 				}
 				ch.sampler.configSav.writeAll();
@@ -392,7 +392,7 @@ public class Envelope {
 				canvas.redraw();
 				for (int i=0; i<ch.getKeygroups().size(); i++)
 				{
-					Keygroup k = (Keygroup) ch.getKeygroups().get(i);
+					Keygroup k = ch.getKeygroups().get(i);
 					k.setRelease(release);
 				}
 				ch.sampler.configSav.writeAll();

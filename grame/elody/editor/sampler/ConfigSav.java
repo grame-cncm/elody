@@ -226,33 +226,33 @@ class ConfigList  {
 	 * It provides methods to get and set any information
 	 * concerning the channel, or one of its keygroups.  
 	 ******************************************************/	
-	private TreeMap map;
+	private TreeMap<Integer, TreeMap<Integer, Keyg>> map;
 
-	public ConfigList() { map = new TreeMap();	}
+	public ConfigList() { map = new TreeMap<Integer, TreeMap<Integer, Keyg>>();	}
 	
 	public void addKeygroup(Integer channel, int index, File file, int ref, int plus, int minus, int output,
 			int pan, int vol, int attack, int decay, double sustain, int release, double sensit)
 	{
-		TreeMap k = addChannel(channel);
+		TreeMap<Integer, Keyg> k = addChannel(channel);
 		k.put(Integer.valueOf(index), new Keyg(file, ref, plus, minus,
 				output, pan, vol, attack, decay, sustain, release, sensit));
 	}
 	public void delKeygroup(Integer channel, int index)
 	{
-		TreeMap k = (TreeMap) map.get(channel);
+		TreeMap<Integer, Keyg> k = map.get(channel);
 		k.remove(Integer.valueOf(index));
 		if (k.isEmpty())
 			map.remove(channel);
 	}
 	
-	public TreeMap addChannel(Integer ch)
+	public TreeMap<Integer, Keyg> addChannel(Integer ch)
 	{
 		if (!isSet(ch))
-			map.put(ch, new TreeMap());
-		return (TreeMap) map.get(ch);
+			map.put(ch, new TreeMap<Integer, Keyg>());
+		return map.get(ch);
 	}
 	
-	public TreeMap getMap() { return map; }
+	public TreeMap<Integer, TreeMap<Integer, Keyg>> getMap() { return map; }
 	
 	public boolean isSet(Integer ch) {
 		return (map.containsKey(ch));
@@ -261,26 +261,26 @@ class ConfigList  {
 	public int maxChannels()
 	{
 		if (map.isEmpty())	return -1;
-		Integer result = (Integer) map.lastKey();
+		Integer result = map.lastKey();
 		return result.intValue();
 	}
 	
 	public int maxKeygroups(Integer ch)
 	{
-		TreeMap k = (TreeMap) map.get(ch);
+		TreeMap<Integer, Keyg> k = map.get(ch);
 		if (k.isEmpty())	return -1;
-		Integer result = (Integer) k.lastKey();
+		Integer result = k.lastKey();
 		return result.intValue();
 	}
 	
 	public Keyg getKeyg(Integer ch, int keygIndex)
 	{
-		TreeMap k = null;
+		TreeMap<Integer, Keyg> k = null;
 		if (isSet(ch))
 		{
-			k = (TreeMap) map.get(ch);
+			k = map.get(ch);
 			if (k.containsKey(Integer.valueOf(keygIndex)))
-				return (Keyg) k.get(Integer.valueOf(keygIndex));		
+				return k.get(Integer.valueOf(keygIndex));		
 		}
 		return (Keyg) null;
 	}

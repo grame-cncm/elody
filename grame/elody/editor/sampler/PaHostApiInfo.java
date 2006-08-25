@@ -14,7 +14,7 @@ public class PaHostApiInfo 	{
     private int deviceCount;
     private int defaultInputDevice;
     private int defaultOutputDevice;
-    private Vector devList;
+    private Vector<PaDeviceInfo> devList;
 
 	public PaHostApiInfo(int structVersion, int type, String name,
 			int deviceCount, int defaultInputDevice, int defaultOutputDevice)
@@ -34,9 +34,9 @@ public class PaHostApiInfo 	{
 	public int getDeviceCount() { return deviceCount; }
 	public int getDefaultInputDevice() { return defaultInputDevice;	}
 	public int getDefaultOutputDevice() { return defaultOutputDevice; }
-	public Vector getDevList() { return devList; }
+	public Vector<PaDeviceInfo> getDevList() { return devList; }
 
-	public void setDevList(Vector v) { devList = v; }
+	public void setDevList(Vector<PaDeviceInfo> v) { devList = v; }
 
 	public void printAll(int n)
 	{

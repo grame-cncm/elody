@@ -69,8 +69,8 @@ public class TBasicGuidoReader extends BasicGuidoReader {
 	int activeTag;
 	int numTagArgs;
 
-	static Hashtable noteNames,tagNames;
-	Stack  tagStack,eventStack,seqStack,chordStack;
+	static Hashtable<String, Integer> noteNames,tagNames;
+	Stack<TExp>  tagStack,eventStack,seqStack,chordStack;
 	
 	int midiChannel = 0;
 	int track = 0;
@@ -87,13 +87,13 @@ public class TBasicGuidoReader extends BasicGuidoReader {
 	
 	public TBasicGuidoReader() {
 	
-		noteNames = new Hashtable();
-		tagNames = new Hashtable();
+		noteNames = new Hashtable<String, Integer>();
+		tagNames = new Hashtable<String, Integer>();
 		
-		tagStack = new Stack();
-		eventStack = new Stack();
-		seqStack = new Stack();
-		chordStack = new Stack();
+		tagStack = new Stack<TExp>();
+		eventStack = new Stack<TExp>();
+		seqStack = new Stack<TExp>();
+		chordStack = new Stack<TExp>();
 		
 		noteNames.put("c", new Integer(0));
 		noteNames.put("do", new Integer(0));
@@ -148,7 +148,7 @@ public class TBasicGuidoReader extends BasicGuidoReader {
 		
 		while( !seqStack.empty()) {
 			//System.out.println("POP seq");
-			result = TExpMaker.gExpMaker.createMix((TExp)seqStack.pop(),result);
+			result = TExpMaker.gExpMaker.createMix(seqStack.pop(),result);
 		}
 	}
 	
@@ -189,7 +189,7 @@ public class TBasicGuidoReader extends BasicGuidoReader {
 		
 		while( !eventStack.empty()) {
 			//System.out.println("POP event");
-			res = TExpMaker.gExpMaker.createSeq((TExp)eventStack.pop(),res);
+			res = TExpMaker.gExpMaker.createSeq(eventStack.pop(),res);
 		}
 		seqStack.push(res);
 	}
@@ -305,7 +305,7 @@ public class TBasicGuidoReader extends BasicGuidoReader {
 		
 		while( !chordStack.empty()) {
 			//System.out.println("POP event");
-			res1 = TExpMaker.gExpMaker.createMix((TExp)chordStack.pop(),res1);
+			res1 = TExpMaker.gExpMaker.createMix(chordStack.pop(),res1);
 		}
 		eventStack.push(res1);
   	}
@@ -314,7 +314,7 @@ public class TBasicGuidoReader extends BasicGuidoReader {
 	public void GD_TAG_START(String s){ 
 		//System.out.println("GD_TAG_START");
 		
-		Integer res = (Integer)tagNames.get(s);
+		Integer res = tagNames.get(s);
 		if (res !=  null) {
 			activeTag = res.intValue();
 		}else {
@@ -379,10 +379,10 @@ public class TBasicGuidoReader extends BasicGuidoReader {
 	
 	
 	int convertNoteName(String s) {
-		Integer res =  (Integer)noteNames.get(s);
+		Integer res = noteNames.get(s);
 		if (res == null) {
 			System.out.println("Unknown notename, replaced by rest.");
-			res =  (Integer)noteNames.get("_");
+			res = noteNames.get("_");
 		}
 		return res.intValue();
 	}

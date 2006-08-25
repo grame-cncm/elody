@@ -122,7 +122,7 @@ public class Stock extends BasicApplet implements ActionListener {
    		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		try {
 			File file = new File(path, name);
-			Vector v = new Vector ();
+			Vector<TExp> v = new Vector<TExp> ();
     		for (int i=0, n = nRows * nColumns; i<n; i++)
 				v.addElement (expHolders[i].getExpression ());
 			TArrayExp ae = new TArrayExp (v);
@@ -156,9 +156,9 @@ public class Stock extends BasicApplet implements ActionListener {
 				TExp  res =  parser.readFile(file).getExp();	
 				
 				if (res instanceof TArrayExp) { // cas d'une expression ARRAY
-					Enumeration e = ((TArrayExp)res).getArray().elements();
+					Enumeration<TExp> e = ((TArrayExp)res).getArray().elements();
 					for (; e.hasMoreElements() && (i<n); i++) {
-						exp = (TExp)e.nextElement ();
+						exp = e.nextElement();
 						if (exp!=null) expHolders[i].setExpression (exp);
 						else break;
 					}

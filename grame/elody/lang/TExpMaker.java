@@ -79,7 +79,7 @@ public abstract class TExpMaker {
 	 public abstract TExp createNull ();
 	 public abstract TExp createBody( TExp id, TExp body);
 	 public abstract TExp createMute (TExp exp);
-	 public abstract TExp createArray (Vector exp);
+	 public abstract TExp createArray (Vector<TExp> exp);
 	
 	 public abstract TValue expandVal (TValue val, float coef);
 	 
@@ -304,7 +304,7 @@ final class TExpMaker1 extends TExpMaker{
 		return checkNull(arg1) ? arg1 : new TMuteExp(arg1);
 	}
 	
-	public TExp createArray(Vector arg1) {
+	public TExp createArray(Vector<TExp> arg1) {
 		return  new TArrayExp(arg1);
 	}
 	

@@ -18,7 +18,7 @@ import java.util.Vector;
 *******************************************************************************************/
 
 public final class TFileParser {
-	protected static Vector formatTable = new Vector();
+	protected static Vector<Class> formatTable = new Vector<Class>();
 	public static void registerParser(Class name) { formatTable.addElement(name);}
 		
 	public TFileParser () {}
@@ -27,9 +27,9 @@ public final class TFileParser {
 		InputStream input = null;
 		TImpFileParser parser;
 		
-		for (Enumeration e = formatTable.elements(); e.hasMoreElements();) {
+		for (Enumeration<Class> e = formatTable.elements(); e.hasMoreElements();) {
 			try {
-				Class classname = (Class)e.nextElement();
+				Class classname = e.nextElement();
 				parser = (TImpFileParser)classname.newInstance();
 				input = new  BufferedInputStream (new FileInputStream(file.getAbsolutePath()));
 				return parser.readFile(input);
@@ -45,9 +45,9 @@ public final class TFileParser {
 		InputStream input = null;
 		TImpFileParser parser;
 		
-		for (Enumeration e = formatTable.elements(); e.hasMoreElements();) {
+		for (Enumeration<Class> e = formatTable.elements(); e.hasMoreElements();) {
 			try {
-				Class classname = (Class)e.nextElement();
+				Class classname = e.nextElement();
 				parser = (TImpFileParser)classname.newInstance();
 				input =  new  BufferedInputStream(url.openStream());
 				return parser.readFile(input);
@@ -65,9 +65,9 @@ public final class TFileParser {
 	public TFileContent readFile(InputStream input) throws Exception{ 
 		TImpFileParser parser;
 	
-		for (Enumeration e = formatTable.elements(); e.hasMoreElements();) {
+		for (Enumeration<Class> e = formatTable.elements(); e.hasMoreElements();) {
 			try {
-				Class classname = (Class)e.nextElement();
+				Class classname = e.nextElement();
 				parser = (TImpFileParser)classname.newInstance();
 				return parser.readFile(input);
 			}catch (Exception ex) {}

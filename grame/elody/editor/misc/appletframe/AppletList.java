@@ -4,9 +4,10 @@ import java.applet.Applet;
 import java.util.Enumeration;
 import java.util.Vector;
 
-public class AppletList extends Vector {
-	public synchronized void  add (AppletFrame f) {
+public class AppletList extends Vector<AppletFrame> {
+	public synchronized boolean  add (AppletFrame f) {
 		insertElementAt (f, 0);
+		return true;
 	}
 
 	public synchronized void  remove (AppletFrame f) {
@@ -18,10 +19,10 @@ public class AppletList extends Vector {
 		insertElementAt (f, 0);
 	}
 	public synchronized Applet  getApplet (java.awt.Point c) {
-		Enumeration en = elements();
+		Enumeration<AppletFrame> en = elements();
 		if (en==null) return null;
 		while (en.hasMoreElements()) {
-			AppletFrame ddf = (AppletFrame)en.nextElement();
+			AppletFrame ddf = en.nextElement();
 			java.awt.Point floc = ddf.getLocation();
 			//System.out.printl("floc = "+ floc + ", " + ddf.getLocationOnScreen());
 			if (ddf.contains (c.x - floc.x, c.y - floc.y)) {
@@ -34,10 +35,10 @@ public class AppletList extends Vector {
 		return null;
 	}
 	public synchronized Applet  getApplet (String className) throws ClassNotFoundException {
-		Enumeration en = elements();
+		Enumeration<AppletFrame> en = elements();
 		if (en==null) return null;
 		while (en.hasMoreElements()) {
-			AppletFrame a = (AppletFrame)en.nextElement();
+			AppletFrame a = en.nextElement();
 			if (a.applet.getClass().equals(Class.forName(className)))
 				return a.applet;
 		}
