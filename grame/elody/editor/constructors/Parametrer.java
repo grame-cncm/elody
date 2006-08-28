@@ -2,9 +2,11 @@ package grame.elody.editor.constructors;
 
 import grame.elody.editor.constructors.parametrer.ParamExprHolder;
 import grame.elody.editor.constructors.parametrer.ParamPanel;
+import grame.elody.editor.constructors.parametrer.TParamVisitor;
 import grame.elody.editor.misc.Define;
 import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
+import grame.elody.lang.TEvaluator;
 import grame.elody.lang.texpression.expressions.TEvent;
 import grame.elody.lang.texpression.expressions.TExp;
 import grame.elody.util.MsgNotifier;
@@ -41,16 +43,10 @@ public class Parametrer extends BasicApplet implements Observer {
   			if (exprHolder.isRecentlyDropped())
   			{
   				exprHolder.setRecentlyDropped(false);
-  				if (exprHolder.getExpression() instanceof TEvent)
-  				{
-  					TEvent event = (TEvent) exprHolder.getExpression();
-  					param.initControls((int)event.getPitch(), (int)event.getVel(),
-  							event.getDur(), (int) event.getChan());
-  				}
-  				else
-  				{
-  					param.initControls(-1, -1, -1, -1);
-  				}
+  				TParamVisitor v = new TParamVisitor();
+  				TEvaluator.gEvaluator.Eval(exprHolder.getExpression()).Accept(v, 0, null);
+  				float dur = TEvaluator.gEvaluator.Duration(exprHolder.getExpression());
+  				param.initControls(v.getAbsPitch(), v.getAbsVel(), dur, v.getAbsChan());
   			}
   		}
   	}

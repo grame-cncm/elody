@@ -21,11 +21,13 @@ public class DurationControler extends FloatEditCtrl {
     	{
     		absRef = v*10/ctrl.getValue();
     		editAbs.setText(String.valueOf(v));
+    		editAbs.setEnabled(true);
     	}
     	else
     	{
     		absRef = -1;
     		editAbs.setText("");
+    		editAbs.setEnabled(false);
     	}
     }
   	public void update (Observable o, Object arg) {

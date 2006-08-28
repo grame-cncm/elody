@@ -15,6 +15,7 @@ import java.util.Hashtable;
 /***********************************/
 
 public abstract class TExp implements Serializable {
+
 	public static final int TYPE  		= 0;
 	public static final int PITCH  		= 1;
 	public static final int VEL  		= 2;
@@ -32,6 +33,7 @@ public abstract class TExp implements Serializable {
 	public static final int ATTN  = 2;
 	public static final int INST  = 3;
 	public static final int XPND  = 4;
+
 	
 	protected static Hashtable<TExp, TExp> absTable = new Hashtable<TExp, TExp>(50); 	// hashtable por l'abstraction
 	

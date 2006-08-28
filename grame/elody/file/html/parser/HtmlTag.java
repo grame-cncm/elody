@@ -93,23 +93,23 @@ public final class HtmlTag {
 	}
 
 	public static final int T_UNKNOWN = 0;
-
+	
 	public static final int T_A = 1;
-
+	
 	public static final int T_ABBREV = 2;
-
+	
 	public static final int T_ACRONYM = 3;
-
+	
 	public static final int T_ADDRESS = 4;
-
+	
 	public static final int T_APPLET = 5;
-
+	
 	public static final int T_AREA = 6;
-
+	
 	public static final int T_AU = 7;
-
+	
 	public static final int T_B = 8;
-
+	
 	public static final int T_BANNER = 9;
 
 	public static final int T_BASE = 10;

@@ -2,6 +2,7 @@ package grame.elody.editor.misc;
 
 import grame.midishare.Midi;
 import grame.midishare.MidiAppl;
+import grame.midishare.MidiException;
 
 import java.awt.Canvas;
 import java.awt.Checkbox;
@@ -25,6 +26,21 @@ public class MidiApplAlarm extends MidiAppl {
 				Midi.Connect(0, 0, (thru.getState() ? 1 : 0) ); 
 			}			
 		});
+
+	}
+	
+	public void Open (String name) throws MidiException
+	{
+		super.Open(name);
+		for (int i=0; i<256; i++)
+			Midi.AcceptType(filter, i, 1);
+		Midi.AcceptType(filter, Midi.typeNote, 0);
+		Midi.AcceptType(filter, Midi.typeCtrlChange, 0);
+		Midi.AcceptType(filter, Midi.typeProgChange, 0);
+		Midi.AcceptType(filter, Midi.typeKeyOn, 0);
+		Midi.AcceptType(filter, Midi.typeKeyOff, 0);
+		Midi.AcceptType(filter, Midi.typePrivate, 0);
+		
 	}
 	
 	public Led getMidiLed() { return midiLed; }

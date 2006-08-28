@@ -17,14 +17,22 @@ public class FloatEditCtrl extends EditControler {
   		MsgNotifier mn = (MsgNotifier)o;
   		switch (mn.message()) {
   			case Define.TextBarFieldMsg:
-  				String s = (String)arg;
-    			ctrl.setValue (float2int(new Float(s).floatValue()));
+  				if ( ctrl.getValue()==(int)(Float.valueOf(edit.getText()).floatValue()*10) )
+				{
+					float v = (float) Integer.valueOf(editAbs.getText()).intValue()/absRef;
+  					ctrl.setValue(float2int(v));
+				}
+  				else
+  				{
+  					String s = (String)arg;
+  					ctrl.setValue (float2int(new Float(s).floatValue()));
+  				}
   				break;
   			case Define.BarControlerMsg:
   				Integer i = (Integer)arg;
   				Float f = new Float(int2float(i.intValue()));
     			edit.setText (f.toString());
-    			if (absRef!=-1)
+    			if (displayAbs&&(absRef!=-1))
     				editAbs.setText (String.valueOf((int)(f.floatValue()*absRef)));
   				break;
   			case Define.ShiftControlMsg:

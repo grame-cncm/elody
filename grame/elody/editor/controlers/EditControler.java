@@ -68,7 +68,13 @@ public class EditControler extends Panel implements Observer {
   		switch (mn.message()) {
   			case Define.TextBarFieldMsg:
   				try {
-	    			ctrl.setValue (new Integer((String)arg).intValue());
+  					if ( ctrl.getValue()==Integer.valueOf(edit.getText()).intValue() )
+  					{
+  						int v = Integer.valueOf(editAbs.getText()).intValue()-absRef;
+  						ctrl.setValue(v);
+  					}
+  					else
+  						ctrl.setValue (new Integer((String)arg).intValue());
 	    		}
 	    		catch (Exception e) {
 	    			edit.setText (new Integer(getValue()).toString());
@@ -77,7 +83,7 @@ public class EditControler extends Panel implements Observer {
   			case Define.BarControlerMsg:
     			int nArg = ((Integer)arg).intValue();
     			edit.setText(String.valueOf(nArg));
-  				if (absRef!=-1)
+  				if (displayAbs&&(absRef!=-1))
   					editAbs.setText (String.valueOf(nArg+absRef));					
   				break;
   			case Define.ShiftControlMsg:
@@ -99,11 +105,13 @@ public class EditControler extends Panel implements Observer {
     	{
     		absRef = v-ctrl.getValue();
     		editAbs.setText(String.valueOf(v));
+    		editAbs.setEnabled(true);
     	}
     	else
     	{
     		absRef = -1;
     		editAbs.setText("");
+    		editAbs.setEnabled(false);
     	}
     }
     

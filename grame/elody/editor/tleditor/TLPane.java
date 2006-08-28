@@ -1804,26 +1804,28 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 	//
 	//==================================================================================
 
-	final static int EVNMENT 		= 0;
-	final static int BORD_GAUCHE 	= 1;
-	final static int BORD_HAUT 		= 2;
-	final static int BORD_BAS 		= 3;
-	final static int BORD_DROIT 	= 4;
-	final static int COIN 			= 5;
-	final static int PISTE 			= 6;
-	final static int TEMPS 			= 7;
-	final static int RIEN	 		= 8;
+	public enum Place {
+		EVNMENT,
+		BORD_GAUCHE,
+		BORD_HAUT,
+		BORD_BAS,
+		BORD_DROIT,
+		COIN,
+		PISTE,
+		TEMPS,
+		RIEN
+	}
 
-	int	analyzeMousePos(MouseEvent m) 
+	Place analyzeMousePos(MouseEvent m) 
 	{ 
 		return analyzeMousePos(m.getX(), m.getY()); 
 	}
 	
-	int analyzeMousePos(int mx, int my)
+	Place analyzeMousePos(int mx, int my)
 	{
 		if (mx < fRuleWidth && my < fRuleHeight) {			
 		
-			return COIN;
+			return Place.COIN;
 			
 		} else if (mx >= fRuleWidth && my >= fRuleHeight) { 
 			int ctime = x2time(mx);
@@ -1831,25 +1833,25 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 			
 			TLZone z = new TLZone(fMultiTracks, ctime, cline);
 			if (z.empty()) {
-				return RIEN;
+				return Place.RIEN;
 			} else if (time2x(z.end()) - 5 < mx) {
-				return BORD_GAUCHE;
+				return Place.BORD_GAUCHE;
 			} else if (time2x(z.start()) + 4 > mx) {
-				return BORD_DROIT;
+				return Place.BORD_DROIT;
 			} else if (line2y(cline) + 4 > my) {
-				return BORD_HAUT;
+				return Place.BORD_HAUT;
 			} else if (line2y(cline+1) - 5 < my) {
-				return BORD_BAS;
+				return Place.BORD_BAS;
 			} else {
-				return EVNMENT;
+				return Place.EVNMENT;
 			}
 		} else if (my >= fRuleHeight) {	
 		
-			return PISTE;
+			return Place.PISTE;
 
 		} else {
 		
-			return TEMPS;
+			return Place.TEMPS;
 		}
 	}
 
@@ -1907,7 +1909,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		int cline 	= y2line(my);
 		
 		fDragAction = sTLNullAction;
-		int z = analyzeMousePos(mx,my);
+		Place z = analyzeMousePos(mx,my);
 		
 		if (isPopupEvent(m)) {
 			switch (z) {
@@ -2108,7 +2110,7 @@ final class ButtonPanel extends Canvas implements MouseListener {
 	final protected int STOP = 1;
 	final protected int PLAY = 2;
 	final protected int CLEAR = 3;
-	
+
 	protected boolean[] enabled = {true, true, true, true};
 	
 	protected int pressed = NULL;

@@ -33,8 +33,11 @@ import java.util.Observer;
 
 public class BegEndConstructor extends BasicApplet {
 	static final String appletName = "BegEndConstructor";
-	static final int begType = 1;
-	static final int endType = 2;
+	public enum Type {
+		BEGTYPE,
+		ENDTYPE,
+		NULLTYPE
+	}
 	BegEndExprHolder eh;
 	TimeControlerPanel beg, end;
 	
@@ -57,17 +60,17 @@ public class BegEndConstructor extends BasicApplet {
 		add ("East", end);
 		moveFrame (250, 350);
 	}   
-	public int getFType (TExp exp) {
+	public Type getFType (TExp exp) {
 		try {
 			exp = exp.convertAbstrExp();
 			exp = TExpMaker.gExpMaker.createBody(exp.getArg1(), exp.getArg2());
 			exp = exp.convertAbstrExp();
 			exp = TExpMaker.gExpMaker.createBody(exp.getArg1(), exp.getArg2());
-			if (exp.convertBeginExp() != null) return begType;
-			if (exp.convertRestExp() != null) return endType;
+			if (exp.convertBeginExp() != null) return Type.BEGTYPE;
+			if (exp.convertRestExp() != null) return Type.ENDTYPE;
 		}
 		catch (Exception e) { }
-		return 0;
+		return Type.NULLTYPE;
 	}
 	public void decompose (TExp exp) {
    		TExpMaker maker = TExpMaker.gExpMaker;
@@ -81,11 +84,11 @@ public class BegEndConstructor extends BasicApplet {
 		TExp f = a.getArg1();
 		if (f.convertApplExp() == null) {
 			switch (getFType (f)) {
-				case begType: 
+				case BEGTYPE: 
 					begExp = arg1;
 					endExp = maker.createNote(Color.blue, 60, 100, 0, (int)TimeControlerPanel.timeLimit);
 					break;
-				case endType:
+				case ENDTYPE:
 					begExp = maker.createNote(Color.blue, 60, 100, 0, 0);
 					endExp = arg1;
 					break;

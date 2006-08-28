@@ -56,8 +56,6 @@ public final class TLTrack implements Serializable {
 	public static final int	PARAMETER 	= 3;
 	public static final int	MIXFUNCTION = 4;
 	
-	
-	
 	//------------------------------------------------------------------------------
 	// création d'une track vide
 	//------------------------------------------------------------------------------
