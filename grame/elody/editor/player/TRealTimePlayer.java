@@ -83,7 +83,6 @@ public class TRealTimePlayer implements Observer, TPlayerInterface {
 		curPlayer.startPlayer(exp);
 	}
 	
-	
 	public void stopPlayer () 	{ curPlayer.stopPlayer();}
 	public void contPlayer () 	{ curPlayer.contPlayer();}
 	

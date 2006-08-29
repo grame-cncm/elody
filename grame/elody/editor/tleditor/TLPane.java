@@ -1305,10 +1305,10 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		String cmd = e.getActionCommand();
 		
 		// analyse des commandes
-				if (cmd.equals(TGlobals.getTranslation("PlayAll"))) 			playAllTracks();
+				if (cmd.equals(TGlobals.getTranslation("PlayAll"))) 			playAllTracks(false);
 		else 	if (cmd.equals(TGlobals.getTranslation("ClearAll"))) 			clearAllTracks();
 		else 	if (cmd.equals(TGlobals.getTranslation("StopAll"))) 			stopAllTracks();
-		else 	if (cmd.equals(TGlobals.getTranslation("StartAll"))) 			startAllTracks();
+		else 	if (cmd.equals(TGlobals.getTranslation("StartAll"))) 			playAllTracks(true);
 		
 		else 	if (cmd.equals(TGlobals.getTranslation("NormalTrack"))) 		normalModeSelTrack();
 		else 	if (cmd.equals(TGlobals.getTranslation("SeqFunctionTrack")))	seqFunModeSelTrack();
@@ -1344,21 +1344,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		}
 	}
 	
-	void playAllTracks()
-	{
-		stopAllTracks();
-	
-		if (fCurExp == null) {  // Si pas d'expression en cours
-			startAllTracks();
-		}else if (fPlayer.getState().date < fDuration) {  // Si le rendu n'est pas terminé
-			fTask.Forget();
-			fPlayer.contPlayer();
-			fBtnPan.setClearEnabled(false);
-			TGlobals.midiappl.ScheduleTask(fTask, Midi.GetTime());
-		}
-	}
-	
-	void startAllTracks()
+	void playAllTracks(boolean fromBeginning)
 	{
 		stopAllTracks();
 		
@@ -1367,7 +1353,10 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		if (!(fCurExp instanceof TNullExp)) {
 			fDuration = (int)TEvaluator.gEvaluator.Duration(fCurExp); 
 			fTask.Forget();
+			int date = fPlayer.getState().date;
 			fPlayer.startPlayer (fCurExp);
+			if (!fromBeginning)
+				fPlayer.setPosMsPlayer(date);
 			fBtnPan.setClearEnabled(false);
 			TGlobals.midiappl.ScheduleTask(fTask, Midi.GetTime());
 			notifier.notifyObservers (fCurExp);
@@ -1391,7 +1380,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 			fName.setText("");
 			multiTracksChanged();
 			fCurExp = TLConverter.exp(fMultiTracks);
-			notifier.notifyObservers (fCurExp);
+		//	notifier.notifyObservers (fCurExp);
 			fUpdater.doUpdates();
 		}
 	}
@@ -1565,7 +1554,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		if (e.isControlDown() || e.isMetaDown()) {
 
 			if (kc == KeyEvent.VK_SPACE) {					// Ctrl+Espace
-				startAllTracks();
+				playAllTracks(true);
 			}
 			else if (kc == KeyEvent.VK_DELETE) {			// Ctrl+Suppr
 				clearAllTracks();
@@ -1662,7 +1651,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		{
 			if (kc == KeyEvent.VK_SPACE) {
 				if (fPlayer.getState().state == MidiPlayer.kPlaying) { stopAllTracks(); }
-				else { playAllTracks(); }
+				else { playAllTracks(false); }
 				
 			} else if (kc == KeyEvent.VK_BACK_SPACE) {
 				if (fSelection.empty()) {
@@ -2264,13 +2253,13 @@ final class ButtonPanel extends Canvas implements MouseListener {
 		
 		switch (pressed) {
 		case START:
-			tl.startAllTracks();		
+			tl.playAllTracks(true);		
 			break;
 		case STOP:
 			tl.stopAllTracks();
 			break;
 		case PLAY:
-			tl.playAllTracks();
+			tl.playAllTracks(false);
 			break;
 		case CLEAR:
 			tl.clearAllTracks();

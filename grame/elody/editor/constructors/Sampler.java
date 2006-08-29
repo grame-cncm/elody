@@ -65,6 +65,7 @@ public class Sampler extends BasicShellSWT {
 	private Group channelsToDisplayGroup = null;
 	
 	private Vector<Channel> channels = new Vector<Channel>();
+	private Vector<Integer> sampleArray;
 	
 	public boolean needToReset = false;
 
@@ -497,9 +498,9 @@ public class Sampler extends BasicShellSWT {
 	private void refresh()
 	{
 		fileText.setText(file.getName());
-		for (int i=0; i< STD_SAMPLERATES.length; i++)
+		for (int i=0; i< sampleArray.size(); i++)
 		{
-			if (STD_SAMPLERATES[i]==sampleRate) {sampleRateCombo.select(i); }
+			if (sampleArray.get(i).intValue()==sampleRate) {sampleRateCombo.select(i); }
 		}
 		for (int i=0; i< STD_BUFFERSIZES.length; i++)
 		{
@@ -511,13 +512,13 @@ public class Sampler extends BasicShellSWT {
 	{
 		if (needToReset)
 		{
-			int err = jni.paDriverReload(STD_SAMPLERATES[sampleRateCombo.getSelectionIndex()],	
+			int err = jni.paDriverReload(sampleArray.get(sampleRateCombo.getSelectionIndex()).intValue(),	
 					STD_BUFFERSIZES[bufferCombo.getSelectionIndex()],
 					fileText.getText(),
 					device.getDevIndex());
 			if (err==0)
 			{
-				sampleRate=STD_SAMPLERATES[sampleRateCombo.getSelectionIndex()];
+				sampleRate=sampleArray.get(sampleRateCombo.getSelectionIndex()).intValue();
 				framesPerBuffer=STD_BUFFERSIZES[bufferCombo.getSelectionIndex()];
 			}
 			else
@@ -541,7 +542,7 @@ public class Sampler extends BasicShellSWT {
 	}
 	private void refreshSampleRates()
 	{
-		Vector<Integer> sampleArray = jni.getAvailableSampleRates(STD_SAMPLERATES);
+		sampleArray = jni.getAvailableSampleRates(STD_SAMPLERATES);
 		String[] items = new String[sampleArray.size()];
 		int defaultSelect = 0;
 		for (int i=0; i< sampleArray.size(); i++)

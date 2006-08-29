@@ -8,6 +8,7 @@ import grame.elody.file.parser.TMIDIFileParser;
 import grame.elody.file.parser.TOBJECTParser;
 import grame.elody.file.parser.TTEXTEParser;
 import grame.midishare.Midi;
+import grame.midishare.MidiAppl;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -15,11 +16,13 @@ import java.util.ResourceBundle;
 public class TGlobals {
 	public static TGlobalPrefs 		context = new TGlobalPrefs();
 	//public static TEvaluator 		evaluator =  new TEvaluator();
-	public static MidiApplAlarm	 	midiappl = null;
+	public static MidiAppl		 	midiappl = null;
+	public static MidiApplAlarm 	midiapplThru = null;
 	public static TRealTimePlayer   player = null;
 	//public static TExpMaker 		maker =  new TExpMaker2();
 	//public static TExpRenderer 	renderer = new TExpRenderer();
 	public static String 			appl = "ElodySharedAppl";
+	public static String 			thru = "ElodySharedApplThru";
 	public static Locale locale = Locale.getDefault();
 	public static ResourceBundle messages = ResourceBundle.getBundle("Elody", locale);
 	
@@ -58,10 +61,12 @@ public class TGlobals {
 				TFileParser.registerParser(TGUIDOParser.class);
 				
 				// Ouverture d'une application partagée pour les taches et d'un Player partagé
-				midiappl = new MidiApplAlarm();
+				midiappl = new MidiAppl();
+				midiapplThru = new MidiApplAlarm();
 				player = new TRealTimePlayer();
 				midiappl.Open(appl);
-				Midi.Connect(0, midiappl.refnum,1);
+				midiapplThru.Open(thru);
+			//	Midi.Connect(0, midiappl.refnum,1);
 				player.Open("ElodySharedPlayer");
 				context.restoreConnections("ElodySharedPlayer");
 				context.restoreAppletsState();
@@ -89,10 +94,12 @@ public class TGlobals {
 		if (--ref == 0) {
 			context.saveConnections("ElodySharedPlayer");
 			context.saveAppletsState();
+			midiapplThru.Close();
 			midiappl.Close(); 
 			player.stopPlayer();
 			player.Close();
 			context.writePrefs();
+			midiapplThru = null;
 			midiappl = null;
 			player = null;
 			/*

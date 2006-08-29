@@ -1,5 +1,7 @@
 package grame.elody.editor.tleditor;
 
+import grame.elody.lang.texpression.expressions.TExp;
+
 import java.awt.Graphics;
 
 //--------------------------------------------------------------------------
@@ -54,6 +56,8 @@ public final class TLUpdater {
 		fDurationChanged 	= false;
 		fViewChanged 		= false;
 		fSelectionChanged 	= false;
+		TExp e = TLConverter.exp(fTarget.getFMultiTracks());
+		fTarget.notifier.notifyObservers (e);
 	}
 	
 	public final void scrollSelection()

@@ -74,8 +74,8 @@ public final class Elody extends BasicApplet {
 		    h += d.height + 3;
 		}
 		Panel pan = new Panel(new BorderLayout());
-		pan.add("Center",TGlobals.midiappl.getMidiLed());
-		pan.add("East",TGlobals.midiappl.getThru());
+		pan.add("Center",TGlobals.midiapplThru.getMidiLed());
+		pan.add("East",TGlobals.midiapplThru.getThru());
 		add(pan);
 		Insets i = getInsets();
 		setSize (w+i.left+i.right, h+i.bottom+i.top);

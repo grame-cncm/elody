@@ -32,15 +32,15 @@ public class MidiApplAlarm extends MidiAppl {
 	public void Open (String name) throws MidiException
 	{
 		super.Open(name);
+		Midi.Connect(0, refnum, 1);
 		for (int i=0; i<256; i++)
-			Midi.AcceptType(filter, i, 1);
-		Midi.AcceptType(filter, Midi.typeNote, 0);
-		Midi.AcceptType(filter, Midi.typeCtrlChange, 0);
-		Midi.AcceptType(filter, Midi.typeProgChange, 0);
-		Midi.AcceptType(filter, Midi.typeKeyOn, 0);
-		Midi.AcceptType(filter, Midi.typeKeyOff, 0);
-		Midi.AcceptType(filter, Midi.typePrivate, 0);
-		
+			Midi.AcceptType(filter, i, 0);
+		Midi.AcceptType(filter, Midi.typeNote, 1);
+		Midi.AcceptType(filter, Midi.typeCtrlChange, 1);
+		Midi.AcceptType(filter, Midi.typeProgChange, 1);
+		Midi.AcceptType(filter, Midi.typeKeyOn, 1);
+		Midi.AcceptType(filter, Midi.typeKeyOff, 1);
+		Midi.AcceptType(filter, Midi.typePrivate, 1);	
 	}
 	
 	public Led getMidiLed() { return midiLed; }
