@@ -59,32 +59,36 @@ public final class TLUpdater {
 	public final void scrollSelection()
 	{
 		boolean change = false;
-		if (fTarget.getFSelection().start()<fTarget.fTimePos)
+		if (((fTarget.getTimePosEnd()-fTarget.fTimePos)*4/5)>fTarget.getFSelection().duration())
+		// blocage de l'autoscroll pour les grands objets ( > 4/5 de l'écran)
 		{
-			fTarget.fTimePos = fTarget.getFSelection().start();
-			change = true;
-		}
-		if (fTarget.getFSelection().end()>fTarget.getTimePosEnd())
-		{
-			int marginX = fTarget.time2x(fTarget.getFSelection().end())-fTarget.getWidth()+50;
-			fTarget.fTimePos = fTarget.x2time(marginX);
-			change = true;
-		}
+			if (fTarget.getFSelection().start()<fTarget.fTimePos)
+			{
+				fTarget.fTimePos = fTarget.getFSelection().start();
+				change = true;
+			}
+			if (fTarget.getFSelection().end()>fTarget.getTimePosEnd())
+			{
+				int marginX = fTarget.time2x(fTarget.getFSelection().end())-fTarget.getWidth()+50;
+				fTarget.fTimePos = fTarget.x2time(marginX);
+				change = true;
+			}
 
-		if (fTarget.getFSelection().topline()<=fTarget.fLinePos)
-		{
-			fTarget.fLinePos = fTarget.getFSelection().topline();
-			change = true;
-		}
-		if (fTarget.getFSelection().topline()>=fTarget.getLinePosEnd())
-		{
-			fTarget.fLinePos += fTarget.getFSelection().topline()-fTarget.getLinePosEnd()+1;
-			change = true;
-		}
-		if (change)
-		{
-			contentChanged();
-			fTarget.adjustScrollbars();
+			if (fTarget.getFSelection().topline()<=fTarget.fLinePos)
+			{
+				fTarget.fLinePos = fTarget.getFSelection().topline();
+				change = true;
+			}
+			if (fTarget.getFSelection().topline()>=fTarget.getLinePosEnd())
+			{
+				fTarget.fLinePos += fTarget.getFSelection().topline()-fTarget.getLinePosEnd()+1;
+				change = true;
+			}
+			if (change)
+			{
+				contentChanged();
+				fTarget.adjustScrollbars();
+			}
 		}
 	}
 	
@@ -92,35 +96,39 @@ public final class TLUpdater {
 	{
 		boolean change = false;
 
-		if (time<fTarget.fTimePos)
+		if (((fTarget.getTimePosEnd()-fTarget.fTimePos)*4/5)>dur)
+		// blocage de l'autoscroll pour les grands objets ( > 4/5 de l'écran)
 		{
-			fTarget.fTimePos = time;
-			change = true;
-		}
-		if ((time+dur)>fTarget.getTimePosEnd())
-		{
-			int marginX = fTarget.time2x(time+dur)-fTarget.getWidth()+50;
-			fTarget.fTimePos = fTarget.x2time(marginX);
-			change = true;
-		}
+			if (time<fTarget.fTimePos)
+			{
+				fTarget.fTimePos = time;
+				change = true;
+			}
+			if ((time+dur)>fTarget.getTimePosEnd())
+			{
+				int marginX = fTarget.time2x(time+dur)-fTarget.getWidth()+50;
+				fTarget.fTimePos = fTarget.x2time(marginX);
+				change = true;
+			}
 
-		if ((line==fTarget.fLinePos)&&(fTarget.fLinePos>0))
-		{
-			fTarget.fLinePos--;
-			change = true;
-		}
-		if (line>=fTarget.getLinePosEnd())
-		{
-			fTarget.fLinePos ++;
-			change = true;
-		}
+			if ((line==fTarget.fLinePos)&&(fTarget.fLinePos>0))
+			{
+				fTarget.fLinePos--;
+				change = true;
+			}
+			if (line>=fTarget.getLinePosEnd())
+			{
+				fTarget.fLinePos ++;
+				change = true;
+			}
 
 
-		if (change)
-		{
-			contentChanged();
-			fTarget.adjustScrollbars();
-			doUpdates();
+			if (change)
+			{
+				contentChanged();
+				fTarget.adjustScrollbars();
+				doUpdates();
+			}
 		}
 	}
 	

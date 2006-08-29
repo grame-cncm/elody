@@ -222,11 +222,11 @@ static bool readConfigFile(TSampler* s, char* fname, int sampleRate)
 			exit(0);
 		}
 		char * pch;
-		pch=strchr(sndfilename,'\'');
+		pch=strchr(sndfilename,'\"');
 		while (pch!=NULL)
 		{
 			sndfilename[pch-sndfilename] = ' ';
-			pch=strchr(pch+1,'\''); // simple quote represente un espace dans un nom de fichier
+			pch=strchr(pch+1,'\"'); // simple quote represente un espace dans un nom de fichier
 		}
 		s->fChanVol[midiChan] = vol / 127.0;
 		s->fChanPan[midiChan] = pan / 127.0;
