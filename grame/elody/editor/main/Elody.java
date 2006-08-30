@@ -46,13 +46,13 @@ public final class Elody extends BasicApplet {
 	/**
 	 * méthode stop() d'Elody : quitte tout l'environnement Elody
 	 */
-	public void stop() {
-		if (Define.appletMode) { 
-			TGlobals.quit ();
-		}else {
-			AppletFrame.quitElody();
-		}
-	}
+  	public void stop() {
+  		if (Define.appletMode) { 
+  			TGlobals.quit ();
+  		}else {
+  			AppletFrame.quitElody();
+  		}
+  	}
 	
 //____________________________________________________________________________________________
 // méthode privées

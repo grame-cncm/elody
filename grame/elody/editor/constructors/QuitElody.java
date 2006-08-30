@@ -1,5 +1,6 @@
 package grame.elody.editor.constructors;
 
+import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.appletframe.AppletFrame;
 
 public final class QuitElody {

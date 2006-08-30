@@ -1,5 +1,6 @@
 package grame.elody.editor.misc;
 
+import grame.elody.editor.constructors.Stock;
 import grame.elody.editor.player.TRealTimePlayer;
 import grame.elody.file.parser.TFileParser;
 import grame.elody.file.parser.TGUIDOParser;
@@ -12,6 +13,7 @@ import grame.midishare.MidiAppl;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Vector;
 
 public class TGlobals {
 	public static TGlobalPrefs 		context = new TGlobalPrefs();

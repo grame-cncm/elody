@@ -1,5 +1,9 @@
 package grame.elody.editor.misc.winsolver;
 
+import grame.elody.editor.constructors.Stock;
+import grame.elody.editor.main.Elody;
+import grame.elody.editor.misc.TGlobals;
+import grame.elody.editor.misc.appletframe.AppletFrame;
 import grame.elody.editor.misc.applets.Window;
 
 import java.awt.Frame;
@@ -7,6 +11,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -76,11 +81,21 @@ public class Screen {
 	public void closeAll()
 	/* ferme toutes les fenêtres à l'exception du menu Elody */
 	{
-		for (int i=1; i<vectWindow.size(); i++)
-		{
-			Window w = vectWindow.get(i);
-			w.close();
-		}
+		boolean stopClosing = false;
+   		while(!(Stock.stocks.isEmpty()||stopClosing))
+   		{
+   			stopClosing = Stock.stocks.firstElement().showConfirmDialog();
+   		}
+   		if (!stopClosing)
+   	   	// si l'utilisateur choisit ANNULER dans le ConfirmDialog
+   	   	// d'un Stock, le processus de fermeture est stoppé
+   		{
+   			for (int i=1; i<vectWindow.size(); i++)
+   			{
+   				Window w = vectWindow.get(i);
+   				w.close();
+   			}
+   		}
 	}
 	
 	public void compute1()

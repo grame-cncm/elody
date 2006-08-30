@@ -109,17 +109,26 @@ public class AppletFrame extends Frame implements WindowListener {
 					return a;
 				}
 			}
-			a = (BasicApplet)Class.forName(className).newInstance();
-			BasicStub stub = new BasicStub(a.getFrame(), params);
-			a.setStub (stub);
-			a.init();
-			a.start();
-			Frame f = a.getFrame();
-			Dimension d = a.getSize();
-			stub.appletResize (d.width, d.height);
-			f.setVisible(true);
-			f.repaint();
-			return a;
+			Object o = Class.forName(className).newInstance();
+			if (o instanceof BasicApplet)
+			// les instances de QuitElody ne sont pas des BasicApplet
+			// mais l'exécution se poursuit si l'utilisateur choisit
+			// ANNULER dans la ConfirmDialog d'un Stock
+			{
+				a = (BasicApplet) o;
+				BasicStub stub = new BasicStub(a.getFrame(), params);
+				a.setStub (stub);
+				a.init();
+				a.start();
+				Frame f = a.getFrame();
+				Dimension d = a.getSize();
+				stub.appletResize (d.width, d.height);
+				f.setVisible(true);
+				f.repaint();
+				return a;
+			}
+			else
+				return null;
 		}
 		catch (Exception e) {
 			System.out.println();
@@ -173,20 +182,28 @@ public class AppletFrame extends Frame implements WindowListener {
 	* quitte le runtime de la machine virtuelle
 	*/
 	public static void quitElody () {
-   		
-   		TGlobals.quit ();
-   		
-		Enumeration<AppletFrame> en = aList.elements();
-		while (en.hasMoreElements()) {
-			AppletFrame f = en.nextElement();
-			if (f.applet instanceof Elody)
-				aList.remove(f);
-			else
-				f.close();
-			en = aList.elements();
-		}
-		
-		java.lang.Runtime.getRuntime().exit(0);
+   		   		
+   		boolean stopClosing = false;
+   		// si l'utilisateur choisit ANNULER dans le ConfirmDialog
+   		// d'un Stock, le processus de fermeture est stoppé
+   		while(!(Stock.stocks.isEmpty()||stopClosing))
+   		{
+   			stopClosing = Stock.stocks.firstElement().showConfirmDialog();
+   		}
+   		if (!stopClosing)
+   		{
+   			TGlobals.quit ();
+   			Enumeration<AppletFrame> en = aList.elements();
+   			while (en.hasMoreElements()) {
+   				AppletFrame f = en.nextElement();
+   				if (f.applet instanceof Elody)
+   					aList.remove(f);
+   				else
+   					f.close();
+   				en = aList.elements();
+   			}
+   			java.lang.Runtime.getRuntime().exit(0);
+   		}
 	}
 	/**
 	* renvoie l'applet si elle existe

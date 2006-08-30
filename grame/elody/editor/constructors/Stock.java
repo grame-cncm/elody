@@ -46,10 +46,12 @@ public class Stock extends BasicApplet implements ActionListener {
 	static String cmds[] = { TGlobals.getTranslation("Load"), TGlobals.getTranslation("Save"),
 		TGlobals.getTranslation("Save_as"), TGlobals.getTranslation("Clear") };
 	static final int kLoad=0, kSave=1, kSaveAs=2, kClear=3;
+	public static Vector<Stock> stocks = new Vector<Stock>();
 	 
 	//-------------------------------------------------
 	public Stock() {
 		super(TGlobals.getTranslation("Untitled"));
+		stocks.add(this);
 		setLayout(new BorderLayout(4,4));
 		setSize (nColumns*65, nRows*70);
 		expHolders = new ExprHolder[nRows * nColumns];
@@ -64,10 +66,7 @@ public class Stock extends BasicApplet implements ActionListener {
     	getFrame().addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
-				if (dirty)
-					new ConfirmDialog(getFrame(), getThis());
-				else
-					getFrame().dispose();
+				showConfirmDialog();
 			} 		
     	});
     	add ("Center", center);
@@ -84,7 +83,20 @@ public class Stock extends BasicApplet implements ActionListener {
 		moveFrame (80, 130);
 	}   
     
-    public Stock getThis()	{ return this; }
+    public boolean showConfirmDialog()
+    {
+    	if (dirty)
+    	{
+    		ConfirmDialog d = new ConfirmDialog(getFrame(), this);
+    		return d.mustStopClosing();
+    	}
+    	else
+    	{
+			getFrame().dispose();
+			stocks.remove(this);
+			return false;
+    	}
+    }
 	
 	//-------------------------------------------------
     public void enableCmd (int command, boolean state) {
@@ -217,6 +229,8 @@ class CmdsPanel extends Panel
 
 class ConfirmDialog extends Dialog
 {
+	protected boolean stopClosing = false;
+	
 	public ConfirmDialog(Frame owner, final Stock s) {
 		super(owner, "Elody", true);
 		addWindowListener(new WindowAdapter() {
@@ -238,6 +252,7 @@ class ConfirmDialog extends Dialog
 				title = title.substring(0, title.length()-1);
 				s.SaveAs(title);
 				s.getFrame().dispose();
+				Stock.stocks.remove(s);
 				dispose();
 			}	
 		});
@@ -246,6 +261,7 @@ class ConfirmDialog extends Dialog
 		noBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				s.getFrame().dispose();
+				Stock.stocks.remove(s);
 				dispose();
 			}	
 		});
@@ -254,6 +270,7 @@ class ConfirmDialog extends Dialog
 		cancelBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
+				stopClosing = true;
 			}	
 		});
 		p.add(cancelBtn);
@@ -261,4 +278,6 @@ class ConfirmDialog extends Dialog
 		add(p, BorderLayout.SOUTH);
 	    setVisible(true);
 	}
+
+	public boolean mustStopClosing() { return stopClosing; }
 }
