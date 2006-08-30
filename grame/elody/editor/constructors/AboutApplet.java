@@ -54,7 +54,7 @@ class VersionPanel extends Panel
     	setFont (new Font("Verdana", Font.PLAIN, 12));
 //		add ("North", new Label ("Interface version " + Elody.version(), Label.LEFT));
 //		add ("South", new Label ("Engine version " + TGlobals.version(), Label.LEFT));
-		add ("West", new Label ("V. " + Elody.version(), Label.LEFT));
+		add ("West", new Label ("version " + Elody.version(), Label.LEFT));
 		add ("East", new Label ("http://www.grame.fr/Elody/", Label.LEFT));
 	}
 	public Insets getInsets () {

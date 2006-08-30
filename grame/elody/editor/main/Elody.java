@@ -93,7 +93,7 @@ public final class Elody extends BasicApplet {
 	/**
 	 * renvoie la version d'Elody pour la partie interface
 	 */
-	public static String version() {return "1.21 + Sampler";}	
+	public static String version() {return "1.22";}	
 
 	/**
 	 * point d'entrée d'Elody en mode application
