@@ -57,8 +57,6 @@ public class Stock extends BasicApplet implements ActionListener {
 	}
   
 	//-------------------------------------------------
-   
-  
     public void init() {
     	Container center = new Panel ();
     	WindowListener[] l = getFrame().getWindowListeners();

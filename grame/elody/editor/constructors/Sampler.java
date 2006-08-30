@@ -469,6 +469,14 @@ public class Sampler extends BasicShellSWT {
 				{
 					setDevice(dev);
 					sampleRate=device.getDefaultSampleRate();
+					for (int i=0; i<sampleArray.size(); i++)
+					{
+						if (sampleArray.get(i).intValue()==sampleRate)
+						{
+							sampleRateCombo.select(i);
+							break;
+						}
+					}
 					needToReset=true;
 					resetDriver();
 					refresh();
@@ -515,7 +523,6 @@ public class Sampler extends BasicShellSWT {
 					STD_BUFFERSIZES[bufferCombo.getSelectionIndex()],
 					fileText.getText(),
 					device.getDevIndex());
-			refreshSampleRates();
 			if (err==0)
 			{
 				sampleRate=sampleArray.get(sampleRateCombo.getSelectionIndex()).intValue();
@@ -529,6 +536,7 @@ public class Sampler extends BasicShellSWT {
 				mb.setMessage(errorMsg);
 				mb.open();
 			}
+			refreshSampleRates();
 			needToReset = false;
 		}
 	}
@@ -551,15 +559,8 @@ public class Sampler extends BasicShellSWT {
 			items[i]=n.toString()+" Hz";
 			if (n.intValue()==sampleRate) { defaultSelect=i; }
 		}
-		if (sampleArray.size()==0)
-		{
-			
-		}
-		else
-		{
-			sampleRateCombo.setItems(items);
-			sampleRateCombo.select(defaultSelect);
-		}
+		sampleRateCombo.setItems(items);
+		sampleRateCombo.select(defaultSelect);
 	}
 	
 	public void setOutputDeviceGroupEnable(boolean b)	{ outputDeviceGroup.setEnabled(b); }
