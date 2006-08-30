@@ -619,7 +619,7 @@ JNIEXPORT jobjectArray JNICALL Java_grame_elody_editor_sampler_PaJniConnect_GetD
 	for (int i=0; i<drvNumber; i++)
 	{
 		info = Pa_GetDeviceInfo( Pa_HostApiDeviceIndexToDeviceIndex( (PaHostApiIndex) apiIndex, i ) );
-		if ((info->maxOutputChannels)>0)
+		if (((info->maxOutputChannels)>0)&&((info->defaultSampleRate)>0))
 		{
 			jobject jInfo = env->NewObject( PaDeviceInfoCls, constructorID,
 					(jint) info->structVersion,	env->NewStringUTF(info->name), (jint) info->hostApi,

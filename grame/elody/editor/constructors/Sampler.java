@@ -429,11 +429,11 @@ public class Sampler extends BasicShellSWT {
 		Control relative = null;
 		for (int i=0; i<apiList.size(); i++)
 		{
-			relative = ApiTreeCreate(apiList.get(i), parent, relative);
+			relative = apiTreeCreate(apiList.get(i), parent, relative);
 		}
 	}
 
-	private Control ApiTreeCreate(PaHostApiInfo api, Composite parent, Control relative)
+	private Control apiTreeCreate(PaHostApiInfo api, Composite parent, Control relative)
 	{
 		final Label apiIcon = new Label(parent, SWT.NONE);
 		apiIcon.setImage(SWTResourceManager.getImage("Images/ico_d.bmp"));
@@ -455,12 +455,12 @@ public class Sampler extends BasicShellSWT {
 		Control rel = apiIcon;
 		for (int i=0; i<api.getDevList().size(); i++)
 		{
-			rel = DeviceCreate(i, parent, rel, api.getDevList().get(i));
+			rel = deviceCreate(i, parent, rel, api.getDevList().get(i));
 		}
 		return rel;
 	}
 
-	private Control DeviceCreate(final int devIndex, Composite parent, Control relative, final PaDeviceInfo dev)
+	private Control deviceCreate(final int devIndex, Composite parent, Control relative, final PaDeviceInfo dev)
 	{
 		final Button devButton = new Button(parent, SWT.RADIO);
 		devButton.addSelectionListener(new SelectionAdapter() {
@@ -469,10 +469,9 @@ public class Sampler extends BasicShellSWT {
 				{
 					setDevice(dev);
 					sampleRate=device.getDefaultSampleRate();
-					refreshSampleRates();
-					refresh();
 					needToReset=true;
 					resetDriver();
+					refresh();
 				}
 			}
 		});
@@ -516,6 +515,7 @@ public class Sampler extends BasicShellSWT {
 					STD_BUFFERSIZES[bufferCombo.getSelectionIndex()],
 					fileText.getText(),
 					device.getDevIndex());
+			refreshSampleRates();
 			if (err==0)
 			{
 				sampleRate=sampleArray.get(sampleRateCombo.getSelectionIndex()).intValue();
@@ -551,8 +551,15 @@ public class Sampler extends BasicShellSWT {
 			items[i]=n.toString()+" Hz";
 			if (n.intValue()==sampleRate) { defaultSelect=i; }
 		}
-		sampleRateCombo.setItems(items);
-		sampleRateCombo.select(defaultSelect);
+		if (sampleArray.size()==0)
+		{
+			
+		}
+		else
+		{
+			sampleRateCombo.setItems(items);
+			sampleRateCombo.select(defaultSelect);
+		}
 	}
 	
 	public void setOutputDeviceGroupEnable(boolean b)	{ outputDeviceGroup.setEnabled(b); }

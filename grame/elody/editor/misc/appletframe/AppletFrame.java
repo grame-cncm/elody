@@ -1,5 +1,6 @@
 package grame.elody.editor.misc.appletframe;
 
+import grame.elody.editor.constructors.Stock;
 import grame.elody.editor.main.Elody;
 import grame.elody.editor.misc.TGlobals;
 import grame.elody.editor.misc.applets.BasicApplet;
@@ -66,9 +67,9 @@ public class AppletFrame extends Frame implements WindowListener {
 	//___________________________________________________________________________
 	// méthodes privées 
     private final void close () {
-		aList.remove (this);
-		applet.stop();
-		dispose();
+   		aList.remove (this);
+   		applet.stop();
+   		dispose();
     }	
 
 	//___________________________________________________________________________
