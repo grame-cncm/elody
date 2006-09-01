@@ -437,7 +437,9 @@ public class Channel {
 		public void widgetSelected(final SelectionEvent e) {
 			setVol(volScale.getSelection());
 			sampler.configSav.writeAll();
-			sampler.needToReset=true;
+			PaJniConnect.SetParam ((int) num-1, vol, pan, sensit,
+					envelope.getAttack(), envelope.getDecay(),
+					envelope.getSustain(), envelope.getRelease());
 		}
 	});
 		final FormData volScFd = new FormData();
@@ -467,7 +469,9 @@ public class Channel {
 		public void widgetSelected(final SelectionEvent e) {
 			setSensit(sensitScale.getSelection());
 			sampler.configSav.writeAll();
-			sampler.needToReset=true;
+			PaJniConnect.SetParam ((int) num-1, vol, pan, sensit,
+					envelope.getAttack(), envelope.getDecay(),
+					envelope.getSustain(), envelope.getRelease());
 		}
 	});
 		sensitScale.addMouseListener(new MouseAdapter() {
@@ -476,7 +480,9 @@ public class Channel {
 				setSensit(100);
 				sensitScale.setSelection(100);
 				sampler.configSav.writeAll();
-				sampler.needToReset=true;
+				PaJniConnect.SetParam ((int) num-1, vol, pan, sensit,
+						envelope.getAttack(), envelope.getDecay(),
+						envelope.getSustain(), envelope.getRelease());
 			}		
 		});
 		final FormData sensitScFd = new FormData();
@@ -507,7 +513,9 @@ public class Channel {
 			public void widgetSelected(final SelectionEvent e) {
 				setPan(panScale.getSelection());
 				sampler.configSav.writeAll();
-				sampler.needToReset=true;
+				PaJniConnect.SetParam ((int) num-1, vol, pan, sensit,
+						envelope.getAttack(), envelope.getDecay(),
+						envelope.getSustain(), envelope.getRelease());
 			}
 		});
 			panScale.addMouseListener(new MouseAdapter() {
@@ -516,7 +524,9 @@ public class Channel {
 					setPan(64);
 					panScale.setSelection(64);
 					sampler.configSav.writeAll();
-					sampler.needToReset=true;
+					PaJniConnect.SetParam ((int) num-1, vol, pan, sensit,
+							envelope.getAttack(), envelope.getDecay(),
+							envelope.getSustain(), envelope.getRelease());
 				}		
 			});
 			final FormData panScFd = new FormData();

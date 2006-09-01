@@ -31,16 +31,43 @@ static int iscomment (char* s)
 
 inline float square (float x) { return x*x; }
 
-static void initChanVolPanSensit(float vol[], float pan[], float sensit[])
+static bool setTable(int channel, float param[], float value)
 {
-	for (int c=0; c<CHANNELS_NUM; c++)
+	if ((channel<0)||(channel>=CHANNELS_NUM)||(value>1.0)||(value<-1.0))
 	{
-		vol[c]= 100.0/127.0;
-		pan[c]= 0.5;
-		sensit[c]= 0.0;
+		return false;
+	}
+	else
+	{
+		param[channel] = value;
+		return true;
 	}
 }
 
+static bool setChanVolPanSensit(int c, float vol[], int v, float pan[], int p, float sensit[], float vel[], double s) 
+{
+	double e = exp(4*s);
+	vel[0]=0;
+	for (int j=1; j<128; j++)
+		vel[j]=pow(j/127.0,e);
+	return ( setTable(c, vol, v/127.0)
+			&& setTable(c, pan, p/127.0)
+			&& setTable(c, sensit, (float) s) );
+}
+
+static void initChanVolPanSensit(float vol[], int v, float pan[], int p, float sensit[], float vel[32][128], double s)
+{
+	for (int c=0; c<CHANNELS_NUM; c++)
+	{
+		setChanVolPanSensit(c, vol, v, pan, p, sensit, vel[c], s);
+	}
+}
+
+bool setSamplerParam(TSampler* samp, int sampleRate, int channel, int vol, int pan, double sens, int a, int d, double s, int r)
+{
+	samp->fChanEnvelope[channel].setEnvelope(a, d, s, r, sampleRate);
+	return setChanVolPanSensit(channel, samp->fChanVol, vol, samp->fChanPan, pan, samp->fChanSensit, samp->fChanVel[channel], sens);
+}
 
 /********************************************************************************
 							METHODES
@@ -312,8 +339,8 @@ bool initSampler(TSampler* s, char* fname, int sampleRate)
 #endif
 	
 	/* Initialisation des tables */
-	initChanVolPanSensit(s->fChanVol, s->fChanPan, s->fChanSensit);
-	
+	initChanVolPanSensit(s->fChanVol, 100, s->fChanPan, 64, s->fChanSensit, s->fChanVel, 0.0);
+
 	/* initialisation des listes a vide	*/
 	
 	initList(&s->fSoundList);
@@ -405,8 +432,9 @@ static void doKeyOff (TSampler* s, int chan, int key, int vel)
 	
 	for (i=0; i < listSize(&s->fPlayVoiceList); i++) {
 		TVoice* v = (TVoice*)getListElem(&s->fPlayVoiceList, i);
-		v->fEnvelope.keyOff();
+		
 		if (v->fChan == chan && v->fKey == key && v->fStopRequest == 0) {
+			v->fEnvelope.keyOff();
 			v->fStopRequest = 1;
 			break;
 		}

@@ -207,7 +207,8 @@ public class Envelope {
 					k.setAttack(attack);
 				}
 				ch.sampler.configSav.writeAll();
-				ch.sampler.needToReset=true;
+				PaJniConnect.SetParam ((int) ch.getNum()-1, ch.getVol(), ch.getPan(), ch.getSensit(),
+						getAttack(), getDecay(), getSustain(), getRelease());
 			}
 		});
 
@@ -235,7 +236,8 @@ public class Envelope {
 					k.setDecay(decay);
 				}
 				ch.sampler.configSav.writeAll();
-				ch.sampler.needToReset=true;
+				PaJniConnect.SetParam ((int) ch.getNum()-1, ch.getVol(), ch.getPan(), ch.getSensit(),
+						getAttack(), getDecay(), getSustain(), getRelease());
 			}
 		});
 
@@ -264,7 +266,8 @@ public class Envelope {
 					k.setSustain(sustain);
 				}
 				ch.sampler.configSav.writeAll();
-				ch.sampler.needToReset=true;
+				PaJniConnect.SetParam ((int) ch.getNum()-1, ch.getVol(), ch.getPan(), ch.getSensit(),
+						getAttack(), getDecay(), getSustain(), getRelease());
 			}
 		});
 
@@ -292,7 +295,8 @@ public class Envelope {
 					k.setRelease(release);
 				}
 				ch.sampler.configSav.writeAll();
-				ch.sampler.needToReset=true;
+				PaJniConnect.SetParam ((int) ch.getNum()-1, ch.getVol(), ch.getPan(), ch.getSensit(),
+						getAttack(), getDecay(), getSustain(), getRelease());
 			}
 		});
 
@@ -317,7 +321,8 @@ public class Envelope {
 					k.setAttack(attack);
 				}
 				ch.sampler.configSav.writeAll();
-				ch.sampler.needToReset=true;
+				PaJniConnect.SetParam ((int) ch.getNum()-1, ch.getVol(), ch.getPan(), ch.getSensit(),
+						getAttack(), getDecay(), getSustain(), getRelease());
 			}
 		});
 
@@ -342,7 +347,8 @@ public class Envelope {
 					k.setDecay(decay);
 				}
 				ch.sampler.configSav.writeAll();
-				ch.sampler.needToReset=true;
+				PaJniConnect.SetParam ((int) ch.getNum()-1, ch.getVol(), ch.getPan(), ch.getSensit(),
+						getAttack(), getDecay(), getSustain(), getRelease());
 			}
 		});
 
@@ -371,7 +377,8 @@ public class Envelope {
 					k.setSustain(sustain);
 				}
 				ch.sampler.configSav.writeAll();
-				ch.sampler.needToReset=true;
+				PaJniConnect.SetParam ((int) ch.getNum()-1, ch.getVol(), ch.getPan(), ch.getSensit(),
+						getAttack(), getDecay(), getSustain(), getRelease());
 			}
 		});
 
@@ -396,7 +403,8 @@ public class Envelope {
 					k.setRelease(release);
 				}
 				ch.sampler.configSav.writeAll();
-				ch.sampler.needToReset=true;
+				PaJniConnect.SetParam ((int) ch.getNum()-1, ch.getVol(), ch.getPan(), ch.getSensit(),
+						getAttack(), getDecay(), getSustain(), getRelease());
 			}
 		});
 

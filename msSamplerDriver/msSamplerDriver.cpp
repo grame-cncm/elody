@@ -119,6 +119,11 @@ class soundplayer
 	   fNumOutputs=n;
 	   fSampler.fStereoMode = (fNumOutputs==2) ;
 	}
+	virtual bool setParam(int chan, int vol, int pan, double sens, int a, int d, double s, int r)
+	{
+		DriverDataPtr data = GetData();
+		return setSamplerParam(&fSampler, data->sampleRate, chan, vol, pan, sens, a, d, s, r);
+	}
 
 	/* -------------------------------------------------------------*/
 	/* Driver required callbacks                                    */
@@ -541,9 +546,20 @@ JNIEXPORT jint JNICALL Java_grame_elody_editor_sampler_PaJniConnect_GetCurrentDe
 }
 
 /* -----------------------------------------------------------------------------*/
-JNIEXPORT jint JNICALL Java_grame_elody_editor_sampler_PaJniConnect_GetHostAPICount (JNIEnv *env, jclass cls)
+JNIEXPORT jint JNICALL Java_grame_elody_editor_sampler_PaJniConnect_GetHostAPICount
+  (JNIEnv *env, jclass cls)
 {
 	return (jint) Pa_GetHostApiCount();
+}
+
+/* -----------------------------------------------------------------------------*/
+JNIEXPORT jboolean JNICALL Java_grame_elody_editor_sampler_PaJniConnect_SetParam
+  (JNIEnv *env, jclass cls, jint chan, jint vol, jint pan, jdouble sens, jint a, jint d, jdouble s, jint r)
+{
+	if (DSP.setParam(chan, vol, pan, sens, a, d, s, r))
+		return JNI_TRUE;
+	else
+		return JNI_FALSE;
 }
 
 /* -----------------------------------------------------------------------------*/

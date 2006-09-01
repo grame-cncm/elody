@@ -223,7 +223,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 			}		
 		});
 		fBtnPan = new ButtonPanel(this);
-		fBtnPan.setSize(100,30);
+		fBtnPan.setSize(130,30);
 		controlPan.add("West", fBtnPan);
 		
 		internalSetMultiTracks(new TLMultiTracks());
@@ -2081,6 +2081,7 @@ final class ButtonPanel extends Canvas implements MouseListener {
 	
 	protected Point origin;
 	protected Point btSiz;
+	protected Point spaceSiz;
 	
 	protected Point startP;
 	protected Point startSiz;
@@ -2090,6 +2091,8 @@ final class ButtonPanel extends Canvas implements MouseListener {
 	
 	protected Point playP;
 	protected Point playSiz;
+	
+	protected Point space1P;
 	
 	protected Point clearP;
 	protected Point clearSiz;
@@ -2121,15 +2124,16 @@ final class ButtonPanel extends Canvas implements MouseListener {
     
     public void update(Graphics g) 
 	{
-    	compute();
+    	compute(4,1);
     	drawBtn(startP,startSiz,new Color(0,128,0),START,g);
     	drawBtn(stopP,stopSiz,new Color(128,0,0),STOP,g);
     	drawBtn(playP,playSiz,new Color(128,0,128),PLAY,g);
     	drawBtn(clearP,clearSiz,new Color(255,0,0),CLEAR,g);
 	}
-	private void compute() {
+	private void compute(int nbButtons, int nbSpaces) {
 		origin = new Point(2,2);
-    	btSiz = new Point((getBounds().width-5*origin.x)/4, getBounds().height-2*origin.y);
+    	btSiz = new Point((int)((getBounds().width-5*origin.x)/(nbButtons+nbSpaces*0.5)), getBounds().height-2*origin.y);
+    	spaceSiz = new Point(btSiz.x/2, btSiz.y);
   
     	startP = new Point(origin);
     	startSiz = btSiz;
@@ -2140,7 +2144,9 @@ final class ButtonPanel extends Canvas implements MouseListener {
     	playP = new Point((int)(stopP.x+stopSiz.x+origin.x),stopP.y);
     	playSiz = btSiz;
     	
-    	clearP = new Point((int)(playP.x+playSiz.x+origin.x),playP.y);
+    	space1P = new Point((int)(playP.x+playSiz.x+origin.x),playP.y);    	
+    	
+    	clearP = new Point((int)(space1P.x+spaceSiz.x+origin.x),space1P.y);
     	clearSiz = btSiz;
 	}
     

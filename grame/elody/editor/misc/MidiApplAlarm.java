@@ -3,6 +3,7 @@ package grame.elody.editor.misc;
 import grame.midishare.Midi;
 import grame.midishare.MidiAppl;
 import grame.midishare.MidiException;
+import grame.midishare.tools.MidiEvent;
 
 import java.awt.Canvas;
 import java.awt.Checkbox;
@@ -51,8 +52,12 @@ public class MidiApplAlarm extends MidiAppl {
 		switch (Midi.GetType(event))
 		{
 			case Midi.typeKeyOn:
-				midiLed.setLedOn(true);
-				break;
+				int vel = Midi.GetField(event, 1);
+				if (vel>0)
+				{
+					midiLed.setLedOn(true);
+					break;
+				}
 			case Midi.typeKeyOff:
 			case Midi.typePrivate:
 				midiLed.setLedOn(false);

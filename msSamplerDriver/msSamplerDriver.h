@@ -99,6 +99,14 @@ JNIEXPORT jint JNICALL Java_grame_elody_editor_sampler_PaJniConnect_GetHostAPICo
 
 /*
  * Class:     grame_elody_editor_sampler_PaJniConnect
+ * Method:    SetParam
+ * Signature: (IIIDIIDI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_grame_elody_editor_sampler_PaJniConnect_SetParam
+  (JNIEnv *, jclass, jint, jint, jint, jdouble, jint, jint, jdouble, jint);
+
+/*
+ * Class:     grame_elody_editor_sampler_PaJniConnect
  * Method:    GetHostAPIInfos
  * Signature: (I)[Lgrame/elody/editor/sampler/PaHostApiInfo;
  */

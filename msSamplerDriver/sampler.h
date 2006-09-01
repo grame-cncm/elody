@@ -83,6 +83,7 @@ struct TSampler {
 // Prototypes
 
 bool initSampler(TSampler* s, char* fname, int sampleRate);
+bool setSamplerParam(TSampler *samp, int sampleRate, int chan, int vol, int pan, double sens, int a, int d, double s, int r); 
 void processMidiEvents(short ref);
 //void processMidiEvents(TSampler* sampler,short ref);
 void mixAllVoices (TSampler* s, unsigned long nbsamples, float* multi[]);

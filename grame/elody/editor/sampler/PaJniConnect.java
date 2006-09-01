@@ -24,6 +24,7 @@ public class PaJniConnect {
 	private native static int hostApiDeviceIndexToDeviceIndex(int hostApi, int hostApiDeviceIndex);
 	public native static String GetErrorText(int err);
 	private native static boolean testSampleRate(int sampleRate);
+	public native static boolean SetParam (int chan, int vol, int pan, double sens, int a, int d, double s, int r);
 	
 	private Vector<PaHostApiInfo> apiList;
 	
