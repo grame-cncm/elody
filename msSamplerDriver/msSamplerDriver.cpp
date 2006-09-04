@@ -241,10 +241,15 @@ void LoadState()
 		data->outputDevice = LoadConfigNum("Configuration",
 			"Device Number", GetProfileFullName(kProfileName),DEFAULT_OUTPUT_DEVICE);
 		const PaDeviceInfo* defOutputDevInfo = Pa_GetDeviceInfo( data->outputDevice );
+		if (defOutputDevInfo == NULL)
+		{
+			data->outputDevice = DEFAULT_OUTPUT_DEVICE;
+			defOutputDevInfo = Pa_GetDeviceInfo( data->outputDevice );
+		}
 		strcpy(data->outputDeviceName, LoadConfig("Configuration",
 			"Device Name", GetProfileFullName(kProfileName), "") );
 		// Reset default values if material configuration has changed
-		if ( strcmp(data->outputDeviceName, Pa_GetDeviceInfo(data->outputDevice)->name )!=0)
+		if ( strcmp(data->outputDeviceName, Pa_GetDeviceInfo(data->outputDevice)->name )!=0 )
 		{
 			data->outputDevice = DEFAULT_OUTPUT_DEVICE;
 			defOutputDevInfo = Pa_GetDeviceInfo( data->outputDevice );
@@ -256,6 +261,21 @@ void LoadState()
 		data->numOutputs = defOutputDevInfo->maxOutputChannels;
 		if (data->numOutputs>MAX_CHANNELS)
 			data->numOutputs = MAX_CHANNELS;
+
+		PaStreamParameters outputParameters;
+		outputParameters.device = data->outputDevice;
+		outputParameters.channelCount = data->numOutputs;
+		outputParameters.sampleFormat = paFloat32;
+		outputParameters.suggestedLatency =	defOutputDevInfo->defaultLowOutputLatency;
+		outputParameters.hostApiSpecificStreamInfo = NULL;
+		int err = Pa_IsFormatSupported( NULL, &outputParameters, (double) data->sampleRate);
+		if (err!=0)
+		{
+			data->outputDevice = DEFAULT_OUTPUT_DEVICE;
+			defOutputDevInfo = Pa_GetDeviceInfo( data->outputDevice );
+			strcpy(data->outputDeviceName, defOutputDevInfo->name);
+			data->sampleRate = defOutputDevInfo->defaultSampleRate;
+		}
 	}
 	else
 	{
@@ -268,6 +288,8 @@ void LoadState()
 	data->framesPerBuffer = LoadConfigNum("Configuration",
 			"Frames per buffer", GetProfileFullName(kProfileName),DEFAULT_BUFFER_SIZE);
 
+	if ((data->framesPerBuffer<1)||(data->framesPerBuffer>1000000))
+		data->framesPerBuffer = DEFAULT_BUFFER_SIZE;
 
 	strcpy(data->soundConfigFile, LoadConfig("Configuration",
 		"Sound Samples INI file", GetProfileFullName(kProfileName),DEFAULT_AUDIO_FILE) );
@@ -346,6 +368,7 @@ int AudioWakeUp()
 	if( err != paNoError )
 		return err;
 	TRACE(("Pa_Initialize\n"));
+	data->asleep = false;
 
 	//-- 2 - Load state
 	LoadState();
@@ -480,6 +503,8 @@ JNIEXPORT jint JNICALL Java_grame_elody_editor_sampler_PaJniConnect_AudioReload
 	data->sampleRate = (int) sampleRate;
 	data->framesPerBuffer = (int) framesPerBuffer;
 	data->outputDevice = (int) dev;
+	/* A CET ENDROIT : bug du device MOTU non-connecté (audioreload appelé 2x de suite,
+	 * sorte de réentrance à cause de la popup MOTU d'avertissement) */
 	strcpy(data->outputDeviceName, (Pa_GetDeviceInfo(data->outputDevice))->name);
 	TRACE(("JNI parameters conversion\n"));
 

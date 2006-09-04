@@ -86,6 +86,26 @@ public class Sampler extends BasicShellSWT {
 		framesPerBuffer = jni.GetFramesPerBuffer();
 		file = new File(jni.GetFileName());
 		configSav = new ConfigSav(file);
+		
+		boolean badSampleRate = true;
+		boolean badBufferSize = true;
+		
+		for (int i=0; i<STD_SAMPLERATES.length; i++)
+			if (sampleRate==STD_SAMPLERATES[i])
+			{
+				badSampleRate = false;
+				break;
+			}
+		if (badSampleRate) 	{ sampleRate = device.getDefaultSampleRate(); }
+		
+		
+		for (int i=0; i<STD_BUFFERSIZES.length; i++)
+			if (framesPerBuffer==STD_BUFFERSIZES[i])
+			{
+				badBufferSize = false;
+				break;
+			}
+		if (badBufferSize) { framesPerBuffer = 1024; }	
 	}
 
 	public void setBgColor() {

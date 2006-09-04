@@ -132,6 +132,8 @@ public class Channel {
 					sampler.setOutputDeviceGroupEnable(true);
 			}
 			public void shellDeactivated(final ShellEvent e) {
+				// A CET ENDROIT : bug du périphérique MOTU
+				// non connecté (popup d'avertissement indésirable)
 				sampler.resetDriver();
 			}
 		});
