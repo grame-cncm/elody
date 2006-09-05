@@ -1,5 +1,7 @@
 package grame.elody.editor.sampler;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Vector;
 
 public class PaHostApiInfo 	{
@@ -38,16 +40,19 @@ public class PaHostApiInfo 	{
 
 	public void setDevList(Vector<PaDeviceInfo> v) { devList = v; }
 
-	public void printAll(int n)
+	public void printAll(int n, FileWriter fw)
 	{
-		System.out.println();
-		System.out.println("***** API no. "+n+" *****");
-		System.out.println("structVersion="+structVersion);
-		System.out.println("type="+type);
-		System.out.println("name="+name);
-		System.out.println("deviceCount="+deviceCount);
-		System.out.println("defaultInputDevice="+defaultInputDevice);
-		System.out.println("defaultOutputDevice="+defaultOutputDevice);
+		try {
+			fw.write("\r\n***** API no. "+n+" *****");
+			fw.write("\r\nstructVersion="+structVersion);
+			fw.write("\r\ntype="+type);
+			fw.write("\r\nname="+name);
+			fw.write("\r\ndeviceCount="+deviceCount);
+			fw.write("\r\ndefaultInputDevice="+defaultInputDevice);
+			fw.write("\r\ndefaultOutputDevice="+defaultOutputDevice);
+			fw.write("\r\n");
+		} catch (IOException e) {}
+
 	}
 
 	public void setApiIndex(int i) { apiIndex = i; }

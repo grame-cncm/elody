@@ -1,5 +1,8 @@
 package grame.elody.editor.sampler;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Date;
 import java.util.Vector;
 
 public class PaJniConnect {
@@ -43,6 +46,28 @@ public class PaJniConnect {
 				apiList.add(apiArray[i]);
 			}
 		}
+		try {
+			FileWriter fw = new FileWriter("dev.log");
+			Date date = new Date();
+			fw.write(date.toString()+"\r\n");
+			fw.write("user "+System.getProperty("user.name")+"\r\n");
+			fw.write("msSamplerDriver on "+System.getProperty("os.name")+" ("+System.getProperty("os.arch")+") v."+System.getProperty("os.version")+"\r\n");
+			fw.write("java v."+System.getProperty("java.version")+" ("+System.getProperty("java.vendor")+")"+"\r\n");
+			fw.write("JVM "+System.getProperty("java.vm.name")+" v."+System.getProperty("java.vm.version")+" ("+System.getProperty("java.vm.vendor")+")"+"\r\n");
+			
+			for (int i=0; i<apiList.size() ; i++)
+			{				
+				PaHostApiInfo info = apiList.get(i);
+				info.printAll(i, fw);
+				Vector<PaDeviceInfo> dev = info.getDevList();
+				for (int j=0; j<dev.size(); j++)
+				{
+					PaDeviceInfo devInf = dev.get(j);
+					devInf.printAll(devInf.getDevIndex(), fw);
+				}
+			}
+			fw.close();
+		} catch (IOException e) {}
 	}
 	public Vector<PaHostApiInfo> getApiList()	{ return apiList; }
 	public String GetFileName()					{ return GetCurrentFileName(); }

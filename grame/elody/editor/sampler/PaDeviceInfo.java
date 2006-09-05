@@ -1,5 +1,8 @@
 package grame.elody.editor.sampler;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 
 public class PaDeviceInfo	{
 /***** DESCRIPTION ************************************
@@ -48,20 +51,22 @@ public class PaDeviceInfo	{
 	public double getDefaultHighOutputLatency() { return defaultHighOutputLatency; }
 	public int getDefaultSampleRate() { return defaultSampleRate; }
 
-	public void printAll(int n)
+	public void printAll(int n, FileWriter fw)
 	{
-		System.out.println();
-		System.out.println("***** DEVICE no. "+n+" *****");
-		System.out.println("structVersion="+structVersion);
-		System.out.println("name="+name);
-		System.out.println("hostApi="+hostApi);
-		System.out.println("maxInputChannels="+maxInputChannels);
-		System.out.println("maxOutputChannels="+maxOutputChannels);
-		System.out.println("defaultLowInputLatency="+defaultLowInputLatency);
-		System.out.println("defaultLowOutputLatency="+defaultLowOutputLatency);
-		System.out.println("defaultHighInputLatency="+defaultHighInputLatency);
-		System.out.println("defaultHighOutputLatency="+defaultHighOutputLatency);
-		System.out.println("defaultSampleRate="+defaultSampleRate);
+		try {
+			fw.write("\r\n***** DEVICE no. "+n+" *****");
+			fw.write("\r\nstructVersion="+structVersion);
+			fw.write("\r\nname="+name);
+			fw.write("\r\nhostApi="+hostApi);
+			fw.write("\r\nmaxInputChannels="+maxInputChannels);
+			fw.write("\r\nmaxOutputChannels="+maxOutputChannels);
+			fw.write("\r\ndefaultLowInputLatency="+defaultLowInputLatency);
+			fw.write("\r\ndefaultLowOutputLatency="+defaultLowOutputLatency);
+			fw.write("\r\ndefaultHighInputLatency="+defaultHighInputLatency);
+			fw.write("\r\ndefaultHighOutputLatency="+defaultHighOutputLatency);
+			fw.write("\r\ndefaultSampleRate="+defaultSampleRate);
+			fw.write("\r\n");
+		} catch (IOException e) {}
 	}
 
 	public void setDevIndex(int i) { devIndex = i;}
