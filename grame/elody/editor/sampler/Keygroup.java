@@ -505,8 +505,7 @@ public class Keygroup {
 				TGlobals.getTranslation("f")+"#", TGlobals.getTranslation("g"),
 				TGlobals.getTranslation("g")+"#", TGlobals.getTranslation("a"),
 				TGlobals.getTranslation("a")+"#", TGlobals.getTranslation("b") };
-		int octave = pitch / 12;
-		// int octave = pitch/12 - 4;
+		int octave = pitch / 12 - 2;
 		return (noteName[pitch % 12] + Integer.toString(octave));
 	}
 	
