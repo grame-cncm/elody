@@ -18,10 +18,10 @@ public class Rect extends Rectangle {
 	public Rect(Rectangle r) { super(r); }
 	public Rect(Window w) { super(w.getBounds()); }
 	
-	public Point getP0() { return new Point(x, y); }
-	public Point getP1() { return new Point(x+width, y); }
-	public Point getP2() { return new Point(x, y+height); }
-	public Point getP3() { return new Point(x+width, y+height); }
+	public Point getP0() { return new Point(x, y); } //top-left corner
+	public Point getP1() { return new Point(x+width, y); } //top-right corner
+	public Point getP2() { return new Point(x, y+height); } //bottom-left corner
+	public Point getP3() { return new Point(x+width, y+height); } //bottom-right corner
 	
 	public int getArea() { return height*width; }
 	public Point getCenter() { return new Point(x+width/2,y+height/2); }
@@ -33,6 +33,8 @@ public class Rect extends Rectangle {
 	}
 	
 	public void goAttract(Point p)
+	/* moves of 1px this Rect in a direction so that
+	 * it is attracted by the p point */
 	{
 		if ( p.x > getCenter().x )
 			setLocation(x+1, y);
@@ -45,6 +47,8 @@ public class Rect extends Rectangle {
 	}
 			
 	public void goRepuls(Point p)
+	/* moves of 1px this Rect in a direction so that
+	 * it is repulsed by the p point */
 	{
 		if ( p.x > getCenter().x )
 			setLocation(x-2, y);
@@ -56,6 +60,8 @@ public class Rect extends Rectangle {
 			setLocation(x, y+2);	
 	}
 	public Vector<Rect> checkCollision(Vector<Rect> rectangles)
+	/* checks all the specified rectangles and returns those
+	 * with which it intersects */
 	{
 		Vector<Rect> result = new Vector<Rect>();
 		for (int j=0; j<rectangles.size(); j++)

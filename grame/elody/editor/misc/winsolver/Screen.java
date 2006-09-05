@@ -20,30 +20,73 @@ import org.eclipse.swt.widgets.Shell;
 
 
 public class Screen {
+/* DESCRIPTION OF WINDOWS REORGANIZATION STRATEGIES:
+ * 1) The first strategy is to reorganize the screen's windows in order to optimize
+ * the space occupation with an attraction to the top-left screen's corner OR in cascade
+ * if there is not enough space. We will use the concept of "anchor points": each window
+ * might cling an anchor point, i.e. this window might be moved until its top-left corner
+ * point corresponds to the specified anchor point. The first anchor point is the
+ * top-left corner of the screen, so the first window will cling this point and be located at
+ * the top-left corner of the screen. When a window clings to an anchor point, this point
+ * loses its anchor statute because it is not available anymore: each anchor point can hold
+ * only one window. But when a window clings, it creates two new anchor points: its top-right
+ * corner point, and its bottom-left corner point. An anchor point is eligible for a window
+ * if once clung, this window is not going to get out of the screen, or to intersect with
+ * another already clung window. When there is more than one available eligible anchor point,
+ * the next window has to choose which one is the best, i.e. which one will cause an optimal
+ * space distribution, i.e. which one will generate a minimal loss of area.
+ * To compute this loss of area for each anchor point, we will split all available anchor points
+ * in two groups, that we will call red and blue for more facilities.
+ * You have to imagine a virtual line splitting the screen in two parts by joining the top-left
+ * corner of the screen to the candidate anchor point. Every other anchor point that is in upper
+ * part is a red one, every anchor point that is in lower part is a blue one.
+ * Every red point that is before the top-right corner of the candidate window (once clung) on
+ * the horizontal axis will cause a loss of area. Similarly, every blue point that is before
+ * the bottom-left corner of the candidate window (once clung) on the vertical axis will also
+ * cause a loss of area.
+ * ************************************
+ * 2) The second strategy is to reorganize the screen's windows by using a heuristic method
+ * in order to optimize the space occupation with an attraction to the biggest window, and
+ * preventing from exceeding the screen's limits. This strategy will preserve as much as possible
+ * the initial location of each window, and give as illusion that the windows have been magnetized.
+ * All the windows will one after the others undergo an infinitesimal movement (i.e. 1 pixel) so that
+ * it will at the same time be attracted by the biggest window (that do not move), i.e. its barycenter
+ * point, and be repulsed by other windows with which it intersects, i.e. their barycenter points, and
+ * also be repulsed by the screen borders.
+ * All the windows will move step by step, one after each others, until an equilibrium will be reached.
+ * As computing an equilibrium is rather difficult, we will consider that there is a great probability
+ * that this equilibrium may be reached after 1000 iterations. 
+ */
+
 	
-	protected Rectangle screen;
-	protected Point screenCenter;
-	protected Vector<Window> vectWindow;
-	protected TreeSet<Window> vect1Window;
-	protected TreeSet<Window> vect2Window;
-	protected TreeSet<Rect> vect2Rect;
-	protected Vector<Rect> resultRect;
-	protected Vector<Point> anchPoints;
+	protected Rectangle screen; // virtual representation of hardware screen
+	//protected Point screenCenter; // center point of the hardware screen
+	protected Vector<Window> vectWindow; // virtual representation of all the screen's Elody's windows
+	protected TreeSet<Window> vect1Window; // virtual representation of all the screen's Elody's windows, 
+										  // sorted by diagonal length OR area value (used by computing methods)
+	protected TreeSet<Window> vect2Window; // virtual representation of all the screen's Elody's windows, 
+										  // sorted by proximity to the biggest of these windows
+	protected TreeSet<Rect> vect2Rect; // same as vect2Window, but for manipulating Rect instead of Window
+	protected Vector<Rect> resultRect; // contains all the Rect that have already been computed
+	protected Vector<Point> anchPoints; // contains all the points to which a Rect can be anchored in the first computing strategy
+	// these points are available top-right and bottom-left corners of already-computed rectangles
 	
-	/* indicateurs à TRUE si les fenêtres n'ont
-	   pas bougé depuis la dernière réorganisation : */
-	public boolean c1 = false;
-	public boolean c2 = false;
+	/* flags are TRUE if windows did not move since last reorganization computing,
+	 *  i.e. if there is no need to recompute: */
+	public boolean c1 = false; // for first computing strategy
+	public boolean c2 = false; // for second computing strategy
 
 	public Screen() {
 		screen = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-		screenCenter = new Point((int)screen.getCenterX(), (int)screen.getCenterY());
+		//screenCenter = new Point((int)screen.getCenterX(), (int)screen.getCenterY());
 		vectWindow = new Vector<Window>();
 		resultRect = new Vector<Rect>();
 	}
 	
+	// AWT methods:
 	public void addWindow(Frame frame)	{ addWindow(new Window(frame)); }
 	public void delWindow (Frame frame) { delWindow(new Window(frame)); }
+	// SWT methods:
 	public void addWindow(Shell shell)  { addWindow(new Window(shell));	}
 	public void delWindow (Shell shell) { delWindow(new Window(shell)); }
 	
@@ -56,20 +99,22 @@ public class Screen {
 		vectWindow.remove(window);
 	}
 	
-	public void printResult()
+	public String toString()
 	{
+		String s="";
 		if (resultRect==null)
-			System.out.println("pas de solution");
+			s="no solution";
 		else
 			for (int j=0; j<resultRect.size(); j++)
 			{
 				Rect r = resultRect.get(j);
-				System.out.println("x="+r.x+" ; y="+r.y+" ; l="+r.width+" ; h="+r.height);
+				s+="[x="+r.x+"; y="+r.y+"; l="+r.width+"; h="+r.height+"]; ";
 			}
+		return s;
 	}
 	
 	public void showAll()
-	/* affiche toutes les fenêtres */
+	/* shows all windows */
 	{
 		for (int i=0; i<vectWindow.size(); i++)
 		{
@@ -79,7 +124,7 @@ public class Screen {
 	}
 	
 	public void closeAll()
-	/* ferme toutes les fenêtres à l'exception du menu Elody */
+	/* close all windows except the Elody menu */
 	{
 		boolean stopClosing = false;
    		while(!(Stock.stocks.isEmpty()||stopClosing))
@@ -87,8 +132,8 @@ public class Screen {
    			stopClosing = Stock.stocks.firstElement().showConfirmDialog();
    		}
    		if (!stopClosing)
-   	   	// si l'utilisateur choisit ANNULER dans le ConfirmDialog
-   	   	// d'un Stock, le processus de fermeture est stoppé
+   	   	// if the user chooses CANCEL in the ConfirmDialog
+   	   	// of a Stock, the closing process is stopped
    		{
    			for (int i=1; i<vectWindow.size(); i++)
    			{
@@ -99,9 +144,8 @@ public class Screen {
 	}
 	
 	public void compute1()
-	/* réorganise les fenêtres en optimisant l'espace occupé par une attraction
-	   vers le coin en haut à gauche de l'écran OU en cascade s'il n'y a pas
-	   assez d'espace */
+	/* first strategy to reorganize the screen's windows: to optimize the space occupation with an attraction
+	   to the top-left screen's corner OR in cascade if there is not enough space */
 	{
 		if (!c1)
 		{
@@ -189,15 +233,15 @@ public class Screen {
 					resultRect.add(r);
 				}
 			}
-			//printResult();
+			//System.out.println(toString());
 			c1 = true;
 		}
 	}
 	
 	public void compute2()
-	/* réorganise les fenêtres de manière heuristique en optimisant l'espace
-	   occupé par une attraction vers la fenêtre la plus grande
-	   en empêchant toute sortie de l'écran */
+	/* second strategy to reorganize the screen's windows: heuristic method
+	 * to optimize the space occupation with an attraction to the biggest window,
+	 * and preventing from exceeding the screen's limits */
 	{
 		if (!c2)
 		{
@@ -256,16 +300,19 @@ public class Screen {
 				Rect r = new Rect(w);
 				resultRect.add(r);
 			}
-			//printResult();
+			// System.out.println(toString());
 			c2 = true;
 		}
 	}
 	
 	protected boolean canAnchor(Rect r, Point p)
+	/* Determine if the r rectangle can cling to the p anchor point
+	 * without getting out of the screen and intersecting with 
+	 * other rectangles */
 	{
 		r.setLocation(p);
-		Point p1 = r.getP1();
-		Point p2 = r.getP2();
+		Point p1 = r.getP1(); //top-right corner
+		Point p2 = r.getP2(); //bottom-left corner
 		if (!(screen.contains(p1)&&screen.contains(p2)))
 			return false;
 		for (int i=0; i<resultRect.size(); i++)
@@ -279,6 +326,9 @@ public class Screen {
 	}
 	
 	static public Rect getBar(Rect r)
+	/* Returns a Rect that represents the window's bar of the specified Rect
+	 * It can be used to prevent this bar from getting out of the screen during
+	 * a computing process. */
 	{
 		return new Rect(r.x, r.y, (int) r.getWidth(), 30);
 	}
@@ -296,7 +346,7 @@ class PointEligible extends Point {
 }
 
 class WindowDiagComp implements Comparator<Window> {
-
+/* sorting windows on their diagonal length */
 	public int compare(Window w0, Window w1) {
 		int d0 = (int) (Math.pow(w0.getHeight(),2)+Math.pow(w0.getWidth(), 2));
 		int d1 = (int) (Math.pow(w1.getHeight(),2)+Math.pow(w1.getWidth(), 2));
@@ -305,7 +355,7 @@ class WindowDiagComp implements Comparator<Window> {
 }
 
 class WindowAreaComp implements Comparator<Window> {
-
+/* sorting windows on their area value */
 	public int compare(Window w0, Window w1) {
 		Rect r0 = new Rect(w0);
 		Rect r1 = new Rect(w1);
@@ -314,7 +364,7 @@ class WindowAreaComp implements Comparator<Window> {
 }
 
 class WindowMagnPtComp implements Comparator<Window> {
-
+/* sorting windows on their proximity to a specified point */
 	protected Point magnPt;
 	public WindowMagnPtComp(Point p) { super(); magnPt = p; }
 
@@ -330,7 +380,7 @@ class WindowMagnPtComp implements Comparator<Window> {
 }
 
 class RectMagnPtComp implements Comparator<Rect> {
-
+/* sorting rectangles on their proximity to a specified point */
 	protected Point magnPt;
 	public RectMagnPtComp(Point p) { super(); magnPt = p; }
 
