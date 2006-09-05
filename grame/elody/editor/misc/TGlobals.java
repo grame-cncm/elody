@@ -1,6 +1,5 @@
 package grame.elody.editor.misc;
 
-import grame.elody.editor.constructors.Stock;
 import grame.elody.editor.player.TRealTimePlayer;
 import grame.elody.file.parser.TFileParser;
 import grame.elody.file.parser.TGUIDOParser;
@@ -11,9 +10,9 @@ import grame.elody.file.parser.TTEXTEParser;
 import grame.midishare.Midi;
 import grame.midishare.MidiAppl;
 
+import java.io.FileReader;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Vector;
 
 public class TGlobals {
 	public static TGlobalPrefs 		context = new TGlobalPrefs();
@@ -54,6 +53,13 @@ public class TGlobals {
 		
 				
 				// Lit le ficher de préférence
+				FileReader fr = new FileReader("Elody.ini");
+				for (int i=0; i<9; i++)
+					fr.read();
+				char[] cbuf = new char[2];
+				fr.read(cbuf, 0, 2);
+				setLanguage(new String(cbuf));
+				fr.close();
 				context.readPrefs();
 				
 				TFileParser.registerParser(THTMLParser.class);

@@ -38,6 +38,7 @@ public final class Elody extends BasicApplet {
   		
   		if (Define.appletMode) {
   			setupContent (getParameter("editors"));
+  			
   		}else {
  			setupContent (getParameter("editors") + ",AboutApplet/About_Elody/0,QuitElody/Quit/0");
  			moveFrame (20,20);
