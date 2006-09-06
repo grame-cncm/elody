@@ -56,6 +56,7 @@ public class Keygroup {
 	private Label noteLabel;
 	private Spinner plusSpinner;
 	private Spinner minusSpinner;
+	private Button extendButton;
 	
 
 	public int getIndex()		{ return index; }
@@ -332,6 +333,7 @@ public class Keygroup {
 			}	
 		});
 		
+		extendButton = new Button(group, SWT.NONE);
 		fileText = new Text(group, SWT.BORDER);
 		final Button loadButton = new Button(group, SWT.NONE);
 		refSpinner = new Spinner(group, SWT.BORDER);
@@ -461,6 +463,20 @@ public class Keygroup {
 					fileLoad(fileText, fDial);
 			}
 		});
+		
+		final FormData extFd = new FormData();
+		extFd.bottom = new FormAttachment(100, -6);
+		extFd.top = new FormAttachment(0, 3);
+		extFd.right = new FormAttachment(fileText, -5, SWT.LEFT);
+		extFd.left = new FormAttachment(fileText, -25, SWT.LEFT);
+		extendButton.setLayoutData(extFd);
+		extendButton.setImage(SWTResourceManager.getImage("Images/ico_ex.png"));
+		extendButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				setRef(60);	setPlus(67); setMinus(60);
+			}
+		});
+		setExtensible(false);
 	}
 	
 	private void fileLoad(Text fileText, FileDialog fd)
@@ -495,6 +511,8 @@ public class Keygroup {
 		fd.left = new FormAttachment(0, 5);
 		group.setLayoutData(fd);
 	}
+	
+	public void setExtensible(boolean b) { extendButton.setVisible(b); }
 
 	public String convertPitch(int pitch)
 	// convert MIDI pitch value (0..127) into musical representation

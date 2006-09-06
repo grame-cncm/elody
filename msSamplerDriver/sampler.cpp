@@ -76,7 +76,7 @@ bool setSamplerParam(TSampler* samp, int sampleRate, int channel, int vol, int p
 			
 *********************************************************************************/
 
-static void readSoundFile(TSound* snd, int sampleRate)
+static int readSoundFile(TSound* snd, int sampleRate)
 {
 	SNDFILE*		sf;
 	SF_INFO			info;
@@ -88,11 +88,11 @@ static void readSoundFile(TSound* snd, int sampleRate)
 	*/
 	sf = sf_open (snd->fSoundName,SFM_READ, &info);
 	
-	if (sf == NULL) { sf_perror(sf); exit(0); }
+	if (sf == NULL) { sf_perror(sf); return ERR_SFNULL; }
 	
 	if (info.channels != 1) { 
-		printf("ERREUR : le fichier doit etre mono or %s comporte %d canaux\n", snd->fSoundName, (int)info.channels);
-		exit(0);
+		printf("WARNING : le fichier doit etre mono or %s comporte %d canaux\n", snd->fSoundName, (int)info.channels);
+	//	return ERR_NOTMONO;
 	}
 	
 	if (info.samplerate != sampleRate) { 
@@ -101,7 +101,7 @@ static void readSoundFile(TSound* snd, int sampleRate)
 	
 	if ( info.frames > (1<<23) ) { 
 		printf("ERREUR : le fichier est trop long, %s comporte  %d samples\n", snd->fSoundName, (int)info.frames);
-		exit(0);
+		return ERR_LONGFILE;
 	}
 	/*
 		on alloue la memoire necessaire aux echantillons
@@ -114,7 +114,7 @@ static void readSoundFile(TSound* snd, int sampleRate)
 	buffer = (short*) malloc(info.frames * sizeof(short));
 	if ((snd->fSamples) == NULL || (buffer == NULL)) { 
 		printf("ERREUR : impossible d'allouer la memoire pour les echantillons, %s comporte  %d samples\n", snd->fSoundName, (int)info.frames);
-		exit(0);
+		return ERR_MALLOC;
 	}
 	/*
 		et on lit les echantillons et on controle la taille lue
@@ -122,31 +122,29 @@ static void readSoundFile(TSound* snd, int sampleRate)
 	
 	q = sf_read_short(sf, buffer, snd->fSize);
 	if (q < snd->fSize) {
-		printf("ERREUR : de lire tous le fichier, %s comporte  %d samples, seuls %d ont put etre lus\n",  snd->fSoundName, (int)info.frames, q);
-		exit(0);
+		printf("ERREUR : de lire tout le fichier, %s comporte  %d samples, seuls %d ont pu etre lus\n",  snd->fSoundName, (int)info.frames, q);
+		return ERR_RDUNCOMPL;
 	}
 	for (q= 0; q <snd->fSize; q++) snd->fSamples[q] = (float) (buffer[q]*(1.0/(float)32767));
 	free(buffer);
-	
+	return 0;
 }  	
 	
-static TSound* newSoundFile(char* filename, int sampleRate)
+static TSound* newSoundFile(char* filename)
 {
 	TSound*	snd = (TSound*) malloc(sizeof(TSound));
 	if (snd == NULL) {
 		printf("ERREUR : allocation TSound impossible\n");
-		exit(0);
+		return NULL;
 	}
 	snd->fSoundName[127] = 0;
 	strncpy(snd->fSoundName, filename, 127);
 	snd->fSamples = NULL;
 	snd->fSize = 0;
-	
-	readSoundFile(snd, sampleRate);
 	return snd;
 }
 
-static TSound* getSoundFile(TSampler* s, char* sndfilename, int sampleRate)
+static TSound* checkSoundFile(TSampler* s, char* sndfilename)
 {	
 	long	n = listSize(&s->fSoundList);
 	long	i;
@@ -154,12 +152,12 @@ static TSound* getSoundFile(TSampler* s, char* sndfilename, int sampleRate)
 	
 	for (i=0; i < n; i++) {
 		snd = (TSound*) getListElem(&s->fSoundList, i);
-		if (strcmp(snd->fSoundName, sndfilename) == 0) return snd;
+		if (strcmp(snd->fSoundName, sndfilename) == 0)
+			return snd;
 	}
-	snd = newSoundFile(sndfilename, sampleRate);
-	addListElem(&s->fSoundList, n, (Elem*)snd);
-	return snd;
+	return NULL;
 }
+
 
 static void printSoundList(TSampler* s)
 {
@@ -174,10 +172,10 @@ static void printSoundList(TSampler* s)
 
 static TAction* newAction(TSound* sound, float speed, int traj)
 {
-	TAction*	action = (TAction*) malloc(sizeof(TAction));
+	TAction* action = (TAction*) malloc(sizeof(TAction));
 	if (action == NULL) {
 		printf("ERREUR : allocation TAction impossible\n");
-		exit(0);
+		return NULL;
 	}
 	action->fSound 		= sound;
 	action->fSpeed 		= speed;
@@ -187,15 +185,33 @@ static TAction* newAction(TSound* sound, float speed, int traj)
 	return action;
 }
 
-static void addRule(TSampler* s, int midichan, int midikey, char* sndfilename, float speed, int traj, int sampleRate)
+static int addRule(TSampler* s, int midichan, int midikey, char* sndfilename, float speed, int traj, int sampleRate)
 {
 	printf("rule : %2d %2d -> %s %f %d\n", midichan, midikey, sndfilename, speed, traj);
 	if (s->fRule[midichan][midikey] != NULL) {
 		printf("WARNING : ecrasement de la regle %d, %d\n", midichan, midikey);
 		free (s->fRule[midichan][midikey]);
 	}
+	TSound* snd = checkSoundFile(s, sndfilename);
+	if (snd==NULL)
+	{
+		snd = newSoundFile(sndfilename);
+		if (snd != NULL)
+		{
+			int err = readSoundFile(snd, sampleRate);
+			if (err!=0)
+				return err;
+			addListElem(&s->fSoundList, listSize(&s->fSoundList), (Elem*)snd);
+		}
+		else
+			return ERR_MALLOC; 
+	}
 		
-	s->fRule[midichan][midikey] = newAction(getSoundFile(s, sndfilename, sampleRate), speed, traj);
+	TAction* action = newAction(snd, speed, traj);
+   	if (action==NULL)
+		return ERR_MALLOC;
+	s->fRule[midichan][midikey] = action;
+	return 0;
 }
 
 // a la place de : char* dname = dirname(strdup(fname));
@@ -211,7 +227,7 @@ static void get_dirname (char* result, char* fname)
 }
 /****************************************************/
 
-static bool readConfigFile(TSampler* s, char* fname, int sampleRate)
+static int readConfigFile(TSampler* s, char* fname, int sampleRate)
 {
 	FILE* 	file;
 	char 	line[1024];
@@ -225,7 +241,7 @@ static bool readConfigFile(TSampler* s, char* fname, int sampleRate)
 	
 	if ((file = fopen(fname,"r")) == NULL) {
 		printf("ERREUR : impossible de lire le fichier de configuration \"%s\"\n", fname);
-		return false;
+		return ERR_CONFIGFILE;
 	}
 	
 	// positionne le repertoire courant 
@@ -246,7 +262,7 @@ static bool readConfigFile(TSampler* s, char* fname, int sampleRate)
 		} else if (sscanf(line, "%d %d %s %f %d %d %d %d %d %f %d %f",
 			&midiChan, &midiKey, sndfilename, &playspeed, &traj, &pan, &vol, &attack, &decay, &sustain, &release, &sensit) != 12) {
 			printf ("ERREUR : ligne non reconnue %s\n", line);
-			exit(0);
+			return ERR_CONFIGFILE;
 		}
 		char * pch;
 		pch=strchr(sndfilename,'\"');
@@ -260,7 +276,9 @@ static bool readConfigFile(TSampler* s, char* fname, int sampleRate)
 		s->fChanEnvelope[midiChan].setEnvelope(attack, decay, (double) sustain, release, sampleRate); // valeur de samplerate à récupérer
 		s->fChanSensit[midiChan] = sensit;
 
-		addRule(s, midiChan, midiKey, sndfilename, playspeed, traj, sampleRate);
+		int err = addRule(s, midiChan, midiKey, sndfilename, playspeed, traj, sampleRate);
+		if (err!=0)
+			return err;
 	}
 	for (int i=0; i<CHANNELS_NUM; i++)
 	{
@@ -270,7 +288,7 @@ static bool readConfigFile(TSampler* s, char* fname, int sampleRate)
 			s->fChanVel[i][j]=pow(j/127.0,e);
 	}
 	printSoundList(s);
-	return true;
+	return 0;
 }
 
 /*	
@@ -302,7 +320,7 @@ int	traj7 [] = {7,7,7,7,7,7,7,7};
 
 
 
-bool initSampler(TSampler* s, char* fname, int sampleRate)
+int initSampler(TSampler* s, char* fname, int sampleRate)
 {
 	s->fMaster = 1.0;
 

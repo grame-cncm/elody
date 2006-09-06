@@ -342,7 +342,12 @@ public class Channel {
 				keygIndex=index;
 				sav=false; // no need to be added in config file
 			} 
-			keygroups.add(new Keygroup(keygIndex, keygComposite, relative, bgColor, this, sav));
+			Keygroup k = new Keygroup(keygIndex, keygComposite, relative, bgColor, this, sav);
+			if (keygroups.isEmpty())
+				k.setExtensible(true);
+			else if (keygroups.size()==1)
+				keygroups.firstElement().setExtensible(false);
+			keygroups.add(k);
 			if (refresh) { keygCompositeRefresh(true); }
 			sampler.needToReset=true;
 		}
@@ -372,6 +377,8 @@ public class Channel {
 			}
 		}
 		keygroups.remove(k);
+		if (keygroups.size()==1)
+			keygroups.firstElement().setExtensible(true);
 		sampler.configSav.delKeygroup(Integer.valueOf(num), k.getIndex());
 		sampler.configSav.writeAll();
 		keygCompositeRefresh(false);

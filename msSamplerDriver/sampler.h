@@ -21,6 +21,16 @@
 #define kMaxVoices				256
 #define CHANNELS_NUM			32
 
+/***** ERRORS CODES *********/
+#define ERR_CONFIGFILE			-1000
+#define ERR_JNICONVERT			-999
+#define ERR_SFNULL				-998
+#define ERR_NOTMONO				-997
+#define ERR_LONGFILE			-996
+#define ERR_MALLOC				-995
+#define ERR_RDUNCOMPL			-994
+
+
 /********************************************************************************
 							STRUCTURES DE DONNEES
 							
@@ -82,7 +92,7 @@ struct TSampler {
 
 // Prototypes
 
-bool initSampler(TSampler* s, char* fname, int sampleRate);
+int initSampler(TSampler* s, char* fname, int sampleRate);
 bool setSamplerParam(TSampler *samp, int sampleRate, int chan, int vol, int pan, double sens, int a, int d, double s, int r); 
 void processMidiEvents(short ref);
 //void processMidiEvents(TSampler* sampler,short ref);

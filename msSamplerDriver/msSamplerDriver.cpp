@@ -55,8 +55,7 @@
 #define DEFAULT_AUDIO_FILE		"soundplayer.conf"
 #define MAX_CHANNELS			8
 
-#define ERR_CONFIGFILE			-1000
-#define ERR_JNICONVERT			-999
+
 
 using namespace std;
 
@@ -172,7 +171,7 @@ class soundplayer
 	}
 	/* -------------------------------------------------------------*/
 
-	virtual bool init(char* soundConfigFile)
+	virtual int init(char* soundConfigFile)
 	{
 		TRACE(("Init\n"));
 		//-- 0 - Declarations
@@ -187,17 +186,16 @@ class soundplayer
 		gAudioConfigFile = soundConfName;
 
 		//-- 2 - Initialize Sampler
-		if (!initSampler(&fSampler, gAudioConfigFile, data->sampleRate))
-		{
-			return false;
-		}
+		int err = initSampler(&fSampler, gAudioConfigFile, data->sampleRate);
+		if (err!=0)
+			return err;
 		TRACE(("initSampler\n"));
 		MidiSetInfo(fRefNum, &fSampler); //MidiGetInfo is called by processMidiEvents in sampler.cpp
 		if (fSampler.fStereoMode)
 			printf("msSamplerDriver loaded : stereo mode\n");
 		else
 			printf("msSamplerDriver loaded : %d tracks mode\n",fNumOutputs);
-		return true;
+		return 0;
 	}
 
 	virtual void compute(int len, float** inputs, float** outputs)
@@ -374,8 +372,9 @@ int AudioWakeUp()
 	LoadState();
 
 	//-- 3 - Initialize sampler
-	if (!DSP.init(data->soundConfigFile))
-		return ERR_CONFIGFILE;
+	int serr = DSP.init(data->soundConfigFile);
+	if (serr!=0)
+		return serr;
 
 	//-- 4 - Allocate outCompute array
 	for (i=0; i<data->numOutputs; i++)
@@ -531,19 +530,29 @@ JNIEXPORT jstring JNICALL Java_grame_elody_editor_sampler_PaJniConnect_GetErrorT
   (JNIEnv *env, jclass cls, jint error)
 {
 	PaError err = (PaError) error;
-	if (err==ERR_CONFIGFILE)
-		return env->NewStringUTF("ERROR: Incorrect sound configuration file");
-	else if (err==ERR_JNICONVERT)
-		return env->NewStringUTF("ERROR: JNI types conversion failure");
-	else if (err==0)
-		return env->NewStringUTF("");
-    else
+	switch (err)
 	{
-		char msg[256];
-		strcpy (msg,"ERROR using PortAudio: ");
-		strcat(msg, Pa_GetErrorText(err));
-		return env->NewStringUTF(msg);
+		case ERR_CONFIGFILE:
+			return env->NewStringUTF("ERROR: Incorrect sound configuration file");
+		case ERR_JNICONVERT:
+			return env->NewStringUTF("ERROR: JNI types conversion failure");
+		case ERR_SFNULL:
+			return env->NewStringUTF("ERROR: Sound opening failure");
+		case ERR_NOTMONO:
+			return env->NewStringUTF("ERROR: All sound files must be mono");
+		case ERR_LONGFILE:
+			return env->NewStringUTF("ERROR: Config file is too long");
+		case ERR_MALLOC:
+			return env->NewStringUTF("ERROR: Memory allocation failure");
+		case ERR_RDUNCOMPL:
+			return env->NewStringUTF("ERROR: Config file has not been entirely read");
+		case 0:
+			return env->NewStringUTF("");
 	}
+	char msg[256];
+	strcpy (msg,"ERROR using PortAudio: ");
+	strcat(msg, Pa_GetErrorText(err));
+	return env->NewStringUTF(msg);
 }
 
 /* -----------------------------------------------------------------------------*/
