@@ -18,7 +18,7 @@ public class ConfigSav {
  ******************************************************/		
 	private File configFile;
 	
-	private ConfigList list = new ConfigList();
+	private ConfigList list;
 	// virtual view of the actual sampler state
 
 	public ConfigSav(File f)
@@ -28,6 +28,27 @@ public class ConfigSav {
 	}
 	
 	public ConfigList getList() { return list; }
+	
+	public void cleanEmptyKeyg(int channel)
+	{
+		Integer ch = Integer.valueOf(channel);
+		if (list.isSet(ch))
+		{
+			for (int j=0; j<=list.maxKeygroups(ch); j++)
+				// elimination of the keygroups without an audio file
+				if (list.getKeyg(ch, j)!=null)
+				{
+					File f = list.getFile(ch, j);
+					if (f==null)
+					{
+						list.getKeyg(ch, j);
+						list.delKeygroup(ch, j);
+						if (list.isSet(ch))	continue;
+						else	break;
+					}
+				}
+		}
+	}
 	
 	public void writeAll()
 	// write the actual virtual sampler state in the config file
@@ -44,21 +65,6 @@ public class ConfigSav {
 			for (int i=0; i<=list.maxChannels(); i++)
 			{ 
 				Integer ch = Integer.valueOf(i);
-				if (list.isSet(ch))
-				{
-					for (int j=0; j<=list.maxKeygroups(ch); j++)
-						// elimination of the keygroups without an audio file
-						if (list.getKeyg(ch, j)!=null)
-						{
-							File f = list.getFile(ch, j);
-							if (f==null)
-							{
-								list.delKeygroup(ch, j);
-								if (list.isSet(ch))	continue;
-								else	break;
-							}
-						}
-				}
 				if (list.isSet(ch))
 				{
 					w.newLine();
@@ -119,6 +125,7 @@ public class ConfigSav {
 		 * si le fichier de configuration est modifié manuellement,
 		 * cela doit être fait avec prudence. */
 		
+		list = new ConfigList();
 		BufferedReader r=null;
 		try {
 			r = new BufferedReader(new FileReader(configFile));
@@ -182,6 +189,7 @@ public class ConfigSav {
 	// all methods below allow to get and set the virtual view of the actual sampler state
 	
 	public boolean isSet(int ch) { return list.isSet(Integer.valueOf(ch)); }
+	
 	public int maxKeygroups(int ch) {return list.maxKeygroups(Integer.valueOf(ch)); }
 	public void addKeygroup(Integer channel, int index, File file, int ref, int plus, int minus, int output,
 			int pan, int vol, int attack, int decay, double sustain, int release, double sensit)

@@ -123,7 +123,9 @@ public class Channel {
 				envelope.shellClose();
 				bt.setSelection(false);
 				keygroups.clear();
+				sampler.configSav.cleanEmptyKeyg(num);
 				sampler.configSav.writeAll();
+			//	sampler.configSav.reindex(num);
 				BasicApplet.screen.delWindow(w);
 				sh.dispose();
 				sh=null;
@@ -167,14 +169,21 @@ public class Channel {
 		int a = 0; 		int d = 0;		double s = 0.0;	int r = 300;
 		if (sampler.configSav.isSet(num))
 		{
+			// getting the first keygroup index
+			int firstIndex;
+			for (firstIndex=0; firstIndex<=sampler.configSav.maxKeygroups(num); firstIndex++)
+			{
+				if (sampler.configSav.getList().getKeyg(Integer.valueOf(num), firstIndex)!=null)
+					break;
+			}
 			// getting the settings from config file
-			setOutput(sampler.configSav.getOutput(num, 0));
-			setVol(sampler.configSav.getVol(num, 0));
-			setPan(sampler.configSav.getPan(num, 0));
-			a = sampler.configSav.getAttack(num, 0);
-			d = sampler.configSav.getDecay(num, 0);
-			s = sampler.configSav.getSustain(num, 0);
-			r = sampler.configSav.getRelease(num, 0);
+			setOutput(sampler.configSav.getOutput(num, firstIndex));
+			setVol(sampler.configSav.getVol(num, firstIndex));
+			setPan(sampler.configSav.getPan(num, firstIndex));
+			a = sampler.configSav.getAttack(num, firstIndex);
+			d = sampler.configSav.getDecay(num, firstIndex);
+			s = sampler.configSav.getSustain(num, firstIndex);
+			r = sampler.configSav.getRelease(num, firstIndex);
 		}
 		envelope = new Envelope(a,d,s,r, this);
 		/* each keygroup has an ouput, volume and panoramic,
@@ -196,11 +205,14 @@ public class Channel {
 			// (adding Keygroups ONLY AFTER building interface)
 			for (int i=0; i<=sampler.configSav.maxKeygroups(num); i++)
 			{
-				File file = sampler.configSav.getFile(num,i);
-				int ref = sampler.configSav.getRef(num,i);
-				int plus = sampler.configSav.getPlus(num,i);
-				int minus = sampler.configSav.getMinus(num,i);
-				addKeygroup(false, i, file, ref, plus, minus);
+				if (sampler.configSav.getList().getKeyg(Integer.valueOf(num), i)!=null)
+				{
+					File file = sampler.configSav.getFile(num,i);			
+					int ref = sampler.configSav.getRef(num,i);
+					int plus = sampler.configSav.getPlus(num,i);
+					int minus = sampler.configSav.getMinus(num,i);
+					addKeygroup(false, i, file, ref, plus, minus);
+				}
 			}
 		}
 		sh.layout();
@@ -329,7 +341,7 @@ public class Channel {
 		if (!full)
 		{
 			boolean sav=true; // need to be added in config file
-			int keygIndex = 1;
+			int keygIndex = 0;
 			Composite relative = null;
 			if (!keygroups.isEmpty())
 			{
