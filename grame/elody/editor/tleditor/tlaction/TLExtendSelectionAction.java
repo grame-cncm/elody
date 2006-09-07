@@ -15,7 +15,8 @@ public class TLExtendSelectionAction extends TLDragAction
 	public TLExtendSelectionAction(TLPane pane){ super(pane); }
 	public void mouseDragged(MouseEvent m) {}
 	public void mouseReleased(MouseEvent m) {}
-	public void drawVisualFeedback(Graphics g){}
+	public void clearVisualFeedback(Graphics g) {}
+	public void drawVisualFeedback(Graphics g, boolean ctrlPressed){}
 	public void mouseClicked(MouseEvent m)
 	{ 
 		TLZone dest = new TLZone( fPane.getFMultiTracks(), fPane.x2time(m.getX()), fPane.y2line(m.getY()) );

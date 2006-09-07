@@ -32,9 +32,8 @@ public class TLScoreMoveAction extends TLDragAction implements TExpContent {
 	{
 		fExport.mouseReleased(m);
 	}
-	public void drawVisualFeedback(Graphics g) 
-	{
-	}
+	public void clearVisualFeedback(Graphics g) {}
+	public void drawVisualFeedback(Graphics g, boolean ctrlPressed) {}
 	public void mouseClicked(MouseEvent m) 
 	{
 	}

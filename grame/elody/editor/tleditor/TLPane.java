@@ -1921,6 +1921,10 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 				switch (z) {
 					case TEMPS : 	fPosMs = ctime; setPos(fPosMs);					
 									break;
+					case BORD_GAUCHE :  
+						adjustSelection(ctime, cline);
+						fDragAction = new TLResizeAction (this); 
+						break;
 				}			
 		} else {
 			switch (z) {
@@ -1963,7 +1967,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		}
 		fUpdater.doUpdates();
 		Graphics g = getGraphics();
-		fDragAction.drawVisualFeedback(g);
+		fDragAction.drawVisualFeedback(g, (m.isControlDown()||m.isMetaDown()));
 		g.dispose();
 	}
 	
@@ -1974,12 +1978,13 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		Graphics g = getGraphics();
 	
 		// redessine le feedback visuel pour l'effacer (mode XOR)
-		fDragAction.drawVisualFeedback(g);
+		
+		fDragAction.clearVisualFeedback(g);
 
 		// appel l'action de drag et redessine le nouveau feedback visuel
 		fDragAction.mouseDragged(m); 
 		fUpdater.doUpdates(false);
-		fDragAction.drawVisualFeedback(g);
+		fDragAction.drawVisualFeedback(g, (m.isControlDown()||m.isMetaDown()));
 
 		g.dispose();
 	}
@@ -1990,7 +1995,7 @@ public class TLPane extends Canvas implements AdjustmentListener, MouseListener,
 		g.setColor(fRuleColor);
 		g.fillRect(0, 0, 18, 19);
 		drawTarget(g);   
-		fDragAction.drawVisualFeedback(g);
+		fDragAction.clearVisualFeedback(g);
 		g.dispose();
 		fDragAction.mouseReleased(m);
 		fUpdater.doUpdates();

@@ -53,6 +53,7 @@ public class TLZoomAction extends TLDragAction
 
 	public void mouseReleased(MouseEvent m) { fPane.setFOldZoom(z0); }
 	public void mouseClicked(MouseEvent m) {}
-	public void drawVisualFeedback(Graphics g) {}
+	public void clearVisualFeedback(Graphics g) {}
+	public void drawVisualFeedback(Graphics g, boolean ctrlPressed) {}
 }
 

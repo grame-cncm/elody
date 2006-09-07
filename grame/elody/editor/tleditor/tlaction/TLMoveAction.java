@@ -58,7 +58,8 @@ public class TLMoveAction extends TLDragAction {
 		}
 	}
 
-	public void drawVisualFeedback(Graphics g) {
+	public void clearVisualFeedback(Graphics g) { drawVisualFeedback(g, false); }
+	public void drawVisualFeedback(Graphics g, boolean ctrlPressed) {
 		// verifie que l'on n'est pas dans un drag externe
 		if (!fExternal) {
 			// Graphics g = getGraphics();

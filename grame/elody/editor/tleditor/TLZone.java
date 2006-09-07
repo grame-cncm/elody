@@ -5,8 +5,9 @@ import grame.elody.editor.misc.draganddrop.TExpContent;
 import grame.elody.editor.tleditor.tlevent.TLEvent;
 import grame.elody.editor.tleditor.tlevent.TLRest;
 import grame.elody.lang.TExpMaker;
-import grame.elody.lang.texpression.expressions.TEvent;
 import grame.elody.lang.texpression.expressions.TExp;
+
+import java.awt.Color;
 
 public class TLZone implements TExpContent {
 	private static TLTrack			fScrap = null;	// buffer pour couper/copier/coller
@@ -484,6 +485,41 @@ public class TLZone implements TExpContent {
 		resizeTrack(t, newEndTime - fStartTime);
 		suppressRestTime(t.getFullDur());
 		insertTrackToContent(t);
+	}
+	
+	public void cmdQuickDuplicate(int endTime)
+	{
+		TLTrack t = transfertIntoTrack(true);
+		int initTime = fStartTime;
+		int lastDuration;
+		if (endTime<fEndTime)
+		{
+			lastDuration = endTime-fStartTime;
+			cmdClear();
+		}
+		else
+		{
+			int nbCopy = (endTime-fEndTime)/duration();
+			lastDuration = (endTime-fEndTime)%duration();
+			int supprTime = nbCopy*duration();
+			
+			fStartTime = fEndTime;
+			suppressRestTime(supprTime);
+
+			for (int i=0; i<nbCopy; i++)
+			{
+				insertTrack(t.makeCopy());
+				fStartTime += t.getFullDur();
+			}
+		}
+		
+		TExp e = TExpMaker.gExpMaker.createSilence(Color.black, 60, 100, 0, lastDuration);
+		TExp lastExp = TExpMaker.gExpMaker.createBegin(TLConverter.exp(t), e);
+		
+		cmdInsert(lastExp);
+		cmdReify();
+		fStartTime = initTime;
+		fEndTime = endTime;
 	}
 	
 	public void cmdEvaluate()

@@ -1,10 +1,9 @@
 package grame.elody.editor.tleditor.tlaction;
 
-import grame.elody.editor.tleditor.TLActionItem;
 import grame.elody.editor.tleditor.TLPane;
-import grame.elody.editor.tleditor.TLZone;
 import grame.elody.editor.tleditor.TLActionItem.Action;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 
@@ -15,6 +14,7 @@ import java.awt.event.MouseEvent;
 public class TLResizeAction extends TLDragAction {
 	int fNewEndTime;	// nouvelle fin de la selection
 	int	fLine;			// ligne (pour pouvoir annuler)
+	boolean fPrevCtrlState;
 	
 	public TLResizeAction(TLPane pane)
 	{
@@ -34,14 +34,21 @@ public class TLResizeAction extends TLDragAction {
 		if ( (fNewEndTime != fPane.getFSelection().end()) && (fLine == fPane.getFSelection().voice()) ) {
 			fPane.getFMultiTracks().at(fLine);
 			fPane.toUndoStack(Action.TRACK);
-			fPane.getFSelection().cmdResize(fNewEndTime);
+			if (m.isControlDown()||m.isMetaDown())
+				fPane.getFSelection().cmdQuickDuplicate(fNewEndTime);
+			else
+				fPane.getFSelection().cmdResize(fNewEndTime);
 			fPane.multiTracksChanged();			
 		}
 	}
-	public void drawVisualFeedback(Graphics g)
+	
+	public void clearVisualFeedback(Graphics g) { drawVisualFeedback(g, fPrevCtrlState); }
+	
+	public void drawVisualFeedback(Graphics g, boolean ctrlPressed)
 	{
 		if ( (fNewEndTime != fPane.getFSelection().end()) && (fLine == fPane.getFSelection().voice()) ) {
 
+			fPrevCtrlState = ctrlPressed;
 			fPane.fUpdater.scrollDrop(fNewEndTime, fLine, 0);
 			
 			int rx = fPane.time2x(fPane.getFSelection().start());
@@ -53,6 +60,10 @@ public class TLResizeAction extends TLDragAction {
 
 			g.drawLine(tx, 0, tx, h);
 			int delta = fNewEndTime - fPane.getFSelection().start();
+			if (ctrlPressed)
+				g.setColor(Color.red);
+			else
+				g.setColor(Color.black);
 			g.drawString("<>"+ delta, tx+2, ry - 10);
 			g.setPaintMode();
 		}

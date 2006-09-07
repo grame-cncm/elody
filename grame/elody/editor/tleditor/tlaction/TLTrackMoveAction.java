@@ -80,7 +80,8 @@ public class TLTrackMoveAction extends TLDragAction {
 			}
 		}
 	}
-	public void drawVisualFeedback(Graphics g) 
+	public void clearVisualFeedback(Graphics g) { drawVisualFeedback(g, false); }
+	public void drawVisualFeedback(Graphics g, boolean ctrlPressed) 
 	{
 		if (! fExternal ) {
 			Dimension dim = fPane.getSize();

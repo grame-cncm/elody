@@ -17,5 +17,6 @@ public abstract class TLDragAction {
 	public abstract void mouseDragged(MouseEvent m);
 	public abstract void mouseReleased(MouseEvent m);
 	public abstract void mouseClicked(MouseEvent m);
-	public abstract void drawVisualFeedback (Graphics g);
+	public abstract void clearVisualFeedback (Graphics g);
+	public abstract void drawVisualFeedback (Graphics g, boolean ctrlPressed);
 }

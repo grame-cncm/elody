@@ -51,7 +51,8 @@ public class TLPitchAction extends TLDragAction
 			fPane.multiTracksChanged();
 		}
 	}
-	public void drawVisualFeedback(Graphics g)
+	public void clearVisualFeedback(Graphics g) { drawVisualFeedback(g, false); }
+	public void drawVisualFeedback(Graphics g, boolean ctrlPressed)
 	{
 		//Graphics g = getGraphics();
 		g.setXORMode(TLPane.getFArgColorBkg()); g.setColor(TLPane.getFTraitColor()); 			

@@ -17,7 +17,8 @@ public class TLUnselectAction extends TLDragAction {
 		fPane.getFSelection().moveTo( fPane.x2time(m.getX()), fPane.y2line(m.getY()) );
 		fPane.selectionChanged();
 	}
-	public void drawVisualFeedback(Graphics g){}
+	public void clearVisualFeedback(Graphics g) {}
+	public void drawVisualFeedback(Graphics g, boolean ctrlPressed){}
 	public void mouseClicked(MouseEvent m)
 	{ 
 		fPane.getFSelection().moveTo( fPane.x2time(m.getX()), fPane.y2line(m.getY()) );

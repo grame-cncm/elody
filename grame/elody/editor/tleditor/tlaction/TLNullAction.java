@@ -14,5 +14,6 @@ public class TLNullAction extends TLDragAction {
 	public void mouseDragged(MouseEvent m) {}
 	public void mouseReleased(MouseEvent m) {}
 	public void mouseClicked(MouseEvent m) {}
-	public void drawVisualFeedback(Graphics g) {}
+	public void clearVisualFeedback(Graphics g) {}
+	public void drawVisualFeedback(Graphics g, boolean ctrlPressed) {}
 }
