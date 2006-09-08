@@ -1,0 +1,77 @@
+<HTML>
+<HEAD>
+  <TITLE>Constructeur de R&egrave;gles</TITLE>
+  <META NAME="Author" CONTENT="Grame">
+</HEAD>
+<BODY BGCOLOR="#dcf3d9">
+
+<H1 ALIGN=CENTER>Constructeur de R&egrave;gles<HR></H1>
+
+<P ALIGN=CENTER><IMG SRC="images/rules.png"></P>
+
+<P>Le <B>Constructeur de R&egrave;gles</B> contient la plupart des r&egrave;gles
+de base utilis&eacute;es pour construire des expressions musicales. Ces
+r&egrave;gles ont deux arguments&nbsp;: le premier est gliss&eacute; dans la case
+de gauche et le deuxi&egrave;me dans la case du milieu. Le r&eacute;sultat
+est disponible dans la case de droite. </P>
+
+<BR>
+
+<BLOCKQUOTE>
+  <P><IMG SRC="images/abstr.png">Le <B>constructeur Lambda</B> permet de construire des
+  abstractions en glissant dans la case du milieu l'objet que l'on veut g&eacute;n&eacute;raliser
+  et dans la case de gauche &laquo;&nbsp;l'ingr&eacute;dient&nbsp;&raquo; que l'on veut
+  <B>rendre variable</B>. Les fonctions &agrave; plusieurs arguments sont
+  construites en rendant variable un nouvel ingr&eacute;dient dans un abstraction
+  d&eacute;j&agrave; construite.</P>
+  <P><IMG SRC="images/yabstr.png">Le <B>constructeur Recursive lambda</B> permet de construire
+  des abstractions &laquo;&nbsp;r&eacute;cursives&nbsp;&raquo; en glissant dans la case
+  du milieu l'objet que l'on veut g&eacute;n&eacute;raliser et dans la case
+  de gauche &laquo;&nbsp;l'ingr&eacute;dient&nbsp;&raquo; que l'on veut rendre variable.
+  Le r&eacute;sultat est une &laquo;&nbsp;abstraction r&eacute;cursive&nbsp;&raquo;, une
+  abstraction qui se comporte comme l'application du combinateur de point
+  fixe Y sur l'abstraction simple.</P>
+  <P><IMG SRC="images/appl.png">Le <B>constructeur Application</B> permet de construire
+  des applications de fonctions &agrave; un argument sur un objet. La fonction
+  est gliss&eacute;e dans la case de gauche et l'argument dans la case du
+  milieu. Pour appliquer une fonction &agrave; plusieurs arguments, il faut
+  r&eacute;aliser plusieurs applications &agrave; un argument.</P>
+  <P><IMG SRC="images/seq.png">Le <B>constructeur S&eacute;quence</B> permet de construire
+  la s&eacute;quence de 2 objets. le premier objet est gliss&eacute; dans
+  la case de gauche et le deuxi&egrave;me dans la case du milieu.</P>
+  <P><IMG SRC="images/mix.png">Le <B>constructeur Mixage</B> permet de superposer temporellement
+  2 objets. Les objets sont synchronis&eacute;s sur leur d&eacute;but.</P>
+  <P><IMG SRC="images/beg.png">Le <B>constructeur Début</B> permet de couper un objet
+  en gardant son d&eacute;but en utilisant un autre objet pour sp&eacute;cifier
+  la dur&eacute;e du d&eacute;coupage. L'objet &agrave; d&eacute;couper est
+  gliss&eacute; dans la case de gauche et l'objet dont on utilise la dur&eacute;e
+  est gliss&eacute; dans la case du milieu.</P>
+  <P><IMG SRC="images/rest.png">Le <B>constructeur Rest</B> permet de couper un objet
+  en gardant sa fin en utilisant un autre objet pour sp&eacute;cifier la
+  dur&eacute;e du d&eacute;coupage. L'objet &agrave; d&eacute;couper est
+  gliss&eacute; dans la case de gauche et l'objet dont on utilise la dur&eacute;e
+  est gliss&eacute; dans la case du milieu.</P>
+  <P><IMG SRC="images/stretch.png">Le <B>constructeur Étirement</B> permet de synchroniser
+  la dur&eacute;e de 2 objets. La dur&eacute;e de l'objet de gauche sera
+  &laquo;&nbsp;forc&eacute;e&nbsp;&raquo; &agrave; la dur&eacute;e de l'objet de la case
+  centrale. L'objet de gauche sera ainsi dilat&eacute; ou compress&eacute;
+  &agrave; une nouvelle dur&eacute;e.</P>
+  <BR>
+</BLOCKQUOTE>
+
+<P>Certaines de ces r&egrave;gles sont disponibles dans la <A HREF="builder.html">fabrique</A>.</P>
+
+<P>Toutes les r&egrave;gles sont <B>r&eacute;versibles</B>. Il est ainsi
+possible de d&eacute;-construire une expression afin d'obtenir ses constituants.
+L'objet &agrave; d&eacute;-construire doit &ecirc;tre gliss&eacute; dans
+une case r&eacute;sultat. Ses constituants appara&icirc;tront dans les cases arguments.
+Par exemple si un objet <B>s&eacute;quence A B</B> est gliss&eacute; dans la case
+r&eacute;sultat de la <B>r&egrave;gle s&eacute;quence</B>, l'objet
+<B>A</B> appara&icirc;tra dans la case de gauche, l'objet <B>B</B> dans la case
+de droite. Ceci est une possibilit&eacute; qui permet de comprendre <B>l'histoire
+</B>de la construction d'un objet.</P>
+
+<P><B>Remarque</B>&nbsp;: la d&eacute;construction des objets se r&eacute;alise
+aussi en <B>double-cliquant</B> sur ceux-ci.
+</BODY>
+</HTML>

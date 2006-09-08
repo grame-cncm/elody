@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+  <TITLE>Abstraction/Application</TITLE>
+  <META NAME="Author" CONTENT="Grame">
+</HEAD>
+<BODY BGCOLOR="#dcf3d9">
+
+<H1 ALIGN=CENTER>Abstraction/Application</H1>
+
+<HR>
+
+<P>Building abstractions is done by starting with a <B>concrete object</B>
+and <B>making variable</B> one of its part. If you abstract a part which
+appears explicitly in the expression, this part will become variable. If
+the part does not appear, nothing happens thus giving as result a constant
+function, that is a function which gives always the same result whatever is the argument.</P>
+
+<P>Technically, the abstraction process is based on a <B>occurrence detection
+mechanism</B> which allows to detect where the object one want to make variable
+appears and replace it with a new variable.</P>
+
+<P>They are currently two occurrence detection mechanisms built in the system:</P>
+
+<P>- A strict occurrence detection mechanism for complex objects, that is
+<B>more complex that a single note</B>. In this case the occurrence detection
+mechanism only match objects which <B>are the same</B> that means which are
+<B>syntactically equivalent</B>. This strict occurrence detection mechanism
+works for all objects more complex than a single note: that is SEQ, MIX,
+TRANSP... objects but also abstractions. It means that an abstraction used
+in an object can be later itself abstracted and replace by a new one.</P>
+
+<P>- The abstraction mechanism for simple notes is less strict.
+It means that a note can be abstracted in another note even <B>if they are
+not exactly the same,</B> that is to say if they don't have the same pitch,
+velocity, duration or channel. For example:</P>
+
+<BLOCKQUOTE>
+  <DL>
+    <DT>- abstracting a note with pitch 60 in a note with pitch 72 will result
+    in a function which transpose by 12 (the difference between 72 and 60).
+    <DT>- abstracting a note with duration 1 second in a note with duration
+    2 second will result in a function which expand by 2 (the multiplicative
+    coefficient between 1 and 2).
+  </DL>
+</BLOCKQUOTE>
+
+<P>For notes, the <B>difference in pitch</B> will result in the creation
+of a <B>transposition operation</B>, the <B>difference in velocity</B> will
+result in the creation of a <B>attenuation operation</B>, the <B>difference
+in duration</B> will result in the creation of a <B>expand operation and
+</B> the <B>difference in channels</B> will result in the creation of a<B>
+channel shifting operation</B>.</P>
+
+<P>This abstraction mechanism only works for notes with the <B>same</B>
+colors. For example abstracting a <B>blue</B> note in a <B>red</B> note
+will give a constant function as result.</P>
+
+<P>Abstraction and applications can also be defined by some <A HREF="rules.html">rules</A> or in the <A HREF="builder.html">builder</A>.</P>
+</BODY>
+</HTML>

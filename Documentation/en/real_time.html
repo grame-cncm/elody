@@ -1,0 +1,139 @@
+<HTML>  
+<HEAD>
+  <TITLE>Real-time stream</TITLE>
+  <META NAME="Author" CONTENT="Grame">
+</HEAD>
+<BODY BGCOLOR="#dcf3d9">
+
+<H1 ALIGN=CENTER>Real-time stream</H1>
+
+<HR>
+
+<P>Using the <B>real-time stream</B> allows to define real-time
+interactions and transformations. The real-time stream is a kind
+of virtual track which will contain all incoming MIDI events received
+by the application. This track can be manipulated like any other
+object in the language: transformed, cut, compressed/expanded....
+When an expression containing the real-time object is evaluated,
+all operations defined on the real-time track are converted as
+a set of transformations functions executed in real-time by the
+internal sequencer on the incoming MIDI stream.</P>
+
+<P>The real-time stream is available in the right side of the colors window.</P>
+
+<H3 ALIGN=CENTER><IMG SRC="images/TR.png"></H3>
+
+<BR>
+
+<P>When it is dragged in the TimeLine editor, it appears as a
+<B>gray colored</B> object which duration is limited to 10 minutes.
+Its graphical representation after evaluation is a grey colored
+line which position in the pitch axis reflect the transposition
+factor that has been eventually used. For a transposition of 0,
+this line will appear with a pitch of 60.</P>
+
+<P ALIGN=CENTER><IMG SRC="images/TR1.png"></P>
+
+<BR>
+
+<H4>Temporal constructions</H4>
+
+<P>In the previous example, the real-time object starts at the
+date 0. When the expression is evaluated, the real-time object
+represents all events that are received since <B>the beginning
+of evaluation</B>. It means that the output since the beginning
+of evaluation will contain the input since the beginning of evaluation.
+Thus the process we got is a direct <B>MIDI thru</B> from input
+to output. To test the result, one need to connect the sequencer
+to the MIDI input or to the output of any other MidiShare application.</P>
+
+<H4>Temporal shift</H4>
+
+<P>If the real-time object is now shifted on the temporal axis,
+the whole set of received events will be shifted in time. In the
+following example, three instances on the real-time object are
+used: the first starts a time 0, the second is shifted by 1 second,
+the third is shifted by 2 seconds.</P>
+
+<P ALIGN=CENTER><IMG SRC="images/TR2.png"></P>
+
+<P>The resulting transformation after evaluation is a kind of
+<B>2 repetitions echo</B> where each received event will be sent
+immediatly and sent again with a delay of 1 and 2 seconds.</P>
+
+<BR>
+
+<H4>Temporal cutting</H4>
+
+<P>The real-time object can be cut like any other musical object.
+In the following example, the <B>first 5 seconds of the real-time
+object</B> are cut and repeated twice.</P>
+
+<P ALIGN=CENTER><IMG SRC="images/TR3.png"></P>
+
+<P>The resulting process after evaluation does a <B>direct MIDI
+thru during the first 5 seconds</B> and repeats between dates
+5 and 10s what was received <B>between dates 0 and 5s</B>.</P>
+
+<BR>
+
+<P><B>Transformations</B></P>
+
+<P>It's possible to apply transformations on the real-time object
+like usually done on normal musical objects. In the following
+example, three different transformations are sucessively applied
+on differents parts on the real-time object:</P>
+
+<BR>
+
+<UL>
+  <LI>a <B>transposition function of +12 semi-tons</B> is applied
+  between dates 5 and 10s
+  <LI>a <B>transposition function of +7 semi-tons</B> is applied
+  between dates 15 and 20s
+  <LI>an <B>echo function</B> is applied between dates 25
+  and 30s
+</UL>
+
+<P ALIGN=CENTER><IMG SRC="images/TR4.png"></P>
+
+<P>The resulting process after evaluation does a <B>thru on the
+first 5 seconds</B>, a <B>transposition of +12 semi-tons between
+dates 5 and 10s</B>, a <B>thru between dates 10 and 15s</B>,
+a <B>transposition of -7 semi-tons between dates 15 and 20s</B>,
+a <B>thru between dates 20 and 25 s</B>, and last <B>an
+echo between dates 25 and 30 s.</B></P>
+
+<P><B>Remark:</B> the function track used is a <B>MixFunctionTrack</B>
+type. It means that the result of successive applications of functions
+on the argument track are <B>mixed</B> (as explained in the <A
+HREF="timeline.html">TimeLine editor</A> page).</P>
+
+<BR>
+
+<P><B>Compression/expansion</B></P>
+
+<P>The real-time object can be compressed or expansed. It's possible
+to define processes which modify time but <B>can not be executed
+in real-time</B>. For example if the whole real-time object is
+compressed by 2, one obtains a process that produces events to
+be <B>played in the past</B>. Of course it's impossible! For all
+processes that modify time and produce &quot;old&quot; events,
+the convention is to send them <B>as soon as possible</B>, thus
+events to be played in the past are still payed at the current
+date.</P>
+
+<P>In the following example, the first 10 seconds of the real-time
+object are cut and compressed by a factor 2 and repeated twice.</P>
+
+<P ALIGN=CENTER><IMG SRC="images/TR5.png"></P>
+
+<P>The resulting process compress the incoming stream during 10s
+starting from date 0, but events after compression can not
+be played at their real dates and are actually played as soon
+as they are received. On the other hand, during the second repetition
+starting at date 5s, the stream received betwwen 0 and 10s
+can be compressed and pleyed correctly betwen dates 5 and 10s.</P>
+
+</BODY>
+</HTML>

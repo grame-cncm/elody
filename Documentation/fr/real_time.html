@@ -1,0 +1,163 @@
+<HTML>  
+<HEAD>
+  <TITLE>Flot temps-r&eacute;el</TITLE>
+  <META NAME="Author" CONTENT="Grame">
+</HEAD>
+<BODY BGCOLOR="#dcf3d9">
+
+<H1 ALIGN=CENTER>Flot temps-r&eacute;el</H1>
+
+<HR>
+
+<P>L'utilisation du <B>flot temps-r&eacute;el</B> permet de construire
+des transformations et interactions temps-r&eacute;el. Le flot
+temps-r&eacute;el est une sorte de s&eacute;quence virtuelle infinie
+qui va contenir l'ensemble des &eacute;v&eacute;nements MIDI qui
+seront re&ccedil;us par l'application. Cette s&eacute;quence peut
+&ecirc;tre manipul&eacute;e comme n'importe quel autre objet du
+langage&nbsp;: transform&eacute;e, coup&eacute;e, compress&eacute;e&nbsp;/&nbsp;dilat&eacute;e....
+Lorsqu'une expression contenant l'objet temps-r&eacute;el est
+&eacute;valu&eacute;e, toutes les op&eacute;rations sur la s&eacute;quence
+temps-r&eacute;el sont converties en un ensemble de fonctions
+de transformations ex&eacute;cut&eacute;es en temps-r&eacute;el
+par le s&eacute;quenceur interne sur le flot MIDI entrant.</P>
+
+<P>Le flot temps-r&eacute;el est disponible complètement à droite dans la palette des couleurs.</P>
+
+<H3 ALIGN=CENTER><IMG SRC="images/TR.png"></H3>
+
+<BR>
+
+<P>Lorsqu'il est gliss&eacute; dans l'&eacute;diteur temporel,
+il appara&icirc;t comme un objet de <B>couleur grise</B> dont la dur&eacute;e
+est limit&eacute;e &agrave; 10 minutes. Sa repr&eacute;sentation graphique
+apr&egrave;s &eacute;valuation est une <B>ligne grise</B> dont
+la position dans l'axe des hauteurs refl&eacute;tera le facteur de transposition
+&eacute;ventuellement utilis&eacute;. Pour une transposition de
+0, cette ligne appara&icirc;tra &agrave; la hauteur 60.</P>
+
+<P ALIGN=CENTER><IMG SRC="images/TR1.png"></P>
+
+<BR>
+
+<H4>Constructions temporelles</H4>
+
+<P>Dans l'exemple ci-dessus, l'objet temps-r&eacute;el est cal&eacute;
+&agrave; la position temporelle 0. Lorsque l'expression est &eacute;valu&eacute;e,
+l'objet temps-r&eacute;el repr&eacute;sente l'ensemble des &eacute;v&eacute;nements
+re&ccedil;us &agrave; partir de <B>la date du d&eacute;but de
+l'&eacute;valuation</B>. Dans le cas ci-dessus, la sortie &agrave;
+partir de la date du d&eacute;but de l'&eacute;valuation
+contiendra l'entr&eacute;e &agrave; partir de la date du
+d&eacute;but de l'&eacute;valuation et donc le processus ainsi
+d&eacute;crit est un <B>thru MIDI</B> (redirection directe du
+flot entrant vers la sortie). Pour tester l'effet, il suffira
+de connecter le s&eacute;quenceur contenant cette expression &agrave;
+l'entr&eacute;e MIDI de la machine ou &agrave; la sortie d'une
+autre application MidiShare.</P>
+
+<H4>D&eacute;calage temporel</H4>
+
+<P>Si l'objet temps-r&eacute;el est maintenant d&eacute;cal&eacute;
+sur l'axe temporel, l'ensemble des &eacute;v&eacute;nements re&ccedil;us
+sera d&eacute;cal&eacute; dans le temps. Dans l'exemple suivant,
+trois instances de l'objet temps-r&eacute;el sont utilis&eacute;es
+: la premi&egrave;re cal&eacute;e sur la date 0, la deuxi&egrave;me
+d&eacute;cal&eacute;e de 1 seconde, la troisi&egrave;me d&eacute;cal&eacute;e
+de 2 secondes.</P>
+
+<P ALIGN=CENTER><IMG SRC="images/TR2.png"></P>
+
+<P>La transformation obtenue apr&egrave;s &eacute;valuation est
+un <B>&eacute;cho &agrave; deux r&eacute;p&eacute;titions</B> ou
+chaque &eacute;v&eacute;nement re&ccedil;u est renvoy&eacute;
+directement sans d&eacute;lai, renvoy&eacute; avec un d&eacute;lai
+de 1 seconde et avec un d&eacute;lai de 2 secondes.</P>
+
+<BR>
+
+<H4>D&eacute;coupage temporel</H4>
+
+<P>L'objet temps-r&eacute;el peut &ecirc;tre d&eacute;coup&eacute;
+comme n'importe quel autre objet du langage. Dans l'exemple suivant,
+on coupe les <B>5 premi&egrave;res secondes de l'objet temps-r&eacute;el</B>
+et le r&eacute;sultat obtenu est r&eacute;p&eacute;t&eacute; deux fois.</P>
+
+<P ALIGN=CENTER><IMG SRC="images/TR3.png"></P>
+
+<P>Le processus obtenu apr&egrave;s &eacute;valuation effectue
+un <B>thru sur les 5 premi&egrave;res secondes</B> de l'entr&eacute;e
+temps-r&eacute;el et <B>r&eacute;p&egrave;te</B> ensuite entre les date
+5 et 10s ce qui a &eacute;t&eacute; <B>re&ccedil;u entre les
+date 0 et 5s</B>.</P>
+
+<BR>
+
+<P><B>Transformations</B></P>
+
+<P>Il est possible d'appliquer des transformations sur l'objet
+temps-r&eacute;el comme on le fait habituellement sur une s&eacute;quence
+temps-diff&eacute;r&eacute;. Dans l'exemple suivant trois transformations
+diff&eacute;rentes sont appliqu&eacute;es sur des portions successives
+de l'objet temps-r&eacute;el&nbsp;:</P>
+
+<UL>
+  <LI>une <B>fonction de transposition de +12 demi-tons</B> est
+  appliqu&eacute;e entre les dates 5 et 10s
+  <LI>une <B>fonction de transposition de -7 demi-tons</B> est
+  appliqu&eacute;e entre les dates 15 et 20s
+  <LI>une <B>fonction &eacute;cho</B> est appliqu&eacute;e entre
+  les dates 25 et 30s
+</UL>
+
+<P ALIGN=CENTER><IMG SRC="images/TR4.png"></P>
+
+<P>Le processus obtenu apr&egrave;s &eacute;valuation effectue
+un <B>thru sur les 5 premi&egrave;res secondes</B> de l'entr&eacute;e
+temps-r&eacute;el, une <B>transposition de +12 demi-tons entre
+les dates 5 et 10s</B>, un <B>thru entre les dates 10 et 15s</B>,
+une <B>transposition de -7 demi-tons entre les dates 15 et 20
+s</B>, un <B>thru entre les dates 20 et 25s</B> et enfin <B>un
+&eacute;cho entre les dates 25 et 30s</B>.</P>
+
+<P><B>Remarque&nbsp;:</B> le mode utilis&eacute; est <B>Piste fonction Mix</B>. Les r&eacute;sultats des applications
+des fonctions successives sur la piste argument seront mix&eacute;s
+(comme expliqu&eacute; dans la page <A HREF="timeline.html">&eacute;diteur temporel</A>).</P>
+
+<BR>
+
+<P><B>Compression&nbsp;/&nbsp;dilatation</B></P>
+
+<P>L'objet temps-r&eacute;el peut &ecirc;tre dilat&eacute; ou
+compress&eacute;. Il est alors possible de d&eacute;finir des
+processus qui d&eacute;forment le temps et dont le <B>fonctionnement
+est incompatible avec le temps-r&eacute;el</B>. Par exemple si
+on compresse l'objet temps-r&eacute;el par un facteur 2, on obtient
+un processus qui pour chaque &eacute;v&eacute;nement re&ccedil;u
+produit un &eacute;v&eacute;nement r&eacute;sultat qui doit &ecirc;tre
+<B>envoy&eacute; avant la date courante</B>. Ceci n'est &eacute;videmment
+pas possible&nbsp;!</P>
+
+<P>Pour tout processus qui d&eacute;forme le temps de mani&egrave;re
+incompatible avec le temps-r&eacute;el, la convention est d'<B>envoyer
+les &eacute;v&eacute;nements au plus t&ocirc;t</B> c'est &agrave;
+dire que les &eacute;v&eacute;nements qui apr&egrave;s transformation
+ont une date qui appartient au pass&eacute; seront jou&eacute;s
+&agrave; la date courante.</P>
+
+<P>Dans l'exemple suivante, le d&eacute;but de l'objet temps-r&eacute;el
+est coup&eacute; sur 10s, compress&eacute; par un facteur 2 et
+r&eacute;p&eacute;t&eacute;.</P>
+
+<P ALIGN=CENTER><IMG SRC="images/TR5.png"></P>
+
+<P>Le processus r&eacute;sultat compresse le flot entrant sur
+10s &agrave; partir de la date 0, mais les &eacute;v&eacute;nements
+apr&egrave;s compression ont des dates dans le pass&eacute; et
+sont jou&eacute;s au plus t&ocirc;t. En revanche, lors de la deuxi&egrave;me
+r&eacute;p&eacute;tition &agrave; partir de la seconde 5, le flot
+entre les dates 0 et 10 compress&eacute; par 2 peut &ecirc;tre
+jou&eacute; correctement.</P>
+
+</BODY>
+</HTML>

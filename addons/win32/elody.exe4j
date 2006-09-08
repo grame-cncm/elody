@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<exe4j version="3.1.3">
+  <directoryPresets config="C:/Documents and Settings/Julien THIOLLIERE/Bureau/Elody 1.21 with Sampler/Images" />
+  <application name="Elody" distributionSourceDir="C:/Documents and Settings/Julien THIOLLIERE/Bureau/Elody 1.22" />
+  <executable name="Elody" type="1" iconSet="true" iconFile="C:/Documents and Settings/Julien THIOLLIERE/Bureau/Elody 1.21/Images/Elody.ico" executableDir="." redirectStderr="true" stderrFile="error.log" redirectStdout="true" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="">
+    <messageSet language="Français">
+      <message id="WRONG_PARAMETERS" text="Mauvaise utilisation des paramètres" />
+      <message id="JVM_START" text="La JVM n'a pas démarré." />
+      <message id="ENV_VAR_NOT_DEFINED" text="La variable d'environnement %ENV_VAR_NAME% doit être définie" />
+      <message id="INTERNAL_ERROR" text="Une erreur interne s'est produite (code d'erreur : %ERROR_CODE%)" />
+      <message id="ERROR_DIALOG_TEXT" text="Une erreur s'est produite au lancement de %APPLICATION_NAME% :" />
+    </messageSet>
+    <versionInfo include="true" fileVersion="1.2.2.0" companyName="Grame" fileDescription="Elody - Music Composition Environment" legalCopyright="Copyright Grame 1997-2006" productVersion="1.2.2.0" internalName="" />
+  </executable>
+  <splashScreen show="true" autoOff="true" alwaysOnTop="true" width="266" height="217" bitmapFile="C:/Documents and Settings/Julien THIOLLIERE/Bureau/Elody 1.22/Images/About.jpg">
+    <text>
+      <statusLine x="16" y="11" text="" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+      <versionLine x="183" y="183" text="version %VERSION%" font="Arial" fontSize="8" fontColor="0,0,255" fontWeight="500" />
+    </text>
+  </splashScreen>
+  <java mainClass="grame.elody.editor.main.Elody" vmParameters="" arguments="Elody.ini" allowVMPassthroughParameters="true" minVersion="1.5" maxVersion="" preferredVM="" allowBetaVM="false" jdkOnly="false">
+    <searchSequence>
+      <registry />
+      <envVar name="JAVA_HOME" />
+      <envVar name="JDK_HOME" />
+    </searchSequence>
+    <classPath>
+      <archive location="./Elody.jar" failOnError="false" />
+    </classPath>
+    <nativeLibraryDirectories>
+      <directory name="." />
+    </nativeLibraryDirectories>
+  </java>
+  <includedFiles />
+</exe4j>
+

@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+  <TITLE>Rule constructor</TITLE>
+  <META NAME="Author" CONTENT="Grame">
+</HEAD>
+<BODY BGCOLOR="#dcf3d9" <P ALIGN="CENTER">
+
+<H1 ALIGN=CENTER>Rule constructor<HR></H1>
+
+<P ALIGN=CENTER><IMG SRC="images/rules.png"></P>
+
+<BR>
+
+<P>The <B>rule constructor</B> contains most of the basic rules used to
+build musical objects. These rules need two arguments: the first argument
+will be dropped in the left box and the second argument in the central box,
+the result will be available in the right box.</P>
+
+<BR>
+
+<BLOCKQUOTE>
+  <P><IMG SRC="images/abstr.png">The <B>Lambda constructor</B> allows to build abstractions
+  by dropping in the central box the object you want to generalize and in
+  the left box the &quot;ingredient&quot; you want to <B>make variable</B> in
+  the object. The result is an abstraction, a function which can be applied
+  on a new argument. Functions of several arguments can be defined by abstracting
+  another &quot;ingredient&quot; in a previously defined abstraction.</P>
+  <P><IMG SRC="images/yabstr.png"> The <B>Recursive lambda constructor</B> allows to build
+  recursive abstractions by dropping in the central box the object you want
+  to generalize and in the left box the &quot;ingredient&quot; you want to
+  <B>make variable</B> in the object. The result is a &quot;recursive abstraction&quot;,
+  an abstraction which behave as the application of the fixed-point Y combinator
+  on the simple abstraction.</P>
+  <P><IMG SRC="images/appl.png"> The <B>Application constructor</B> allows to build
+  applications of one argument abstraction on one object. You have to drop in the
+  left box the function to be used and in the central box the argument. To
+  apply a multi-argument abstraction, you have to apply it on a first argument,
+  then take the result an apply it on a second argument and so on.</P>
+  <P><IMG SRC="images/seq.png">The <B>Sequence constructor</B> allows to build a sequence
+  of two objects. You have to drop the first object in the left box and the second
+  one in the central box.</P>
+  <P><IMG SRC="images/mix.png"> The <B>Mix constructor</B> allows to mix two objects.
+  The two objects are synchronized at their beginning.</P>
+  <P><IMG SRC="images/beg.png">The <B>Begin constructor</B> allows to cut and keep
+  the beginning of an object using the duration of a second object. You have to drop
+  in the left box the object you want to cut and in the central box the
+  object whose duration is used.</P>
+  <P><IMG SRC="images/rest.png">The <B>Rest constructor</B> allows to cut and keep
+  the end of an object using the duration of a second object. You have to drop in
+  the left box the object you want to cut and in the central box the object
+  whose duration is used.</P>
+  <P><IMG SRC="images/stretch.png">The <B>Expand constructor</B> allows to synchronize
+  the duration of two objects. The duration of the left object will be synchronized
+  to the duration of the object in the central box. The left object will
+  be expanded or compressed to match the new duration.</P>
+  <BR>
+</BLOCKQUOTE>
+
+<P>Some on the constructors are also available in the <A HREF="builder.html">builder</A>.</P>
+
+<P>All rules are <B>reversibles</B>. It means that you can un-construct
+objects to get their constituents. An object must be dropped on the right
+(result) box to be un-constructed. For example if a <B>sequence A B</B>
+object is dropped in the right box of the <B>Sequence constructor,</B> the
+<B>A</B> argument will appear in the left box, the <B>B</B> in the central
+box. This is a very powerful feature which allows to understand the <B>history</B>
+of a musical object construction.</P>
+
+<P><B>Note:</B> un-constructing objects can also be achieved by <B>double-clicking</B>
+on them. 
+</BODY>
+</HTML>

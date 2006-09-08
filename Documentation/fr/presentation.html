@@ -1,0 +1,200 @@
+<HTML>  
+<HEAD>
+  <TITLE>Pr&eacute;sentation</TITLE>
+  <META NAME="Author" CONTENT="Grame">
+</HEAD>
+<BODY BGCOLOR="#dcf3d9">
+
+<H1 ALIGN=CENTER><IMG SRC="images/About.jpg"></H1>
+<HR>
+<H2>Pr&eacute;sentation</H2>
+
+<P>Elody est un environnement de composition musicale bas&eacute;
+sur un langage fonctionnel visuel, une interface &agrave; manipulation
+directe et des fonctionnalit&eacute;s Internet. Il est &eacute;crit
+en Java et utilise <A HREF="http://midishare.sourceforge.net/"
+TARGET="new-window">MidiShare</A> pour la partie MIDI temps-r&eacute;el.</P>
+
+<P>Elody permet la manipulation algorithmique et la transformation
+de structures musicales ainsi que de processus de composition.
+L'environnement a &eacute;t&eacute; con&ccedil;u pour favoriser
+une attitude cr&eacute;ative et exp&eacute;rimentale de l'utilisateur
+et favoriser les &eacute;changes et possibilit&eacute;s de collaboration
+li&eacute;es &agrave; Internet.</P>
+
+<P>Le principe g&eacute;n&eacute;ral d'utilisation d'Elody consiste
+&agrave; <B>construire des objets musicaux</B> en combinant des
+objets simples (notes ou silence) ou des programmes. L'interface
+utilisateur est bas&eacute;e sur le glisser&nbsp;/&nbsp;d&eacute;poser et
+les repr&eacute;sentations visuelles des diff&eacute;rentes fonctionnalit&eacute;s.
+Chaque action de l'utilisateur donne lieu &agrave; une r&eacute;sultat
+sonore et graphique imm&eacute;diat.</P>
+
+<HR>
+
+<H3>Les constructeurs musicaux</H3>
+
+<P>Toutes les fonctionnalit&eacute;s sont accessibles sous la
+forme de <B>constructeurs visuels</B>. Un <B>constructeur</B> est
+une mani&egrave;re particuli&egrave;re de cr&eacute;er de nouvelles
+expressions en combinant des expressions existantes en s&eacute;quence
+ou, par exemple, en parall&egrave;le. Les constructeurs visuels
+sont repr&eacute;sent&eacute;s par un ensemble de case arguments.
+Lorsque l'utilisateur y glisse des expressions, celles-ci sont combin&eacute;es et cela g&eacute;n&egrave;re un r&eacute;sultat accessible et r&eacute;utilisable. Aucun calcul n'est r&eacute;alis&eacute; par les
+constructeurs. L'expression r&eacute;sultante est un arbre qui
+contient le constructeur utilis&eacute; et dont les branches sont
+les arguments. Ainsi une expression conserve toujours l'ensemble
+de ses constituants et l'histoire de sa construction&nbsp;: <B>sa description
+en intention</B>.</P>
+
+<P>Voici la description des diff&eacute;rents constructeurs actuellement
+disponibles&nbsp;:</P>
+
+<UL>
+  <LI><A HREF="chords.html">Le constructeur d'accord</A>
+  <LI><A HREF="keyboard.html">Le clavier</A>
+  <LI><A HREF="sequencer.html">Le constructeur de s&eacute;quence</A>
+  <LI><A HREF="combiner.html">Le combineur</A>
+  <LI><A HREF="rules.html">Les r&egrave;gles</A>
+  <LI><A HREF="builder.html">La fabrique</A>
+  <LI><A HREF="begin.html">Le constructeur d&eacute;but - fin</A>
+  <LI><A HREF="colors.html">Les couleurs</A>
+  <LI><A HREF="input.html">L'entr&eacute;e temps-r&eacute;el</A>
+</UL>
+
+<HR>
+
+<H3>Les &eacute;diteurs</H3>
+
+<P>Les &eacute;diteurs permettent de manipuler et &eacute;diter
+des expressions Elody.</P>
+
+<P>Voici la description des diff&eacute;rents &eacute;diteurs
+actuellement disponibles&nbsp;:</P>
+
+<UL>
+  <LI><A HREF="timeline.html">L'&eacute;diteur temporel</A>
+  <LI><A HREF="sampler.html">L'&eacute;chantillonneur</A>
+</UL>
+
+<HR>
+
+<H3>Outils de rendu</H3>
+
+<P>L'&eacute;valuation d'une expression, c'est &agrave; dire la
+traduction de sa <B>forme en intention</B> vers sa <B>forme en
+extension</B> est effectu&eacute;e seulement lors du rendu graphique
+ou sonore. L'utilisateur manipule toujours des expressions non-&eacute;valu&eacute;es,
+en intention.</P>
+
+<P>Voici la description des diff&eacute;rents outils de rendu
+actuellement disponibles&nbsp;:</P>
+
+<UL>
+  <LI><A HREF="player.html">Le lecteur</A>
+  <LI><A HREF="display.html">L'affichage de graphiques</A>
+  <LI><A HREF="guido.html">L'afficheur Guido</A>
+</UL>
+
+<P>Les expressions affich&eacute;es en repr&eacute;sentation piano-m&eacute;canique
+peuvent &ecirc;tre jou&eacute;es en utilisant la commande <B>Ctrl+Clic</B>.
+Ceci permet de jouer les objets &agrave; tout moment m&ecirc;me
+s'ils ne sont pas dans un s&eacute;quenceur.</P>
+
+<HR>
+
+<H3>Programmation</H3>
+
+<P>Le mod&egrave;le de programmation d'Elody est appel&eacute;
+<B>programmation homog&egrave;ne</B>. Il int&egrave;gre la <B>programmabilit&eacute;</B>
+au sein m&ecirc;me du langage musical, sans avoir recours &agrave;
+un langage de programmation ext&eacute;rieur. Il permet &agrave;
+l'utilisateur de cr&eacute;er, de manipuler et de composer ses
+programmes exactement comme les autres objets musicaux dont il
+a l'habitude. Ce mod&egrave;le de programmation s'inspire tr&egrave;s
+directement du lambda-calcul et repose sur les notions <A HREF="abstraction.html">d'<B>abstraction</B> et d'<B>application</B></A>.</P>
+
+<P>Les programmes d&eacute;finis dans Elody sont des expressions
+musicales g&eacute;n&eacute;ralis&eacute;es qui sont obtenues
+en <B>rendant variable</B> des parties d'une expression existante.
+Ces abstractions peuvent &ecirc;tre appliqu&eacute;es sur d'autres
+objets pour produire de nouveaux r&eacute;sultats ou compos&eacute;es
+pour cr&eacute;er de nouveaux programmes. Ainsi il n'y a pas de
+r&eacute;elles distinctions entre les programmes et les objets
+musicaux. Les programmes sont seulement des objets musicaux dont
+certaines parties sont variables. Ils peuvent &ecirc;tre jou&eacute;s,
+visualis&eacute;s comme les autres objets musicaux.</P>
+
+<HR>
+
+<H3>Interactions temps r&eacute;el</H3>
+
+<P>Une mod&egrave;le simple de description d'interactions avec
+un flot d'entr&eacute;e a &eacute;t&eacute; introduit dans Elody.
+Les interactions sont actuellement limit&eacute;es &agrave; des
+processus de transformation compos&eacute;s et appliqu&eacute;s
+sur le flot temps r&eacute;el. Le <B><A HREF="real_time.html">flot
+temps r&eacute;el</A></B> est une s&eacute;quence infinie qui
+contient tous les &eacute;v&eacute;nements re&ccedil;us en temps-r&eacute;el
+par le syst&egrave;me. Bien que cette s&eacute;quence soit connue
+seulement lorsque l'expression est &eacute;valu&eacute;e et r&eacute;duite,
+il est possible de la manipuler comme un <B>objet connu</B>. Le
+syst&egrave;me se charge de traduire toutes les actions d&eacute;crites
+par l'utilisateur en op&eacute;rations effectives qui seront <B>r&eacute;alis&eacute;es
+en temps-r&eacute;el</B>, lors du rendu de l'expression. L'utilisateur
+r&eacute;alise une sp&eacute;cification en termes de manipulation
+du flot temps-r&eacute;el, et le moteur de rendu effectuera les
+op&eacute;rations n&eacute;cessaires de bas niveau.</P>
+
+<HR>
+
+<H3>Gestions des fichiers</H3>
+
+<P>Plusieurs outils sont disponibles pour la gestion des fichiers.
+Les expressions Elody peuvent &ecirc;tre sauvegard&eacute;es sous
+diff&eacute;rents formats. Le format <B>HTML</B> sauve la <B>forme en
+intention</B> des expressions Elody et conserve ainsi toute l'histoire
+de leur construction. Le format <B>MIDIFile</B> permet de sauver la <B>forme
+en extension</B> qui peut &ecirc;tre lue et &eacute;dit&eacute;e<I>
+</I>avec des logiciels de notation ou des s&eacute;quenceurs.
+Le format <B>GUIDO</B> est utilis&eacute; pour la repr&eacute;sentation
+en <B>notation musicale traditionnelle</B>.</P>
+
+<UL>
+  <LI><A HREF="document.html">Nouveau document</A>
+  <LI><A HREF="file.html">Gestionnaire de fichiers</A>
+  <LI><A HREF="publisher.html">Le publicateur</A>
+</UL>
+
+<HR>
+
+<H3>Outils</H3>
+
+<P>D'autres outils sont disponibles&nbsp;:</P>
+
+<UL>
+  <LI><A HREF="history.html">L'historique</A>
+  <LI><A HREF="preference.html">Les pr&eacute;f&eacute;rences</A>
+</UL>
+
+<HR>
+
+<H3>Fen&ecirc;tres</H3>
+
+<P>Voici quelques raccourcis utiles pour la gestion des fen&ecirc;tres&nbsp;:</P>
+<UL>
+	<LI><B>F9&nbsp;:</B> ferme toutes les fen&ecirc;tres sans quitter l'application
+	<LI><B>F10&nbsp;:</B> affiche toutes les fen&ecirc;tres (utile si certaines sont réduites ou cachées derrières celles d'une autre application)
+	<LI><B>F11&nbsp;:</B> réorganise toutes les fen&ecirc;tres pour optimiser l'espace
+	<LI><B>F12&nbsp;:</B> réorganise toutes les fen&ecirc;tres en conservant au mieux leur disposition (les fen&ecirc;tres sont &laquo;&nbsp;aimantées&nbsp;&raquo;)
+</UL>
+
+<BR>
+<HR>
+
+<P><B>REMARQUES</B> - Elody est un syst&egrave;me en cours de
+d&eacute;veloppement. La sp&eacute;cification du langage musical
+n'est pas compl&egrave;tement termin&eacute;e et peut &eacute;voluer.
+
+</BODY>
+</HTML>

@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+  <TITLE>Sampler</TITLE>
+  <META NAME="Author" CONTENT="Grame">
+</HEAD>
+<BODY BGCOLOR="#dcf3d9">
+
+<H1 ALIGN=CENTER>Sampler</H1>
+
+<HR>
+
+<P ALIGN=CENTER><IMG SRC="images/sampler_main.PNG"></P>
+
+<P>The <B>sampler</B> allows to associate sounds in WAV or AIFF audio format with one or more MIDI notes,
+so that when the note is emitted, the associated sound (called sample) is played.</P>
+<P>You can create or load an existing <B>configuration file</B> that contains a list of these associations.</P>
+<P>Stereo or multitracks output devices are supported: you can choose your device, set the sample rate and the buffer size.</P>
+<P><b>32 channels</b> are available for editing samples associations.</P>
+
+<P ALIGN=CENTER><IMG SRC="images/sampler_channel.PNG"></P>
+
+<P>Each association is built with a <B>keygroup</B>. Each keygroup contains a reference note associated with the
+original sample, and a set of higher and lower notes corresponding to the same sample but having a different pitch.</P>
+<P>WARNING: keygroups <B>can NOT intersect</B>!
+<P>The editor allows to build many keygroups in any channel, by using the <B>New</B> button or by using drag-and-drop with audio files.</P>
+<P>Every changes are <B>instantaneously saved</B> in the configuration file and visible in a <b>keyboard viewer</B>.
+Manual modifications of this configuration file are disadvised.</P>
+<P>You can set for each channel the <b>volume</b>, the <b>velocity sensitivity</b>, the <b>ADSR envelope</b>, and depending on the device you chose: either an <b>output track</b> (multitracks mode)
+or the <b>panoramic level</b> (stereo mode). Just double-click if you wish to reset the velocity sensitivity or the panoramic level to the default center value.</P>
+
+<P ALIGN=CENTER><IMG SRC="images/sampler_extend.PNG"></P>
+
+<P>The keygroup can easily be extended to the <B>whole keyboard</B> by clicking on the left-button in the list.</P>
+
+<P ALIGN=CENTER><IMG SRC="images/sampler_env.PNG"></P>
+
+<P>The <b>envelope editor</b> allows to set the four ADSR parameters and to visualize the envelope shape.</P>
+
+<P><B>WARNING:</B> there is an incompatibility with drivers displaying a popup when their device is not connected (MOTU for example), that crashes Elody.</P>
+
+</BODY>
+</HTML>
+

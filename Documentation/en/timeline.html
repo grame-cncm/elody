@@ -1,0 +1,246 @@
+<HTML>  
+<HEAD>
+  <TITLE>TimeLine editor</TITLE>
+  <META NAME="Author" CONTENT="Grame">
+</HEAD>
+<BODY BGCOLOR="#dcf3d9">
+
+<H1 ALIGN=CENTER>TimeLine editor</H1>
+
+<HR>
+
+<H1 ALIGN=CENTER><IMG SRC="images/image27.png"></H1>
+
+<BR>
+
+<P>The <B>TimeLine editor</B> allows to edit and manipulate musical
+objects. As with usual editors, musical object are placed in sequence
+on different tracks and the tracks are themselves mixed. Tracks
+can contain either basic musical object or functions.</P>
+
+<BR>
+
+<H3>Basic features</H3>
+
+<P>Selection and cursor manipulation commands are intuitive and similar to
+those of most text editor.</P>
+<P>Musical expressions coming from other parts of the user interface
+can be dragged into the editor:</P>
+
+<UL>
+  <LI>in tracks: new objects can be inserted before, after or between
+  existing objects.
+  <LI>in the beginning of a track (the left square with the track
+  number): the content of the track will be replaced by the new
+  object.
+  <LI>in the upper left target: the editor content will be replaced
+  by the new object.
+</UL>
+
+<P>Different operations can directly be done on individual objects:
+<B>transposition</B>, <B>attenuation</B>, <B>stretch</B>, <B>quick duplicate</B> and <B>change
+of MIDI channel</B>. By clicking on the sides of an object, the cursor
+shape changes and then moving the mouse allows to change the
+value of the parameters.</P>
+
+<UL>
+	<LI><B>top</B> side: transposition
+	<LI><B>bottom</B> side: velocity
+	<LI><B>right</B> side: stretch
+	<LI><B>right</B> side + <B>Ctrl</B> press: quick duplicate
+	<LI><B>left</B> side: MIDI channel
+</UL>
+
+<P>Objects can be copied by <B>Alt-clicking</B> and moving
+them in a different location. Tracks can be copied by <B>Alt-clicking</B>
+on the beginning of a track and then moving to destination.</P>
+<P>Objects can also be copied, cut, and pasted by pressing respectively <B>Ctrl+C</B>, <B>Ctrl+X</B>, and <B>Ctrl+V</B>.</P>
+<P>Most of yours operations can be undone by pressing <B>Ctrl+Z</B>.
+
+<BR>
+
+<H3>Commands</H3>
+
+<P>The following pop-up menu can be obtained by <B>right-clicking</B>
+on an object. It allows to execute various commands:</P>
+
+<P ALIGN=CENTER><IMG SRC="images/image36.png"></P>
+
+<UL>
+  <LI><B>PlayEvent</B>: plays the event content
+  <LI><B>Evaluate</B>: perform one step evaluation
+  <LI><B>Simplify</B>: performs complete evaluation
+  <LI><B>Unevaluate:</B>
+  <LI><B>Group</B>: allows to group several events in a track:
+    the group will be manipulates as a <B>sequence of objects</B>
+  <LI><B>ClearEvent</B>: clears an event (shortcut: <B>Del</B>)
+</UL>
+
+<BR>
+
+<P>The following pop-up menu can be obtained by <B>right-clicking</B>
+on the beginning of a track. It allows to execute various commands:</P>
+
+<P ALIGN=CENTER><IMG SRC="images/image37.png"></P>
+
+<UL>
+  <LI><B>NormalTrack:</B> switch this track in normal mode
+  <LI><B>SeqFunctionTrak:</B> switch this track in seq function mode
+  <LI><B>MixFunctionTrak:</B> switch this track in mix function mode
+  <LI><B>AbstractTrack:</B> switch this track in abstraction mode
+</UL>
+  <SPAN style="margin-left:50px">=> shortcut: switching between above modes with <B>Ctrl+Up</B> and <B>Ctrl+Down</B>.</SPAN>
+<UL>
+  <LI><B>MuteTrak:</B> mute this track (shortcut: <B>M</B>)
+  <LI><B>UnmuteTrak:</B> unmute this track (shortcut: <B>M</B>)
+  <LI><B>PlayTrack:</B> plays the content of this track
+  <LI><B>ClearTrack:</B> clears the content of this track (shortcut: <B>Ctrl+D</B>)
+</UL>
+
+<BR>
+
+<P>The following pop-up menu can be obtained by <B>right-clicking</B>
+on the upper left target. It displays the global commands that also are accessible with the upper buttons:</P>
+
+<TABLE ALIGN=CENTER>
+	<TR>
+		<TD><IMG SRC="images/image38.png"></TD>
+		<TD>&nbsp;</TD>
+		<TD><IMG SRC="images/image38b.png"></TD>
+	</TR>
+</TABLE>
+
+<UL>
+  <LI><B>StartAll</B>: evaluate and start the whole editor content
+  from the beginning (shortcut: <B>Ctrl+Space</B>)
+  <LI><B>PlayAll</B>: play the editor content from the current
+  position (shortcut: <B>Space</B>)
+  <LI><B>StopAll</B>: stop playing (shortcut: <B>Space</B>)
+  <LI><B>ClearAll</B>: clear the the whole editor content (shortcut: <B>Ctrl+Del</B>)
+</UL>
+
+<BR>
+
+<P>The following pop-up menu can be obtained by <B>right-clicking</B>
+on the time line. On the one hand, it allows to locate the cursor (shortcut: <B>Ctrl+Click</B> on the time line). On the other hand, it allows to change the global zoom factor (shortcut: <B>Ctrl+Plus</B>, <B>Ctrl+Minus</B> or <B>Ctrl+Mouse wheel</B>). Note that the zoom factor can also be changed by <B>dragging the mouse vertically</B> on the time line. It is possible to horizontally scroll the editor content by <B>dragging the mouse horizontally</B> on the time line.</P>
+
+<H3 ALIGN=CENTER><IMG SRC="images/image40.png"></H3>
+
+<BR>
+
+<H3>Direct Application</H3>
+
+<P>The single argument functions can be applied directly on any musical
+object in the editor. By dragging the function on top of the target
+object, an <B>APPLY</B> feedback will appear indicating that the
+function can be applied on the object. By releasing the mouse,
+the function will be applied and the result will appear instead
+of the initial object. In the following example, a <B>repeat4</B>
+function (wich repeat its argument 4 times) is applied on the
+<B>extrait1</B> object.</P>
+
+<BR>
+
+<P ALIGN=CENTER><IMG SRC="images/image34.png">
+
+<BR>
+
+<H3>Placing functions in time</H3>
+
+<P>Functions have a duration and can be placed in tracks like
+regular musical objects. Sequences of functions will be applied
+with the following semantic: <B>each function is applied on the
+portion of the object argument corresponding to the function duration</B>.
+In the following example, two functions are used: a <B>transpose-12</B>
+function and a <B>transpose+12</B> function, applied on a
+sequence of C notes. The result can be seen in the top graphic
+display. Note that the track containing function is in <B>function mode:</B>
+in this case <B>rest</B> in the function track are
+interpreted as <B>identity function</B> during evaluation.</P>
+
+<P ALIGN=CENTER><IMG SRC="images/image39.png"></P>
+
+<BR>
+
+<H3>Evaluation rules</H3>
+
+<P>They are four rules of evaluation depending of the track content:</P>
+
+<H4>Normal tracks evaluations</H4>
+
+<P>Group of normal tracks are mixed together.</P>
+
+<H4>Abstraction track evaluation</H4>
+
+<P>An abstraction track contains an object which will be abstracted
+in the object resulting from the evaluation of the bottom tracks.
+In the following example, a c5/4 note is abstracted in a chord
+(actually a MIX) of c5/4, c5/4 +4 (transposition by 4) and c5/4
++7 (transposition by 7). The result is an abstraction which in
+this particular case represent an <B>abstract chord</B>, actually
+a major chord.</P>
+
+<P ALIGN=CENTER><IMG SRC="images/image42.png"></P>
+
+<BR>
+
+<H4>Seq functions tracks evaluations</H4>
+
+<P>A track in seq function mode will be applied on the track just
+bellow. When several consecutives functions are applied on a argument
+track, the results of the application of each function <B>will
+be put in sequence</B>. If several tracks in functions mode are
+used, this process will be repeated several times. Here is an
+example of &quot;multi-layer&quot; applications:</P>
+
+<UL>
+  <LI>track 5 is applied on track 6
+  <LI>track 4 is applied the previous result (that is track 5 applied
+  on track 6)
+  <LI>track 3 is applied the previous result
+  <LI>track 2 is applied the previous result
+  <LI>track 1 is applied the previous result
+</UL>
+
+<P ALIGN=CENTER><IMG SRC="images/image41.png"></P>
+
+<H4>Mix functions tracks evaluations</H4>
+
+<P>A track in mix function mode will be applied on the track just
+bellow.When several consecutives functions are applied on a argument
+track, the results of the application of each function <B>will
+be mixed</B> (this behavior is particulary adapted when applying
+functions on the real-time input). If several tracks in functions
+mode are used, this process will be repeated several times. Here
+is an example of &quot;multi-layer&quot; applications:</P>
+
+<UL>
+  <LI>track 5 is applied on track 6
+  <LI>track 4 is applied the previous result (that is track 5 applied
+  on track 6)
+  <LI>track 3 is applied the previous result
+  <LI>track 2 is applied the previous result
+  <LI>track 1 is applied the previous result
+</UL>
+
+<P ALIGN=CENTER><IMG SRC="images/image46.png"></P>
+
+<BR>
+
+<P><B>Remarks:</B></P>
+
+<UL>
+  <LI>The behavior difference between <B>SeqFunctionTrack</B> and
+  <B>MixFunctionTrack</B> modes is visible only if the functions
+  used do a <B>temporal deformation</B> of their arguments (like
+  the <B>repeat2</B> function for example: its result duration
+  is twice its argument duration)
+  <LI>Functions of several arguments can be defined in Elody. But
+  because of the time line editor evaluation rules, it's not very
+  convenient to manipulate them in the editor.
+  <LI><B>Right-clicking</B> is PC specific, on a Mac you
+  must use the <B>command-clicking</B> to access the same function.
+</UL>
+
+</BODY>
+</HTML>

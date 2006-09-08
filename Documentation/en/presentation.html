@@ -1,0 +1,194 @@
+<HTML>  
+<HEAD>
+  <TITLE>Presentation</TITLE>
+  <META NAME="Author" CONTENT="Grame">
+</HEAD>
+<BODY BGCOLOR="#dcf3d9">
+
+<H1 ALIGN=CENTER><IMG SRC="images/About.jpg"></H1>
+
+<H2><HR>Presentation</H2>
+
+<P>Elody is a music composition environment based on a visual
+functional language, a direct-handling user interface and Internet
+facilities. It is written in Java and uses the real-time MIDI
+services of <A HREF="http://midishare.sourceforge.net/"
+TARGET="new-window">MidiShare</A>.</P>
+
+<P>Elody allows algorithmic descriptions and transformations of
+musical structures and compositional processes. Its design tries
+to promote a creative and experimental attitude (including for
+the programming activity), as well as Internet users collaboration.</P>
+
+<P>Working with Elody consists in <B>building musical objects</B>
+by combining simple primitive objects (notes or rest), or programs.
+The user interface is based on drag&amp;drop
+and visual functionalities. Each user action results in an immediate
+sound and graphical feedback.</P>
+
+<HR>
+
+<H3>Musical constructors</H3>
+
+<P>All functionnalities are available by way of <B>visual constructors</B>.
+A <B>constructor</B> is a particular way to create new expressions
+by combining existing ones in sequence or in parallel for example.
+Visual constructors are represented by one or several arguments
+boxes. When the user drop expressions in these boxes, they are combined
+and this produce an accessible and reusable result.
+The constructors perform no real computation. The resulting expression
+is a tree whose root is labeled with the constructor name and branches
+which are the used sub-expressions. Therefore an expression always keep
+track of all its components and the way to combine them: <B>the
+intentional description</B>.</P>
+
+<P>Here is the description of the different musical constructors
+currently available:</P>
+
+<UL>
+  <LI><A HREF="chords.html">The Chord constructor</A>
+  <LI><A HREF="keyboard.html">The Keyboard</A>
+  <LI><A HREF="sequencer.html">The Sequence constructor</A>
+  <LI><A HREF="combiner.html">The Combiner</A>
+  <LI><A HREF="rules.html">The Rules</A>
+  <LI><A HREF="builder.html">The Builder</A>
+  <LI><A HREF="begin.html">The Begin/End constructor</A>
+  <LI><A HREF="colors.html">The Colors</A>
+  <LI><A HREF="input.html">The Real-time input</A>
+</UL>
+
+<HR>
+
+<H3>Editors</H3>
+
+<P>Editors allow to work on Elody's objects by editing and modifying
+them.</P>
+
+<P>Here is the description of the different musical editors currently
+available:</P>
+
+<UL>
+  <LI><A HREF="timeline.html">The TimeLine editor</A>
+  <LI><A HREF="sampler.html">The Sampler</A>
+</UL>
+
+<HR>
+
+<H3>Renderers</H3>
+
+<P>The evaluation of an expression, that is the transition from
+the <B>intentional description</B> to the corresponding <B>extensional
+description</B>, is only done for graphical and sound rendering.
+Users always handle non-evaluated, intentional descriptions.</P>
+
+<P>Here is the description of the different renderers currently
+available:</P>
+
+<UL>
+  <LI><A HREF="player.html">The Player</A>
+  <LI><A HREF="display.html">The Graphic displayer</A>
+  <LI><A HREF="guido.html">The Guido Viewer</A>
+</UL>
+
+<P>Elody objects displayed in a piano-roll like representation
+can immediately be played using the <B>Ctrl+Click</B> command.
+This allows to play objects even if they are not in a player.</P>
+
+<HR>
+
+<H3>Programming</H3>
+
+<P>One of the main purpose of a music composition environment
+is to allow to express intentional descriptions with all the required
+generality, and to maintain the relation with the corresponding
+extensional description. Reaching generality and abstraction within
+intentional description presuppose a kind of programming. The
+<B>homogeneous language approach</B> adopted in Elody tries to
+insert the programming activity in a conceptual framework directly
+related to the existing skills and knowledge of the user. Instead
+of providing the user with a separate programming language with
+specific concepts, syntax, semantic and editings tools, the key
+idea of the homogeneous language approach is to extend in a consistent
+way the domain of objects the user manipulates with his editing
+tools to include user-defined programs. This is achieved mainly
+by introducing the concepts of <A HREF="abstraction.html"><B>abstraction</B>
+and <B>application</B></A> of the lambda-calculus.</P>
+
+<P>Elody is based on this approach. User-defined programs are
+abstractions: generalized musical expressions obtained by <B>making
+variable</B> parts of the existing expression. These abstractions
+can be applied to other objects to produce a new result, or composed
+to build new programs. Therefore Elody makes not real distinction
+between musical objects and programs. Programs are just musical
+objects with variables parts. They are visualized, manipulated
+and assembled in a consistent way like any other musical objects.</P>
+
+<HR>
+
+<H3>Real-time Interactions</H3>
+
+<P>A simple model of description of interactions with an input
+stream has been introduced in Elody. Interactions are currently
+limited to transformation processes composed and applied on the
+real-time input stream. The <B><A HREF="real_time.html">real-time
+stream</A></B> is an infinite sequence that contains all events
+received in real-time by the system. Although this sequence is
+only known when the expression is evaluated and reduced, it is
+possible to manipulate it like a <B>known object</B>. The
+system is in charge of translating actions described by the user
+into effective operations that will <B>operate in real-time</B>,
+during expression rendering. The user makes a specification in
+terms of temporal organization and manipulation of the real-time
+stream, the rendering engine will execute low level side effect
+operations according to the specification.</P>
+
+<HR>
+
+<H3>File management</H3>
+
+<P>Several tools are available to manage Elody documents. Elody
+expressions can be saved in several different formats. The <B>HTML</B>
+format save Elody expressions in their <B>intentional description</B>
+thus keeping all the history of their construction. <B>MIDIFile</B> format
+allows to save the <B>extensional description</B> to be used in
+conventionnal notation softwares or sequencers. <B>GUIDO</B> format is
+used for <B>conventional musical score notation</B>.</P>
+
+<UL>
+  <LI><A HREF="document.html">The Document window</A>
+  <LI><A HREF="file.html">The File window</A>
+  <LI><A HREF="publisher.html">The Publisher window</A>
+</UL>
+
+<HR>
+
+<H3>Tools</H3>
+
+<P>Additional tools are available.</P>
+
+<UL>
+  <LI><A HREF="history.html">The History window</A>
+  <LI><A HREF="preference.html">The Preference window</A>
+</UL>
+
+<HR>
+
+<H3>Windows</H3>
+
+<P>Here are some useful shortcuts for managing the windows organization:</P>
+<UL>
+	<LI><B>F9:</B> close all windows without leaving the application
+	<LI><B>F10:</B> show all windows (useful if some are reduced or hidden behind those from another application)
+	<LI><B>F11:</B> reorganize all windows in order to optimize the desk space
+	<LI><B>F12:</B> reorganize all windows while trying to preserve their initial location (windows are magnetized)
+</UL>
+
+<BR>
+<HR>
+
+<P><B>DISCLAIMER</B> - Elody is a research product currently in
+development. The musical language specification is not frozen
+yet and may change in future versions.
+
+</BODY>
+</HTML>

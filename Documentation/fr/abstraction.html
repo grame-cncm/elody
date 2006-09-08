@@ -1,0 +1,75 @@
+<HTML>  
+<HEAD>
+  <TITLE>Abstraction&nbsp;/&nbsp;Application</TITLE>
+  <META NAME="Author" CONTENT="Grame">
+</HEAD>
+<BODY BGCOLOR="#dcf3d9">
+
+<H1 ALIGN=CENTER>Abstraction&nbsp;/&nbsp;Application</H1>
+
+<HR>
+
+<P>La construction des abstractions se r&eacute;alise en partant
+d'un <B>objet concret</B> dans lequel on <B>rend variable</B>
+un autre objet. Si cet autre objet appara&icirc;t dans l'objet initial,
+il sera rendu variable, sinon le r&eacute;sultat sera une fonction
+constante, qui rend le m&ecirc;me r&eacute;sultat quel que soit
+l'argument sur lequel elle est appliqu&eacute;e.</P>
+
+<P>De mani&egrave;re interne, le processus d'abstraction utilise
+un m&eacute;canisme de <B>d&eacute;tection d'occurrence</B> qui
+consiste &agrave; identifier un objet dans un autre objet et &agrave;
+le remplacer par une nouvelle variable.</P>
+
+<P>Deux m&eacute;canismes de d&eacute;tection d'occurrences sont
+actuellement utilis&eacute;s&nbsp;:</P>
+
+<P>- Un m&eacute;canisme de <B>d&eacute;tection d'occurrence strict</B>,
+pour les objets &laquo;&nbsp;complexes&nbsp;&raquo;, c'est &agrave; dire <B>plus
+complexes qu'une note simple</B>. Dans ce cas les objets sont
+identifiables seulement s'ils sont syntaxiquement &eacute;quivalents,
+c'est &agrave; dire s'ils ont exactement la m&ecirc;me structure.
+Ce m&eacute;canisme est utilis&eacute; pour les arbres de type
+S&Eacute;Q, MIX, TRANSP, etc. mais aussi les abstractions&nbsp;: cela signifie
+qu'une abstraction elle-m&ecirc;me peut &ecirc;tre rendue variable.</P>
+
+<P>- Le m&eacute;canisme de d&eacute;tection d'occurrence pour
+les notes simples est moins strict. Il est possible en effet de
+rendre variable une note dans une autre note m&ecirc;me si ces
+deux notes <B>ne sont pas exactement identiques</B>, c'est &agrave;
+dire si elles n'ont pas la m&ecirc;me hauteur, v&eacute;locit&eacute;,
+dur&eacute;e ou canal MIDI. Par exemple&nbsp;:</P>
+
+<BLOCKQUOTE>
+  <DL>
+    <DT>- abstraire une note de hauteur 60 dans une note de hauteur
+    72 donne comme r&eacute;sultat une fonction qui transpose de
+    12 (la diff&eacute;rence entre 72 et 60).
+    <DT>- abstraire une note de dur&eacute;e 1 seconde dans une note
+    de dur&eacute;e 2 secondes donne comme r&eacute;sultat une fonction
+    qui dilate les dur&eacute;es d'une facteur 2 (le coefficient
+    multiplicatif entre 1 et 2).
+  </DL>
+</BLOCKQUOTE>
+
+<P>Pour les notes, la <B>diff&eacute;rence des hauteurs</B> conduira
+&agrave; la cr&eacute;ation d'une <B>op&eacute;ration de transposition</B>,
+la <B>diff&eacute;rence des v&eacute;locit&eacute;s</B> conduira
+&agrave; la cr&eacute;ation d'une <B>op&eacute;ration d'att&eacute;nuation</B>,
+la <B>diff&eacute;rence des dur&eacute;es</B> conduira &agrave;
+la cr&eacute;ation d'une <B>op&eacute;ration d'expansion</B> ou<B>
+compression</B> et la <B>diff&eacute;rence des canaux MIDI</B>
+conduira &agrave; la cr&eacute;ation d'une op&eacute;ration de
+<B>transposition des canaux</B>.</P>
+
+<P>Ce m&eacute;canisme ne fonctionne que si les notes consid&eacute;r&eacute;es
+ont la m&ecirc;me couleur. Par exemple abstraire une note <B>rouge</B>
+dans une note <B>bleue</B> donne une fonction constante comme
+r&eacute;sultat.</P>
+
+<P>Les abstractions et applications peuvent aussi &ecirc;tre d&eacute;finies
+dans le <A HREF="rules.html">constructeur de R&egrave;gles</A> ou
+la <A HREF="builder.html">fabrique</A>.</P>
+
+</BODY>
+</HTML>

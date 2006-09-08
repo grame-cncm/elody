@@ -1,0 +1,133 @@
+<html><head></head><body bgcolor="#ffffff">
+
+<font face="Lucida Grande" size="-1">
+
+<font size="5"><b>SWT Compatibility Libraries for J2SE 5.0 Release 4</b></font><br>
+
+</font><p><font face="Lucida Grande" size="-1">May 16, 2006</font></p>
+
+<p><font face="Lucida Grande" size="-1">The SWT Compatibility Libraries
+address issues in J2SE 5.0 Release 4 to make it compatible with the Mac
+OS X implementation of the SWT_AWT bridge in Eclipse 3.2RC3 and later.
+See the <a href="http://help.eclipse.org/help31/nftopic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/swt/awt/package-summary.html">Eclipse Javadoc</a>
+for details on how to use this library in your SWT application. The SWT
+Compatibility Libraries do not replace any existing installation of
+Java.</font></p>
+
+<div style="border: 1px solid rgb(201, 209, 215); padding: 8px; font-size: 11px; background-color: rgb(241, 245, 249);"><font face="Lucida Grande" size="-1"><font color="red">Note: This build has received only limited testing and <b>should not</b> be installed on a system with critical data.</font></font></div>
+
+<ul>
+<font face="Lucida Grande" size="-1"><li>As specified in the <a href="http://developer.apple.com/membership/pdf/terms.pdf">ADC Terms and Conditions (PDF)</a>
+for ADC membership, this pre-release software and any information
+related to this software cannot be discussed outside of Apple-approved
+feedback channels.</li>
+<li>You may not redistribute this build.</li>
+<li>Please see the "Reporting bugs" section for details on how to give feedback.</li>
+</font></ul>
+
+<font face="Lucida Grande" size="-1"><br></font><hr>
+
+<font face="Lucida Grande" size="-1"><br><font size="4"><b>To Install this release:</b></font>
+</font><p>
+<font face="Lucida Grande" size="-1"><b>System Requirements</b>
+</font></p><p>
+<font face="Lucida Grande" size="-1">SWT Compatibility Libraries for J2SE 5.0 Release 4 requires:
+</font></p><ul>
+<font face="Lucida Grande" size="-1">    <li>An Intel or PowerPC-based Macintosh
+    </li><li>Mac OS X v10.4.5 or later
+    </li><li>J2SE 5.0 Release 4
+</li></font></ul>
+<p>
+<font face="Lucida Grande" size="-1"><b>Installation Instructions</b>
+</font></p><p>
+<font face="Lucida Grande" size="-1">Double-click
+"J2SE50Release4SWTCompatibility.dmg" to mount the image on your
+desktop. Once the correct image has mounted, double-click the
+"J2SE50Release4SWTCompatibility.pkg" installer in the mounted image and
+follow the installation instructions.
+</font></p><p>
+<font face="Lucida Grande" size="-1"><b>How to determine if you have this build installed:</b>
+</font></p><p>
+<font face="Lucida Grande" size="-1">This package consists of two files:
+</font></p><blockquote>
+<font face="Lucida Grande" size="-1">	</font><pre><font face="Lucida Grande" size="-1">/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/frameembedding.jar
+/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Libraries/libembedding.jnilib</font></pre>
+</blockquote>
+<p><font face="Lucida Grande" size="-1">Both files are necessary for the SWT_AWT bridge to work.
+
+<br></font></p><hr>
+
+<font face="Lucida Grande" size="-1"><br><font size="4"><b>Major bugs fixed in this release:</b></font></font><p>
+</p><ul>
+<font face="Lucida Grande" size="-1">	<li>AWT frames can be embedded in HIViews via the SWT_AWT bridge in Eclipse 3.2RC3 and later
+</li></font></ul>
+<font face="Lucida Grande" size="-1"><font size="4"><b>Known problems in this release:</b></font>
+</font><ul>
+<font face="Lucida Grande" size="-1">	<li>System.exit() may be needed after the SWT main event loop exits.
+	</li><li>Embedded AWT Frames cannot overlap SWT widgets or other embedded frames.
+	</li><li>AWT exceptions thrown from inside a native method may crash the application.
+	</li><li>Directly manipulating AWT or Swing UI objects or using <tt>SwingUtilities.invokeAndWait(Runnable)</tt> results in deadlock if used from the SWT display thread.
+	</li><li>SWT objects cannot be embedded in AWT windows.
+</li></font></ul>
+<font face="Lucida Grande" size="-1"><font size="4"><b>Areas to Test:</b></font>
+<br>
+</font><ul>
+<font face="Lucida Grande" size="-1">	<li>Test any Eclipse plugins that you know rely on SWT_AWT support (<a href="http://www.eclipseplugincentral.com/">http://www.eclipseplugincentral.com/</a>)
+	</li><li>Test your SWT applications that need to embed or otherwise use the AWT.
+</li></font></ul>
+
+<font face="Lucida Grande" size="-1"><br></font><hr>
+<font face="Lucida Grande" size="-1"><br><font size="4"><b>Reporting Bugs:</b></font>
+</font><p>
+<font face="Lucida Grande" size="-1"><b>Please report any bugs not
+mentioned in the "known problems" section above. Bugs not reported via
+the Bugreporter aren't in the bug database and cannot be tracked and
+fixed.</b>
+</font></p><p>
+</p><ul>
+<font face="Lucida Grande" size="-1">	<li> Use the bug reporter on the Developer Connection website at:
+		<a href="http://developer.apple.com/bugreporter/">http://developer.apple.com/bugreporter/</a>
+       </li><li>
+Please include a test case if possible. A small, reproduceable test
+case that can be run from the command line is the most valuable piece
+of feedback. If your test can be expressed in the JUnit format (<a href="http://www.junit.org/">http://www.junit.org/</a>)
+and can reproduce and detect the bug without human intervention, your
+JUnit test may be added to Apple's regression testing suites. </li><li> Please put "SWT_AWT:" at the beginning of your bug title.
+	</li><li> For crashing bugs, include both the native and the Java stack crawls:
+	<ul>
+		<li> The native crash log is located in the standard location for CrashReporter, ~/Library/Logs/CrashReporter/.
+		</li><li>
+The Java-specific crash information is located at:
+~/Library/Logs/Java/JavaNativeCrash_pidXXXX.log where XXXX is the
+process ID of the crashing process. </li></ul>
+ 	</li><li> For hangs/deadlocks, perform 'kill -QUIT' on
+the process ID and copy the resulting data from Console, stdout in the
+Terminal, or in the Eclipse console. Also, please call 'sample XXXX 3',
+where XXXX is the process ID of the hanging process (and 3 represents
+the duration of the sampling period in seconds). </li><li> If possible, check the behavior using the SWT and/or
+Eclipse 3.2 on another platform. If the bug occurs in both versions,
+please note that in your bug report.
+</li></font></ul>
+
+<font face="Lucida Grande" size="-1"><br>
+</font><hr>
+<font face="Lucida Grande" size="-1"><b>You may not distribute this build in any form to anyone.</b></font><p>
+
+<font face="Lucida Grande" size="-1">Note: This communication is
+covered under the terms of your non-disclosure agreement and prototype
+site license agreement with Apple Computer, Inc.</font></p><p>
+
+<font face="Lucida Grande" size="-1">© 2006 Apple Computer. Inc. All
+rights reserved. Apple, the Apple logo, AppleScript, Mac, and
+Macintosh, are trademarks of Apple Computer, Inc., registered in the
+U.S. and other countries. PowerPC is a trademark of International
+Business Machines Corporation, used under license therefrom. Java and
+all Java-based trademarks and logos are trademarks or registered
+trademarks of Sun Microsystems, Inc. in the U.S. and other countries.
+Other product and company names mentioned herein may be trademarks of
+their respective companies. <br>
+<br>
+8XXXX-20060516.01
+</font>
+
+</p></body></html>
