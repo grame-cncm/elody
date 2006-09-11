@@ -20,7 +20,6 @@
 
 */
 
-
 #include <direct.h>
 #include <MidiShare.h>
 #include <iostream>
@@ -54,8 +53,6 @@
 #define DEFAULT_BUFFER_SIZE		1024
 #define DEFAULT_AUDIO_FILE		"soundplayer.conf"
 #define MAX_CHANNELS			8
-
-
 
 using namespace std;
 
@@ -105,19 +102,23 @@ class soundplayer
 	{
 		return 0;
 	}
+
 	virtual int getNumOutputs() 	
 	{
 	   	return fNumOutputs;
    	}
+
 	virtual void setRefNum(int n)
 	{
 		fRefNum=n;
 	}
+
 	virtual void setNumOutputs(int n) 	
 	{
 	   fNumOutputs=n;
 	   fSampler.fStereoMode = (fNumOutputs==2) ;
 	}
+
 	virtual bool setParam(int chan, int vol, int pan, double sens, int a, int d, double s, int r)
 	{
 		DriverDataPtr data = GetData();
@@ -134,21 +135,21 @@ class soundplayer
 		PaError err = AudioWakeUp();
 		
 		//-- 1 - Errors
-		if (err==ERR_CONFIGFILE)
-		{
+		if (err == ERR_CONFIGFILE) {
 			Pa_Terminate();
 			SaveConfig("Configuration", "Sound Samples INI file",
 				"soundplayer.conf", GetProfileFullName(kProfileName));
 			err = AudioWakeUp();
 		}
-		if ((err!=0)&&(err!=ERR_CONFIGFILE))
-		{
+
+		if ((err != 0) && (err != ERR_CONFIGFILE)) {
 			Pa_Terminate();
-			fprintf( stderr, "An error occured while using the portaudio stream\n" );
-			fprintf( stderr, "Error number: %d\n", err );
-			fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );
+			fprintf(stderr, "An error occured while using the portaudio stream\n");
+			fprintf(stderr, "Error number: %d\n", err );
+			fprintf(stderr, "Error message: %s\n", Pa_GetErrorText(err));
 		}
 	}
+
 	static void CALLBACK msSleep(short r)
 	{
 		TRACE(("msSleep\n"));
@@ -156,12 +157,11 @@ class soundplayer
 		PaError err = AudioSleep();
 
 		//-- 1 - Errors
-		if ((err!=0)&&(err!=ERR_CONFIGFILE))
-		{
+		if ((err != 0) && (err != ERR_CONFIGFILE)) {
 			Pa_Terminate();
-			fprintf( stderr, "An error occured while using the portaudio stream\n" );
-			fprintf( stderr, "Error number: %d\n", err );
-			fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );
+			fprintf(stderr, "An error occured while using the portaudio stream\n");
+			fprintf(stderr, "Error number: %d\n", err);
+			fprintf(stderr, "Error message: %s\n", Pa_GetErrorText(err));
 		}
 	}
 	virtual TDriverOperation getDriverOperation()
@@ -169,8 +169,8 @@ class soundplayer
 		TDriverOperation op = {msWakeUp, msSleep, 0, 0, 0};
 		return op;
 	}
-	/* -------------------------------------------------------------*/
 
+	/* -------------------------------------------------------------*/
 	virtual int init(char* soundConfigFile)
 	{
 		TRACE(("Init\n"));
@@ -194,28 +194,23 @@ class soundplayer
 		if (fSampler.fStereoMode)
 			printf("msSamplerDriver loaded : stereo mode\n");
 		else
-			printf("msSamplerDriver loaded : %d tracks mode\n",fNumOutputs);
+			printf("msSamplerDriver loaded : %d tracks mode\n", fNumOutputs);
 		return 0;
 	}
 
 	virtual void compute(int len, float** inputs, float** outputs)
 	{
-		for (int c=0; c<fNumOutputs; c++)
-	   	{
-			for (int i=0; i<len; i++)
-			   	outputs[c][i] = 0.0;
+		for (int c = 0; c < fNumOutputs; c++) {
+			memset(outputs[c], 0, len * sizeof(float));
 		}
 		processMidiEvents(fRefNum);
-		mixAllVoices (&fSampler, len, outputs);
-
-		//TRACE(("MidiFreeSpace=%d / MidiCountEvs=%d / fRefNum=%d\n",MidiFreeSpace(), MidiCountEvs(fRefNum), fRefNum));
+		mixAllVoices(&fSampler, len, outputs);
 
 		// post processing for volume control
 		const float v = fSampler.fMaster;
-		for (int d=0; d<fNumOutputs; d++)
-	   	{
+		for (int d = 0; d < fNumOutputs; d++) {
 			float* out = outputs[d];
-			for (int i=0; i<len; i++)
+			for (int i = 0; i < len; i++)
 			  	out[i] *= v;
 		}
 	}
@@ -237,13 +232,13 @@ void LoadState()
 	if (DEFAULT_OUTPUT_DEVICE != paNoDevice) {
 		data->outputDevice = LoadConfigNum("Configuration",
 			"Device Number", GetProfileFullName(kProfileName),DEFAULT_OUTPUT_DEVICE);
-		const PaDeviceInfo* defOutputDevInfo = Pa_GetDeviceInfo( data->outputDevice );
+		const PaDeviceInfo* defOutputDevInfo = Pa_GetDeviceInfo( data->outputDevice);
 		if (defOutputDevInfo == NULL) {
 			data->outputDevice = DEFAULT_OUTPUT_DEVICE;
-			defOutputDevInfo = Pa_GetDeviceInfo( data->outputDevice );
+			defOutputDevInfo = Pa_GetDeviceInfo(data->outputDevice);
 		}
 		strcpy(data->outputDeviceName, LoadConfig("Configuration",
-			"Device Name", GetProfileFullName(kProfileName), "") );
+			"Device Name", GetProfileFullName(kProfileName), ""));
 		// Reset default values if material configuration has changed
 		if (strcmp(data->outputDeviceName, Pa_GetDeviceInfo(data->outputDevice)->name )!=0) {
 			data->outputDevice = DEFAULT_OUTPUT_DEVICE;
@@ -330,10 +325,8 @@ int process (const void *inputBuffer, void *outputBuffer,
 
 	// uninterlacing loop
 	float *out = (float*)outputBuffer;
-	for (i=0; i<framesPerBuffer; i++)
-	{
-		for (j=0; j<data->numOutputs; j++)
-		{
+	for (i = 0; i < framesPerBuffer; i++) {
+		for (j = 0; j < data->numOutputs; j++) {
 			*out++ = data->outCompute[j][i];
 		}
 	}
@@ -356,7 +349,7 @@ int AudioWakeUp()
 
 	//-- 1 - Initialize PortAudio
 	err = Pa_Initialize();
-	if( err != paNoError )
+	if (err != paNoError)
 		return err;
 	TRACE(("Pa_Initialize\n"));
 	data->asleep = false;
@@ -366,7 +359,7 @@ int AudioWakeUp()
 
 	//-- 3 - Initialize sampler
 	int serr = DSP.init(data->soundConfigFile);
-	if (serr!=0)
+	if (serr != 0)
 		return serr;
 
 	//-- 4 - Allocate outCompute array
@@ -436,14 +429,14 @@ int AudioSleep()
 		TRACE(("MidiDeconnect / MidiFlushEvs\n"));
 
 		//-- 2 - Stop audio stream
-		err = Pa_StopStream( data->stream );
-		if( err != paNoError )
+		err = Pa_StopStream(data->stream);
+		if (err != paNoError)
 			return err;
 		TRACE(("Pa_StopStream\n"));
 
 		//-- 3 - Close audio stream
-		err = Pa_CloseStream( data->stream );
-		if( err != paNoError )
+		err = Pa_CloseStream(data->stream);
+		if (err != paNoError)
 			return err;
 		TRACE(("Pa_CloseStream\n"));
 
@@ -452,8 +445,7 @@ int AudioSleep()
 		TRACE(("Pa_Terminate\n"));
 
 		//-- 5 - Desallocate outCompute array
-		for (i=0; i<data->numOutputs; i++)
-		{
+		for (i=0; i<data->numOutputs; i++) {
  			free(data->outCompute[i]);
 		}
 		TRACE(("Desallocate outCompute\n"));

@@ -28,18 +28,11 @@
 #define kSamplerDriverVersion      100
 #define SamplerDriverName	"Sampler Driver"
 
-Boolean SetUpMidi ();
-int AudioWakeUp ();
-int AudioSleep ();
+Boolean SetUpMidi();
+int AudioWakeUp();
+int AudioSleep();
 
-void 	CloseMidi ();
-
-/*
-enum { kVolOff=0, kVolOn};
-enum { kBendOff=0, kBendOn};
-enum { kMinBendLength=0, kMaxBendLength = 24};
-enum { kMinFFTSize=512, kMaxFFTSize=8192};
-*/
+void CloseMidi();
 
 #endif
 

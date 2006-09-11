@@ -1,3 +1,26 @@
+/*
+
+  Copyright © Grame 2006
+
+  This library is free software; you can redistribute it and modify it under 
+  the terms of the GNU Library General Public License as published by the 
+  Free Software Foundation version 2 of the License, or any later version.
+
+  This library is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public License 
+  for more details.
+
+  You should have received a copy of the GNU Library General Public License
+  along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+  Grame Research Laboratory, 9, rue du Garet 69001 Lyon - France
+  grame@rd.grame.fr
+
+*/
+
+
 #include <ctype.h>
 #include <string>
 #include <string.h>
@@ -452,9 +475,6 @@ static void doKeyOff (TSampler* s, int chan, int key, int vel)
 	}
 }
 
-//static long long TOTTIME = 0;
-//static long TOTRUN = 0;
-
 static int mixOneVoiceFixedSpeed (TSampler* sss, unsigned long const n, float* multi[], TVoice* v )
 {
 	float * const		src 	= v->fSamples;
@@ -588,7 +608,6 @@ static int mixOneVoiceVariSpeed (TSampler* sss, unsigned long const n, float* mu
 				puisqu'on n'est pas arrive au bout du son
 			*/
 			v->fCurPos = pos;
-			//printf ("bench 1 : %Ld cycles\n", t2-t1);
 			return 0; 
 
 		} else {
@@ -619,8 +638,6 @@ static int mixOneVoiceVariSpeed (TSampler* sss, unsigned long const n, float* mu
 			*/
 			if (v->fLoopMode == 0 || v->fStopRequest) { 
 				v->fCurPos = pos;
-				//printf ("bench 2 : %Ld cycles\n", t2-t1);
-				//printf ("ARRET\n"); 
 				return 1;
 			}
 
@@ -632,7 +649,6 @@ static int mixOneVoiceVariSpeed (TSampler* sss, unsigned long const n, float* mu
 	} 
 	/* cas rare ? */
 	v->fCurPos = pos;
-	//printf ("bench 3 : %Ld cycles\n", t2-t1);
 	return 0;
 }
 		
@@ -682,9 +698,9 @@ void processMidiEvents(short ref)
 				#if defined(TRACE)
 					printf("Note\t(chan=%d,\tpitch=%d,\tvel=%d,\tdur=%d)\n",Chan(e)+Port(e)*16,Pitch(e),Vel(e), Dur(e));
 				#endif
-				doKeyOn(s, Chan(e)+Port(e)*16, Pitch(e), Vel(e));
+				doKeyOn(s, Chan(e) + Port(e) * 16, Pitch(e), Vel(e));
 				/* auto envoie le keyoff */
-				EvType(e)=typeKeyOff;
+				EvType(e) = typeKeyOff;
 				MidiSendAt(ref|128, e, MidiGetTime()+Dur(e));
 				break;
 				
@@ -692,7 +708,7 @@ void processMidiEvents(short ref)
 				#if defined(TRACE)
 					printf("KeyOff\t(chan=%d,\tpitch=%d,\tvel=%d)\n",Chan(e)+Port(e)*16,Pitch(e),Vel(e));
 				#endif
-				doKeyOff(s, Chan(e)+Port(e)*16, Pitch(e), Vel(e));
+				doKeyOff(s, Chan(e) + Port(e) * 16, Pitch(e), Vel(e));
 				MidiFreeEv(e);
 				break;
 
@@ -701,9 +717,9 @@ void processMidiEvents(short ref)
 					printf("KeyOn\t(port=%d,\tchan=%d,\tpitch=%d,\tvel=%d)\n",Port(e),Chan(e)+Port(e)*16,Pitch(e),Vel(e));
 				#endif
 				if (Vel(e) > 0) {
-					doKeyOn(s, Chan(e)+Port(e)*16, Pitch(e), Vel(e));
+					doKeyOn(s, Chan(e) + Port(e) * 16, Pitch(e), Vel(e));
 				} else {
-					doKeyOff(s, Chan(e)+Port(e)*16, Pitch(e), 64);
+					doKeyOff(s, Chan(e) + Port(e) * 16, Pitch(e), 64);
 				}
 				MidiFreeEv(e);
 				break;
@@ -713,10 +729,10 @@ void processMidiEvents(short ref)
 					printf("CtrlChange\t(chan=%d,\tpitch=%d,\tvel=%d)\n",Chan(e)+Port(e)*16,Pitch(e),Vel(e));
 				#endif
 				if (Pitch(e) == 7) {
-					s->fChanVol[Chan(e)+Port(e)*16] = float(Vel(e))/127.0;					
+					s->fChanVol[Chan(e) + Port(e) * 16] = float(Vel(e))/127.0;					
 				}
-				if ((Pitch(e) == 10)&&(s->fStereoMode != 0.0)) {
-					s->fChanPan[Chan(e)+Port(e)*16] = float(Vel(e))/127.0;					
+				if ((Pitch(e) == 10) && (s->fStereoMode != 0.0)) {
+					s->fChanPan[Chan(e) + Port(e) * 16] = float(Vel(e))/127.0;					
 				}
 				MidiFreeEv(e);
 				break;
