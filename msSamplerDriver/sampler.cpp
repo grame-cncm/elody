@@ -20,7 +20,7 @@
 
 using namespace std;
 
-static int iscomment (char* s)
+static int iscomment(char* s)
 {
 	#if defined(TRACE)
 		TRACE(("check for comments for line : %s\n", s));
@@ -29,16 +29,13 @@ static int iscomment (char* s)
 	return *s == 0 || *s =='#';
 }
 
-inline float square (float x) { return x*x; }
+inline float square(float x) { return x*x; }
 
 static bool setTable(int channel, float param[], float value)
 {
-	if ((channel<0)||(channel>=CHANNELS_NUM)||(value>1.0)||(value<-1.0))
-	{
+	if ((channel < 0) || (channel >= CHANNELS_NUM) || (value > 1.0) || (value < -1.0)) {
 		return false;
-	}
-	else
-	{
+	} else {
 		param[channel] = value;
 		return true;
 	}
@@ -57,8 +54,7 @@ static bool setChanVolPanSensit(int c, float vol[], int v, float pan[], int p, f
 
 static void initChanVolPanSensit(float vol[], int v, float pan[], int p, float sensit[], float vel[32][128], double s)
 {
-	for (int c=0; c<CHANNELS_NUM; c++)
-	{
+	for (int c=0; c<CHANNELS_NUM; c++) {
 		setChanVolPanSensit(c, vol, v, pan, p, sensit, vel[c], s);
 	}
 }
@@ -150,7 +146,7 @@ static TSound* checkSoundFile(TSampler* s, char* sndfilename)
 	long	i;
 	TSound*	snd;
 	
-	for (i=0; i < n; i++) {
+	for (i = 0; i < n; i++) {
 		snd = (TSound*) getListElem(&s->fSoundList, i);
 		if (strcmp(snd->fSoundName, sndfilename) == 0)
 			return snd;
@@ -164,7 +160,7 @@ static void printSoundList(TSampler* s)
 	long 	i;
 	
 	printf("sound list { \n");
-	for (i=0; i < listSize(&s->fSoundList); i++) {
+	for (i = 0; i < listSize(&s->fSoundList); i++) {
 		printf("\t%2ld : %s\n", i, ((TSound*)getListElem(&s->fSoundList, i))->fSoundName);
 	}
 	printf("}\n");
@@ -193,13 +189,11 @@ static int addRule(TSampler* s, int midichan, int midikey, char* sndfilename, fl
 		free (s->fRule[midichan][midikey]);
 	}
 	TSound* snd = checkSoundFile(s, sndfilename);
-	if (snd==NULL)
-	{
+	if (snd == NULL) {
 		snd = newSoundFile(sndfilename);
-		if (snd != NULL)
-		{
+		if (snd != NULL) {
 			int err = readSoundFile(snd, sampleRate);
-			if (err!=0)
+			if (err != 0)
 				return err;
 			addListElem(&s->fSoundList, listSize(&s->fSoundList), (Elem*)snd);
 		}
@@ -208,7 +202,7 @@ static int addRule(TSampler* s, int midichan, int midikey, char* sndfilename, fl
 	}
 		
 	TAction* action = newAction(snd, speed, traj);
-   	if (action==NULL)
+   	if (action == NULL)
 		return ERR_MALLOC;
 	s->fRule[midichan][midikey] = action;
 	return 0;
@@ -280,11 +274,10 @@ static int readConfigFile(TSampler* s, char* fname, int sampleRate)
 		if (err!=0)
 			return err;
 	}
-	for (int i=0; i<CHANNELS_NUM; i++)
-	{
+	for (int i = 0; i < CHANNELS_NUM; i++) { 
 		double e = exp(4*s->fChanSensit[i]);
 		s->fChanVel[i][0]=0;
-		for (int j=1; j<128; j++)
+		for (int j = 1; j < 128; j++)
 			s->fChanVel[i][j]=pow(j/127.0,e);
 	}
 	printSoundList(s);
@@ -367,11 +360,11 @@ int initSampler(TSampler* s, char* fname, int sampleRate)
  	
 	/* creation de la freelist des voix	*/
 	
-	for (int v=0; v<kMaxVoices; v++) addListElem(&s->fFreeVoiceList, v, (Elem*) &s->fVoiceTable[v]); 
+	for (int v = 0; v < kMaxVoices; v++) addListElem(&s->fFreeVoiceList, v, (Elem*) &s->fVoiceTable[v]); 
 	
 	/* initialisation de la table des regles	*/
 	
-	for (int c=0;c<CHANNELS_NUM;c++) for (int k=0;k<128;k++) s->fRule[c][k] = NULL; 
+	for (int c = 0; c < CHANNELS_NUM; c++) for (int k=0;k<128;k++) s->fRule[c][k] = NULL; 
 	
 	
 	/* lecture du fichier de configuration 	*/
@@ -488,13 +481,12 @@ static int mixOneVoiceFixedSpeed (TSampler* sss, unsigned long const n, float* m
 				on mixe tous les echantillons demandes d'un coup.
 			*/
 
-			if (sss->fStereoMode == 0.0)
+			if (sss->fStereoMode == 0.0) {
 				for (;i<n; i++) {
 					float x = src[pos++] * level * v->fEnvelope.tick();
 					multi[v->fDst][i] += x;
 				}
-			else
-			{
+			} else {
 				for (;i<n; i++) {
 					float x = src[pos++] * level * v->fEnvelope.tick();
 					multi[0][i] += x * cosValue ;
@@ -513,15 +505,14 @@ static int mixOneVoiceFixedSpeed (TSampler* sss, unsigned long const n, float* m
 			/* 
 				on mixe jusqu'a la fin du son et on avise
 			*/
-			if (sss->fStereoMode == 0.0)
+			if (sss->fStereoMode == 0.0) {
 				do {
 					float x = src[pos] * level * v->fEnvelope.tick();
 					multi[v->fDst][i] += x;
 					pos++;
 					i++;
 				} while (pos < maxpos);
-			else
-			{
+			} else {
 				do {
 					float x = src[pos] * level * v->fEnvelope.tick();
 					multi[0][i] += x * cosValue ;
@@ -578,14 +569,13 @@ static int mixOneVoiceVariSpeed (TSampler* sss, unsigned long const n, float* mu
 				on mixe tous les echantillons demandes d'un coup.
 			*/
 
-			if (sss->fStereoMode == 0.0)
+			if (sss->fStereoMode == 0.0) {
 				for (;i<n; i++) {
 					float x = src[pos >> 8] * level * v->fEnvelope.tick();
 					pos += step;
 					multi[v->fDst][i] += x;
 				}
-			else
-			{
+			} else {
 				for (;i<n; i++) {
 					float x = src[pos >> 8] * level * v->fEnvelope.tick();
 					pos += step;
@@ -606,15 +596,14 @@ static int mixOneVoiceVariSpeed (TSampler* sss, unsigned long const n, float* mu
 			/* 
 				on mixe jusqu'a la fin du son et on avise
 			*/
-			if (sss->fStereoMode == 0.0)
+			if (sss->fStereoMode == 0.0) {
 				do {
 					float x = src[pos >> 8] * level * v->fEnvelope.tick();
 					pos += step;
 					multi[v->fDst][i] += x;
 					i++;
 				} while (pos < maxpos);
-			else
-			{
+			} else {
 				do {
 					float x = src[pos >> 8] * level * v->fEnvelope.tick();
 					pos += step;

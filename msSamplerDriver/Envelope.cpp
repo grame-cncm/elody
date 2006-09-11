@@ -26,7 +26,8 @@ static double checkValue(double value, double min, double max)
 	return value;
 }
 
-Envelope::Envelope() {}
+Envelope::Envelope() 
+{}
 
 Envelope::~Envelope()
 {}
@@ -65,7 +66,7 @@ void Envelope::setEnvelope(int a, int d, double s, int r, int sR)
 	target[RELEASE] = 0.0;
 	if ( release != 0 )
 	//	rate[RELEASE] = - 1000.0 / (sampleRate * release ) ;
-		rate[RELEASE] = pow ( 10 , -2 * 1000.0 / (sampleRate * release ) );
+		rate[RELEASE] = pow (10 , -2 * 1000.0 / (sampleRate * release ));
 	else
 		rate[RELEASE] = -1.0 ;
 }
@@ -83,18 +84,14 @@ void Envelope::keyOff()
 
 double Envelope::tick()
 {
-	if ( (state!=OFF)&&(state!=SUSTAIN) )
-	{
-		if ( state==RELEASE )
-		{
+	if ((state!=OFF)&&(state!=SUSTAIN)) {
+		if (state == RELEASE) {
 			value *= rate[state];
 			if (value <= target[state] + 0.01) {
 				value = target[state];
 				state++;
 			}
-		}
-		else
-		{
+		} else {
 			if (target[state] > value) {
 				value += rate[state];
 				if (value >= target[state]) {
@@ -110,7 +107,7 @@ double Envelope::tick()
 			}
 		}
     }
-	if (state==END)	state=OFF;
+	if (state == END) state=OFF;
 	return value;
 }
 

@@ -234,21 +234,18 @@ void LoadState()
 
 	//-- 1 - Load default values
 	data->asleep = false;
-	if ( DEFAULT_OUTPUT_DEVICE != paNoDevice )
-	{
+	if (DEFAULT_OUTPUT_DEVICE != paNoDevice) {
 		data->outputDevice = LoadConfigNum("Configuration",
 			"Device Number", GetProfileFullName(kProfileName),DEFAULT_OUTPUT_DEVICE);
 		const PaDeviceInfo* defOutputDevInfo = Pa_GetDeviceInfo( data->outputDevice );
-		if (defOutputDevInfo == NULL)
-		{
+		if (defOutputDevInfo == NULL) {
 			data->outputDevice = DEFAULT_OUTPUT_DEVICE;
 			defOutputDevInfo = Pa_GetDeviceInfo( data->outputDevice );
 		}
 		strcpy(data->outputDeviceName, LoadConfig("Configuration",
 			"Device Name", GetProfileFullName(kProfileName), "") );
 		// Reset default values if material configuration has changed
-		if ( strcmp(data->outputDeviceName, Pa_GetDeviceInfo(data->outputDevice)->name )!=0 )
-		{
+		if (strcmp(data->outputDeviceName, Pa_GetDeviceInfo(data->outputDevice)->name )!=0) {
 			data->outputDevice = DEFAULT_OUTPUT_DEVICE;
 			defOutputDevInfo = Pa_GetDeviceInfo( data->outputDevice );
 			strcpy(data->outputDeviceName, defOutputDevInfo->name);
@@ -267,16 +264,13 @@ void LoadState()
 		outputParameters.suggestedLatency =	defOutputDevInfo->defaultLowOutputLatency;
 		outputParameters.hostApiSpecificStreamInfo = NULL;
 		int err = Pa_IsFormatSupported( NULL, &outputParameters, (double) data->sampleRate);
-		if (err!=0)
-		{
+		if (err != 0) {
 			data->outputDevice = DEFAULT_OUTPUT_DEVICE;
 			defOutputDevInfo = Pa_GetDeviceInfo( data->outputDevice );
 			strcpy(data->outputDeviceName, defOutputDevInfo->name);
 			data->sampleRate = defOutputDevInfo->defaultSampleRate;
 		}
-	}
-	else
-	{
+	} else {
 		data->outputDevice = 0;
 		data->sampleRate = DEFAULT_SAMPLE_RATE;
 		data->numOutputs = 2;
@@ -313,7 +307,6 @@ void SaveState()
 			data->outputDevice , GetProfileFullName(kProfileName));
 	SaveConfig("Configuration", "Device Name",
 			data->outputDeviceName , GetProfileFullName(kProfileName));
-
 
 }
 
@@ -377,8 +370,7 @@ int AudioWakeUp()
 		return serr;
 
 	//-- 4 - Allocate outCompute array
-	for (i=0; i<data->numOutputs; i++)
-	{
+	for (i=0; i<data->numOutputs; i++) {
  		data->outCompute[i] = (float*) calloc(data->framesPerBuffer,sizeof(float));
 	}
 	TRACE(("Allocate outCompute\n"));
@@ -404,7 +396,7 @@ int AudioWakeUp()
 							  	 			filling input and output buffers */
 			data );						/* client pointer which is passed to the
 							   				callback function */
-	if ( err != paNoError )
+	if (err != paNoError)
 		return err;
 	TRACE(("Pa_OpenStream\n"));
 
@@ -509,11 +501,10 @@ JNIEXPORT jint JNICALL Java_grame_elody_editor_sampler_PaJniConnect_AudioReload
 
 	//-- 2 - Audio sleep
 	err = AudioSleep();
-	if (err!=0)		return err;
+	if (err != 0)	return err;
 
 	//-- 3 - Audio wake up
 	err = AudioWakeUp();
-
 	return err;
 }
 
@@ -617,7 +608,7 @@ JNIEXPORT jboolean JNICALL Java_grame_elody_editor_sampler_PaJniConnect_testSamp
 		Pa_GetDeviceInfo( data->outputDevice )->defaultLowOutputLatency;
 	outputParameters.hostApiSpecificStreamInfo = NULL;
 	int err = Pa_IsFormatSupported( NULL, &outputParameters, (double) sampleRate);
-	if (err==0)
+	if (err == 0)
 		return JNI_TRUE;
 	else
 		return JNI_FALSE;
@@ -631,20 +622,20 @@ JNIEXPORT jobjectArray JNICALL Java_grame_elody_editor_sampler_PaJniConnect_GetH
 	PaHostApiIndex i;
 	const PaHostApiInfo * info;
 	jclass PaHostApiInfoCls = env->FindClass("grame/elody/editor/sampler/PaHostApiInfo");
+
 	if (PaHostApiInfoCls == NULL) return NULL; /* exception thrown */
 	result = env->NewObjectArray((jsize) apiNumber, PaHostApiInfoCls, NULL);
+
 	if (result == NULL) return NULL; /* out of memory error thrown */
 	jmethodID constructorID = env->GetMethodID(PaHostApiInfoCls, "<init>", "(IILjava/lang/String;III)V");
-	for (i=0; i<apiNumber; i++)
-	{
+
+	for (i=0; i<apiNumber; i++) {
 		info = Pa_GetHostApiInfo(i);
-		if ((info->defaultOutputDevice)>=0)
-		{
+		if ((info->defaultOutputDevice) >= 0) {
 			jobject jInfo = env->NewObject(PaHostApiInfoCls, constructorID, (jint) info->structVersion,
 					(jint) info->type, env->NewStringUTF(info->name), (jint) info->deviceCount,
 					(jint) info->defaultInputDevice, (jint) info->defaultOutputDevice);
-			if (jInfo == NULL)
-			{
+			if (jInfo == NULL) {
 				printf("jInfo == NULL at i=%d\n",i);
 				return NULL; /* exception thrown */
 			}
@@ -662,23 +653,23 @@ JNIEXPORT jobjectArray JNICALL Java_grame_elody_editor_sampler_PaJniConnect_GetD
 	jobjectArray result;
 	const PaDeviceInfo * info;
 	jclass PaDeviceInfoCls = env->FindClass("grame/elody/editor/sampler/PaDeviceInfo");
+
 	if (PaDeviceInfoCls == NULL) return NULL; /* exception thrown */
 	result = env->NewObjectArray((jsize) drvNumber, PaDeviceInfoCls, NULL);
+
 	if (result == NULL) return NULL; /* out of memory error thrown */
 	jmethodID constructorID = env->GetMethodID(PaDeviceInfoCls, "<init>", "(ILjava/lang/String;IIIDDDDD)V");
-	for (int i=0; i<drvNumber; i++)
-	{
+
+	for (int i=0; i<drvNumber; i++) {
 		info = Pa_GetDeviceInfo( Pa_HostApiDeviceIndexToDeviceIndex( (PaHostApiIndex) apiIndex, i ) );
-		if (((info->maxOutputChannels)>0)&&((info->defaultSampleRate)>0))
-		{
+		if (((info->maxOutputChannels)>0)&&((info->defaultSampleRate)>0)) {
 			jobject jInfo = env->NewObject( PaDeviceInfoCls, constructorID,
 					(jint) info->structVersion,	env->NewStringUTF(info->name), (jint) info->hostApi,
 					(jint) info->maxInputChannels, (jint) info->maxOutputChannels,
 					(jdouble) info->defaultLowInputLatency,	(jdouble) info->defaultLowOutputLatency,
 					(jdouble) info->defaultHighInputLatency, (jdouble) info->defaultHighOutputLatency,
 					(jdouble) info->defaultSampleRate );
-			if (jInfo == NULL)
-			{
+			if (jInfo == NULL) {
 				printf("jInfo == NULL at i=%d\n",i);
 				return NULL; /* exception thrown */
 			}
