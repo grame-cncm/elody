@@ -474,6 +474,7 @@ public class Keygroup {
 		extendButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				setRef(60);	setPlus(67); setMinus(60);
+				channel.sampler.configSav.writeAll();
 			}
 		});
 		setExtensible(false);
