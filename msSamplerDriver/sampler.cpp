@@ -256,7 +256,8 @@ static int readConfigFile(TSampler* s, char* fname, int sampleRate)
 		TRACE(("lecture du fichier de configuration \"%s\"...\n", fname));
 	#endif
 	
-	if ((file = fopen(fname,"r")) == NULL) {
+	//if ((file = fopen(fname,"r")) == NULL) {
+	if ((file = fopen(fname,"a+")) == NULL) {
 		printf("ERREUR : impossible de lire le fichier de configuration \"%s\"\n", fname);
 		return ERR_CONFIGFILE;
 	}

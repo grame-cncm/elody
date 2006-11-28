@@ -138,14 +138,13 @@ class soundplayer
 		if (err == ERR_CONFIGFILE) {
 			Pa_Terminate();
 			SaveConfig("Configuration", "Sound Samples INI file",
-				"soundplayer.conf", GetProfileFullName(kProfileName));
+					DEFAULT_AUDIO_FILE, GetProfileFullName(kProfileName));
 			err = AudioWakeUp();
 		}
 
 		if ((err != 0) && (err != ERR_CONFIGFILE)) {
 			Pa_Terminate();
 			fprintf(stderr, "An error occured while using the portaudio stream\n");
-			fprintf(stderr, "Error number: %d\n", err );
 			fprintf(stderr, "Error message: %s\n", Pa_GetErrorText(err));
 		}
 	}
@@ -160,7 +159,6 @@ class soundplayer
 		if ((err != 0) && (err != ERR_CONFIGFILE)) {
 			Pa_Terminate();
 			fprintf(stderr, "An error occured while using the portaudio stream\n");
-			fprintf(stderr, "Error number: %d\n", err);
 			fprintf(stderr, "Error message: %s\n", Pa_GetErrorText(err));
 		}
 	}
@@ -279,7 +277,7 @@ void LoadState()
 		data->framesPerBuffer = DEFAULT_BUFFER_SIZE;
 
 	strcpy(data->soundConfigFile, LoadConfig("Configuration",
-		"Sound Samples INI file", GetProfileFullName(kProfileName),DEFAULT_AUDIO_FILE) );
+		"Sound Samples INI file", GetProfileFullName(kProfileName),DEFAULT_AUDIO_FILE));
 	
 	DSP.setNumOutputs(data->numOutputs);
 
@@ -293,16 +291,15 @@ void SaveState()
 	
 	//-- 1 - Save current values as default values
 	SaveConfigNum("Configuration", "Frames per buffer",
-			data->framesPerBuffer , GetProfileFullName(kProfileName));
+			data->framesPerBuffer, GetProfileFullName(kProfileName));
 	SaveConfigNum("Configuration", "Sample rate",
-			data->sampleRate , GetProfileFullName(kProfileName));
+			data->sampleRate, GetProfileFullName(kProfileName));
 	SaveConfig("Configuration", "Sound Samples INI file",
-			data->soundConfigFile , GetProfileFullName(kProfileName));
+			data->soundConfigFile, GetProfileFullName(kProfileName));
 	SaveConfigNum("Configuration", "Device Number",
-			data->outputDevice , GetProfileFullName(kProfileName));
+			data->outputDevice, GetProfileFullName(kProfileName));
 	SaveConfig("Configuration", "Device Name",
 			data->outputDeviceName , GetProfileFullName(kProfileName));
-
 }
 
 
@@ -430,14 +427,18 @@ int AudioSleep()
 
 		//-- 2 - Stop audio stream
 		err = Pa_StopStream(data->stream);
-		if (err != paNoError)
+		if (err != paNoError) {
+			TRACE(("Pa_StopStream error %s\n",Pa_GetErrorText(err)));
 			return err;
+		}
 		TRACE(("Pa_StopStream\n"));
 
 		//-- 3 - Close audio stream
 		err = Pa_CloseStream(data->stream);
-		if (err != paNoError)
+		if (err != paNoError) {
+			TRACE(("Pa_CloseStream error %s\n",Pa_GetErrorText(err)));
 			return err;
+		}
 		TRACE(("Pa_CloseStream\n"));
 
 		//-- 4 - Terminate PortAudio
