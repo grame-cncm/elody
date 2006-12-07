@@ -48,7 +48,6 @@ public class TEvalPlayer implements TValueVisitor, TPlayerInterface{
 	int offset = 0;   		// différence entre temps réel et temps dans la séquence 
 	int stopDate = 0;   	// date en temps réel du STOP (utilisée pour l'offset) 
 	
-	
 	int endObjectDate = 0;  // date en temps musical limite pour le calcul d'une tranche
 	int objectDate = 0 ;    // date en temps musical courant pour le calcul d'une tranche
 	

@@ -52,7 +52,7 @@ public class TRealTimePlayer implements Observer, TPlayerInterface {
      	curPlayer = loopPlayer;
     	endExp = true;
     	setLoopMarkers ();
-   	 }
+   	}
    	 
     // Methodes publiques
 	
