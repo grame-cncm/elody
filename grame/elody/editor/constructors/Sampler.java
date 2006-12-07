@@ -85,7 +85,7 @@ public class Sampler extends BasicShellSWT {
 		sampleRate = jni.GetSampleRate();
 		framesPerBuffer = jni.GetFramesPerBuffer();
 		file = new File(jni.GetFileName());
-		configSav = new ConfigSav(file);
+		//configSav = new ConfigSav(file);
 		
 		boolean badSampleRate = true;
 		boolean badBufferSize = true;

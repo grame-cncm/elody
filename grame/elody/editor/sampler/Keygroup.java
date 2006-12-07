@@ -56,8 +56,7 @@ public class Keygroup {
 	private Label noteLabel;
 	private Spinner plusSpinner;
 	private Spinner minusSpinner;
-	private Button extendButton;
-	
+	private Button extendButton;	
 
 	public int getIndex()		{ return index; }
 	public int getRef()			{ return ref; }
