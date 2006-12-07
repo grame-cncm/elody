@@ -113,8 +113,6 @@ public class TEvalPlayer implements TValueVisitor, TPlayerInterface{
 		cont.init(date + (int) (dur * ev.getExpand()));
 	}
  	
-			
-	
 	public void Visite(TEvent ev,int date, Object arg) {
 		int dur = (int)ev.getDur();
 		
@@ -150,8 +148,7 @@ public class TEvalPlayer implements TValueVisitor, TPlayerInterface{
  		}
  		cont.init(date + dur);
 	}
- 	
- 			
+  			
 	public void Visite(TSequenceVal val ,int date, Object arg) {
  		Debug.Trace( "TSeqVal", this);
  			
@@ -168,8 +165,7 @@ public class TEvalPlayer implements TValueVisitor, TPlayerInterface{
 		}else{
 			cont.init (new TSequenceVal(cont.getVal(),val.getValArg2()),afterDate);
 		}
-	}
-		
+	}		
  		
 	public void Visite(TMixVal val,int date, Object arg) {
 		Debug.Trace( "TMixVal", this);
@@ -177,8 +173,7 @@ public class TEvalPlayer implements TValueVisitor, TPlayerInterface{
 		val.getValArg1().Accept(this, date, arg);
 		int date1 = cont.getDate();  // date de la continuation  
 		TValue contval1 =  cont.getVal();
-		
-			
+					
 		val.getValArg2().Accept(this, date,arg);
 		int date2 = cont.getDate();  // date de la continuation 
 		TValue contval2 =  cont.getVal();
@@ -197,16 +192,14 @@ public class TEvalPlayer implements TValueVisitor, TPlayerInterface{
 			cont.init(new TMixVal(contval1,contval2), date1); // dates égales
 		}
 	}
-	
-		
+			
 	public void Visite(TClosure val,int date, Object arg) {
 		TValue body = val.getValArg2();
 		float bdur = body.Duration();
 		float coef = Float.isInfinite(bdur) ? 1 : val.Duration() / bdur;
 	
 		TValue val1 = TExpMaker.gExpMaker.expandVal(body,coef);
-		val1.Accept(this, date,arg);
-		
+		val1.Accept(this, date,arg);	
 	}
 	
 	public void Visite(TApplVal val,int date, Object arg) {
@@ -232,7 +225,6 @@ public class TEvalPlayer implements TValueVisitor, TPlayerInterface{
 	}
 	
 	final void nextGeneration() {num++;}
-	
 	
 	final  void playFirstSlice() {
 		endObjectDate = objectDate + SLICE/2;
@@ -276,7 +268,6 @@ public class TEvalPlayer implements TValueVisitor, TPlayerInterface{
  		}
 	}	
 	
-		
 	final  void nextSlice() {
 		if (cont.isNull()) { 	
 			task = null;
@@ -286,7 +277,6 @@ public class TEvalPlayer implements TValueVisitor, TPlayerInterface{
 			TGlobals.midiappl.ScheduleTask(task, Math.max(Midi.GetTime(), offset + objectDate - SLICE));
 		}	
 	}
-	
 	
 	void startPlayerInt(TExp exp) {
 		int emptySeq = Midi.NewSeq();
@@ -308,11 +298,9 @@ public class TEvalPlayer implements TValueVisitor, TPlayerInterface{
 			System.out.println("No more MidiShare events");
 		}
 	}
-	
-	
+		
 	public void  setBufferPlayer (int val) {SLICE = Math.max (val*1000, 2000);}
-	
-	
+		
 	// Methodes publiques
 	
 	public  void startPlayer (TExp exp) {

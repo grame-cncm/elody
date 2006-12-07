@@ -37,11 +37,8 @@ public final class TSeqRealTimePlayer implements Observer {
 	}
 	
 	public void Open (String name) throws MidiException  {
-	
 		player = new MsPlayer1();
 		player.Open(name);
-		//player.SetSynchroIn(MidiPlayer.kEventSync);
-		
 		evalPlayer = new TEvalPlayer(player);
 		((TEvalPlayer)evalPlayer).addObserver (this);
 	}
@@ -52,12 +49,11 @@ public final class TSeqRealTimePlayer implements Observer {
 		curIndex = -1;
 		startLine = true;
 		offset  = Midi.GetTime();
-		contDate = 0;
-		
-		nextExp = getNextExp();
-		
+		contDate = 0;	
+		nextExp = getNextExp();	
 		playNextExp ();
 		displayNextExp(0); // affiche la case 0
+		//System.out.println("startPlayer");
 	}
 	
 	public synchronized void stopPlayer () {
@@ -71,12 +67,12 @@ public final class TSeqRealTimePlayer implements Observer {
 			task1 = null;
 		}
 		evalPlayer.stopPlayer();
+		//System.out.println("stopPlayer");
 	}
 	
-	public synchronized void contPlayer () {evalPlayer.contPlayer();}
+	public synchronized void contPlayer() {evalPlayer.contPlayer();}
 	
-	
-	final int nextIndex (int index) {
+	final int nextIndex(int index) {
 		if (index == max - 1) {
 			return 0;
 		}else{ 
@@ -93,8 +89,7 @@ public final class TSeqRealTimePlayer implements Observer {
 		return exp;
 	}
 	
-	synchronized void playNextExp () {
-	
+	synchronized void playNextExp() {
 		if (startLine){
 			startLine = false;
 			evalPlayer.startPlayer(nextExp);
@@ -107,21 +102,17 @@ public final class TSeqRealTimePlayer implements Observer {
 	 	observer.startExpression(index); // signale le debut du jeu d'une expression
 	}	
   
-    public void update(Observable  o, Object  arg) {
-  
+    public void update(Observable o, Object arg) {
     	int contDate1 = ((Integer)arg).intValue();
-    	int newDate = offset + contDate1;
-    		
-		nextExp = getNextExp();
-    	
+    	int newDate = offset + contDate1;		
+		nextExp = getNextExp();   	
     	task =  new TExpTask(this);
-		task1 = new TDispExpTask(this,curIndex);
-			
-		TGlobals.midiappl.ScheduleTask(task,newDate - ADVANCE);
+		task1 = new TDispExpTask(this,curIndex);			
+		TGlobals.midiappl.ScheduleTask(task, newDate - ADVANCE);
 		TGlobals.midiappl.ScheduleTask(task1, newDate);
  	}
     
-    public PlayerState getState() { return player.GetState ();}
+    public PlayerState getState() {return player.GetState();}
 	  
 	public int getRefnum() {return player.refnum;}
 }
@@ -136,7 +127,7 @@ class TExpTask extends MidiTask {
 	
 	TSeqRealTimePlayer player; 
 	
-	public TExpTask (TSeqRealTimePlayer player) { this.player = player; }
+	public TExpTask (TSeqRealTimePlayer player) {this.player = player;}
 	public void Execute (MidiAppl appl, int date) { 
 		try {
 			int delta = Midi.GetTime() - (date + TSeqRealTimePlayer.ADVANCE + 100);
@@ -147,7 +138,6 @@ class TExpTask extends MidiTask {
 		}
 	}
 }
-
 
 /*******************************************************************************************
 *
@@ -160,7 +150,7 @@ class TDispExpTask extends MidiTask {
 	TSeqRealTimePlayer player; 
 	int index;
 	
-	public TDispExpTask (TSeqRealTimePlayer player, int index) { this.player = player; this.index = index;}
+	public TDispExpTask (TSeqRealTimePlayer player, int index) {this.player = player; this.index = index;}
 	public void Execute (MidiAppl appl, int date) { 
 		try {
 			int delta = Midi.GetTime() - (date + 100);

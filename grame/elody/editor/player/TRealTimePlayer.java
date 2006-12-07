@@ -48,7 +48,6 @@ public class TRealTimePlayer implements Observer, TPlayerInterface {
     public void insertPlayer(TExp exp) {curPlayer.insertPlayer(exp);}
 	public void freePlayer() {curPlayer.freePlayer();}
 
-      
     public void update(Observable  o, Object  arg) { // fin de l'évaluation
      	curPlayer = loopPlayer;
     	endExp = true;
@@ -57,7 +56,7 @@ public class TRealTimePlayer implements Observer, TPlayerInterface {
    	 
     // Methodes publiques
 	
-	public void Open (String name) throws MidiException  {
+	public void Open(String name) throws MidiException  {
 		player = new MsPlayer1();
 		player.Open(name);
 		evalPlayer = new TEvalPlayer(player);
@@ -83,8 +82,8 @@ public class TRealTimePlayer implements Observer, TPlayerInterface {
 		curPlayer.startPlayer(exp);
 	}
 	
-	public void stopPlayer () 	{ curPlayer.stopPlayer();}
-	public void contPlayer () 	{ curPlayer.contPlayer();}
+	public void stopPlayer () 	{curPlayer.stopPlayer();}
+	public void contPlayer () 	{curPlayer.contPlayer();}
 	
 	public void setLoopPlayer(boolean state) { 
 		if (state){
@@ -127,12 +126,10 @@ public class TRealTimePlayer implements Observer, TPlayerInterface {
 		player.SetPosMs(date_ms);
 	}
 
-	
-	 public void freePlayer () {
+	public void freePlayer () {
 		player.Stop();
 		player = null;
 	}
   	
-  	public void  setBufferPlayer(int val) {}
-	
+  	public void  setBufferPlayer(int val) {}	
 }
