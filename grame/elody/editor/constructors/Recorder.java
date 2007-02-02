@@ -32,8 +32,6 @@ public final class Recorder extends BasicApplet implements Observer {
   				record.Open(name);
   				MidiUtils.connect("MidiShare",name,1);
   				TGlobals.context.restoreConnections(name);
-  				
-  				//Midi.Connect(0, record.refnum, 1);
   				record.addObserver(this);
   		   	 }
 	   }catch (MidiException e) {
