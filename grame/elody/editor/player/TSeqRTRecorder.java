@@ -37,7 +37,7 @@ public final class TSeqRTRecorder extends MidiAppl {
     public void deleteObserver	(Observer o) { notifier.deleteObserver(o); }
 
 	public void Open (String name) throws MidiException  
-	{
+	{	
 		super.Open(name);
 		seq = Midi.NewSeq();
 		if (seq == 0) throw new MidiException();
@@ -45,16 +45,17 @@ public final class TSeqRTRecorder extends MidiAppl {
 		Midi.AcceptType(filter,Midi.typeKeyOn,1);
 		Midi.AcceptType(filter,Midi.typeKeyOff,1);
 		Midi.AcceptType(filter,Midi.typeNote,1);
-		Midi.AcceptType(filter,typeSlice,1);
+		Midi.AcceptType(filter,typeSlice,1);		
 	}
 	
 	public void Close ()
 	{
 		Midi.FreeSeq(seq);
-		// super.Close(); 02/02/07  TEMPORAIRE (faire plater...)
+		super.Close(); //02/02/07   TEMPORAIRE (faire planter...)
 	}
 	
 	public synchronized void ReceiveAlarm (int ev) 
+	//public void ReceiveAlarm (int ev) 
 	{
 		int type = Midi.GetType(ev);
 		int curDate = Midi.GetDate(ev);
@@ -84,6 +85,7 @@ public final class TSeqRTRecorder extends MidiAppl {
 	}
 	
 	final synchronized void sendSlice(int date) 
+	//final void sendSlice(int date) 
 	{
 		int endSlice  = Midi.NewEv(typeSlice);
 		endSliceDate = date;
@@ -95,6 +97,7 @@ public final class TSeqRTRecorder extends MidiAppl {
 	}
 	
 	final synchronized void handleKeyOff(int ev, int curDate) 
+	//final void handleKeyOff(int ev, int curDate) 
 	{
 		if (count > 0) {
 			if( --count == 0) sendSlice(curDate + slice);
@@ -105,6 +108,7 @@ public final class TSeqRTRecorder extends MidiAppl {
 	}
 	
 	final synchronized void handleKeyOn(int ev, int curDate) 
+	//final void handleKeyOn(int ev, int curDate) 
 	{
 		count++;
 		endSliceDate = curDate + slice;
@@ -112,19 +116,22 @@ public final class TSeqRTRecorder extends MidiAppl {
 	}
 	
 	final synchronized  void handleNote(int ev, int curDate) 
+	//final  void handleNote(int ev, int curDate) 
 	{
 		sendSlice(curDate + slice);
 		handleEv(ev,curDate);
 	}
 	
 	final synchronized void handleEv(int ev , int curDate) 
+	//final void handleEv(int ev , int curDate) 
 	{
 		if (offset < 0) offset = curDate;  // début d'une nouvelle tranche
 		Midi.SetDate(ev, curDate - offset);
 		Midi.AddSeq(seq, ev);
 	}
 	
-	final synchronized void handleSlice(int ev, int curDate) 
+	final synchronized void handleSlice(int ev, int curDate)
+	//final void handleSlice(int ev, int curDate) 
 	{
 		if ((curDate >= endSliceDate) && !IsEmptySeq()) { 
 			try {
