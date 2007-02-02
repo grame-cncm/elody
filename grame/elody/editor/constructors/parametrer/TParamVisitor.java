@@ -64,7 +64,12 @@ public class TParamVisitor implements TValueVisitor {
 
 	public int getAbsPitch()	{return getAbsVal(absPitch);}
 	public int getAbsVel() 		{return getAbsVal(absVel);}
-	public int getAbsChan()		{return getAbsVal(absChan);}
+	//public int getAbsChan()		{return getAbsVal(absChan);}
+	public int getAbsChan()		
+	{	
+		int val = getAbsVal(absChan);
+		return (val < 0) ? val : val + 1;
+	}
 	
 	public int getAbsVal(ParamMap map)
 	{

@@ -20,12 +20,14 @@ public final class TSeqRTRecorder extends MidiAppl {
 	MsgNotifier  notifier;
 	int count = 0;
 	
-	public TSeqRTRecorder () { 
+	public TSeqRTRecorder () 
+	{ 
 		midireader = new TMIDIFile();
 		notifier = new MsgNotifier (2000);
 	}
 	
-	public TSeqRTRecorder (int slice) { 
+	public TSeqRTRecorder (int slice) 
+	{ 
 		midireader = new TMIDIFile();
 		notifier = new MsgNotifier (2000);
 		this.slice = slice;
@@ -34,7 +36,8 @@ public final class TSeqRTRecorder extends MidiAppl {
 	public void addObserver	  	(Observer o) { notifier.addObserver(o); }
     public void deleteObserver	(Observer o) { notifier.deleteObserver(o); }
 
-	public void Open (String name) throws MidiException  {
+	public void Open (String name) throws MidiException  
+	{
 		super.Open(name);
 		seq = Midi.NewSeq();
 		if (seq == 0) throw new MidiException();
@@ -45,17 +48,20 @@ public final class TSeqRTRecorder extends MidiAppl {
 		Midi.AcceptType(filter,typeSlice,1);
 	}
 	
-	public void Close (){
+	public void Close ()
+	{
 		Midi.FreeSeq(seq);
-		super.Close();
+		// super.Close(); 02/02/07  TEMPORAIRE (faire plater...)
 	}
-
-	public synchronized void ReceiveAlarm (int ev) {
+	
+	public synchronized void ReceiveAlarm (int ev) 
+	{
 		int type = Midi.GetType(ev);
 		int curDate = Midi.GetDate(ev);
 		Midi.SetRefnum(ev,TRACKNUM);
 		 
 		switch (type) {
+		
 			case typeSlice:
 				handleSlice(ev,curDate);
 				break;
@@ -77,8 +83,8 @@ public final class TSeqRTRecorder extends MidiAppl {
 		}
 	}
 	
-	
-	final synchronized void sendSlice(int date) {
+	final synchronized void sendSlice(int date) 
+	{
 		int endSlice  = Midi.NewEv(typeSlice);
 		endSliceDate = date;
 					
@@ -88,8 +94,8 @@ public final class TSeqRTRecorder extends MidiAppl {
 		}
 	}
 	
-	final synchronized void handleKeyOff(int ev, int curDate ) {
-	
+	final synchronized void handleKeyOff(int ev, int curDate) 
+	{
 		if (count > 0) {
 			if( --count == 0) sendSlice(curDate + slice);
 			handleEv(ev,curDate);
@@ -98,25 +104,29 @@ public final class TSeqRTRecorder extends MidiAppl {
 		}
 	}
 	
-	final synchronized void handleKeyOn(int ev, int curDate) {
+	final synchronized void handleKeyOn(int ev, int curDate) 
+	{
 		count++;
 		endSliceDate = curDate + slice;
 		handleEv(ev,curDate);
 	}
 	
-	final synchronized  void handleNote(int ev, int curDate) {
+	final synchronized  void handleNote(int ev, int curDate) 
+	{
 		sendSlice(curDate + slice);
 		handleEv(ev,curDate);
 	}
 	
-	final synchronized void handleEv(int ev , int curDate) {
+	final synchronized void handleEv(int ev , int curDate) 
+	{
 		if (offset < 0) offset = curDate;  // début d'une nouvelle tranche
 		Midi.SetDate(ev, curDate - offset);
 		Midi.AddSeq(seq, ev);
 	}
 	
-	final synchronized void handleSlice(int ev, int curDate) {
-		if ((curDate >= endSliceDate) && !IsEmptySeq() ) { 
+	final synchronized void handleSlice(int ev, int curDate) 
+	{
+		if ((curDate >= endSliceDate) && !IsEmptySeq()) { 
 			try {
 				TExp res = midireader.readTrack(seq,TRACKNUM);
 				notifier.notifyObservers (res);

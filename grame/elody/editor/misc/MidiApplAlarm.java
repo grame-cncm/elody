@@ -18,7 +18,8 @@ public class MidiApplAlarm extends MidiAppl {
 	protected Led midiLed;
 	protected Checkbox thru;
 	
-	public MidiApplAlarm() {
+	public MidiApplAlarm() 
+	{
 		super();
 		midiLed = new Led();
 		thru = new Checkbox("thru");
@@ -27,7 +28,6 @@ public class MidiApplAlarm extends MidiAppl {
 				Midi.Connect(0, 0, (thru.getState() ? 1 : 0) ); 
 			}			
 		});
-
 	}
 	
 	public void Open (String name) throws MidiException
@@ -49,12 +49,11 @@ public class MidiApplAlarm extends MidiAppl {
 	
 	public void ReceiveAlarm (int event)
 	{
-		switch (Midi.GetType(event))
-		{
+		switch (Midi.GetType(event)) {
+		
 			case Midi.typeKeyOn:
 				int vel = Midi.GetField(event, 1);
-				if (vel>0)
-				{
+				if (vel > 0) {
 					midiLed.setLedOn(true);
 					break;
 				}
@@ -62,6 +61,7 @@ public class MidiApplAlarm extends MidiAppl {
 			case Midi.typePrivate:
 				midiLed.setLedOn(false);
 				break;
+				
 			default:
 				midiLed.setLedOn(true);
 				int privEv = Midi.NewEv(Midi.typePrivate);
@@ -79,14 +79,16 @@ class Led extends Canvas {
 	
 	protected boolean ledOn = false;
 
-	public Led() {
+	public Led() 
+	{
 		super();
 		setVisible(true);
 		midiLedOn = Toolkit.getDefaultToolkit().createImage("Images/key_on.png");
 		midiLedOff = Toolkit.getDefaultToolkit().createImage("Images/key_off.png");
 	}
 	
-	public void setLedOn(boolean b) {
+	public void setLedOn(boolean b) 
+	{
 		ledOn = b;
 		update(getGraphics());
 	}
